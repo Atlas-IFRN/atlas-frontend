@@ -19,7 +19,7 @@ O arquivo `requirements.txt` foi incluído neste repositório para **compatibili
 Este arquivo documenta as tecnologias base do ambiente:
 
 ```
-Node.js >= 18
+Node.js >= 20.19
 Docker >= 20.10
 Docker Compose >= 2.0
 React >= 18.0
