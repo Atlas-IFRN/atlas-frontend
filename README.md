@@ -6,7 +6,7 @@ Interface de usuário do ecossistema de microsserviços Atlas, responsável pela
 
 | Tecnologia | Papel no projeto |
 | --- | --- |
-| React 18 | Base da interface reativa e componentizada |
+| React 19 | Base da interface reativa e componentizada |
 | Vite | Build tool e ambiente de desenvolvimento com Hot Reload |
 | TypeScript | Tipagem estática para reduzir erros e melhorar a manutenção |
 | Docker | Padronização do ambiente de execução local |
@@ -20,10 +20,11 @@ Este arquivo documenta as tecnologias base do ambiente:
 
 ```
 Node.js >= 20.19
+npm >= 10.0
 Docker >= 20.10
 Docker Compose >= 2.0
-React >= 18.0
-TypeScript >= 5.0
+React >= 19.0
+TypeScript >= 6.0
 Vite >= 8.0
 ```
 
