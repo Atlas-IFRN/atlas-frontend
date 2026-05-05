@@ -1,0 +1,52 @@
+# --- Dependências ---
+node_modules/
+.pnp
+.pnp.js
+
+# --- Produção/Build ---
+dist/
+dist-ssr/
+*.local
+out/
+build/
+
+# --- Variáveis de Ambiente (CRÍTICO) ---
+# Ignora arquivos de configuração real. O .env.example deve permanecer fora desta lista para ser versionado.
+.env
+.env.development
+.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# --- Logs ---
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- TypeScript ---
+*.tsbuildinfo
+
+# --- Editor: VS Code ---
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
+
+# --- Editor: IntelliJ/JetBrains ---
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# --- Sistema (Windows/macOS) ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Docker ---
+.docker/
