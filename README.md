@@ -85,11 +85,7 @@ Assim que você clonar o projeto e criar o primeiro componente real dentro de um
 
 ### Execução do zero
 
-1. Acesse a pasta do frontend:
-
-```bash
-cd frontend-service
-```
+1. Acesse a raiz do projeto (onde estão `package.json` e `docker-compose.yml`).
 
 2. Garanta que o arquivo `.env.development` exista ou crie um `.env` com as variáveis necessárias.
 
@@ -117,7 +113,7 @@ Esses passos evitam problemas comuns de performance, montagem de volumes e comun
 
 ## ⚙️ Configuração de Ambiente
 
-As variáveis de ambiente deste projeto ficam em arquivos `.env` dentro de `frontend-service/`. Eles servem para separar configurações que mudam entre ambientes, como desenvolvimento, homologação e produção, sem precisar alterar o código-fonte.
+As variáveis de ambiente deste projeto ficam em arquivos `.env` na raiz do repositório. Eles servem para separar configurações que mudam entre ambientes, como desenvolvimento, homologação e produção, sem precisar alterar o código-fonte.
 
 ### O que são arquivos `.env`
 
