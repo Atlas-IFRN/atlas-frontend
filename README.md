@@ -12,28 +12,6 @@ Interface de usuário do ecossistema de microsserviços Atlas, responsável pela
 | Docker | Padronização do ambiente de execução local |
 | Atomic Design | Organização dos componentes de UI em camadas reutilizáveis |
 
-## 📋 Manifesto de Requisitos
-
-O arquivo `requirements.txt` foi incluído neste repositório para **compatibilidade com sistemas de submissão acadêmica ou documentação externa**, permitindo que o projeto seja aprovado em processos de avaliação que exigem listagem explícita de dependências em formato padrão.
-
-Este arquivo documenta as tecnologias base do ambiente:
-
-```
-Node.js >= 20.19
-npm >= 10.0
-Docker >= 20.10
-Docker Compose >= 2.0
-React >= 19.0
-TypeScript >= 6.0
-Vite >= 8.0
-```
-
-### Importante
-
-**O gerenciamento real de dependências de software continua sendo feito exclusivamente via `package.json` e seu lockfile.**
-
-O arquivo `requirements.txt` é meramente informativo e não é utilizado pelo fluxo de desenvolvimento ou build do projeto. Alterações de dependências devem sempre ser feitas editando `package.json` e executando `npm install` ou `npm update`.
-
 ## 🏗️ Arquitetura de Pastas
 
 A pasta `src` concentra toda a implementação da interface. A organização foi pensada para separar responsabilidades e tornar a evolução do frontend previsível.
