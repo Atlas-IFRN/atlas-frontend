@@ -111,6 +111,26 @@ Para usuários de Windows, recomenda-se fortemente:
 
 Esses passos evitam problemas comuns de performance, montagem de volumes e comunicação entre o host Windows e o container.
 
+### Setup Local sem Docker
+
+Caso prefira rodar a aplicação localmente utilizando Node.js nativo (sem Docker):
+
+1. Acesse a raiz do projeto.
+2. Certifique-se de que está rodando a versão do Node.js definida no `requirements.txt`.
+3. Instale as dependências:
+   ```bash
+   npm install
+   ```
+4. Configure as variáveis de ambiente necessárias num arquivo `.env.development` baseado no escopo esperado, caso necessário.
+5. Inicie o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
+6. Acesse no navegador:
+   ```text
+   http://localhost:5173
+   ```
+
 ## ⚙️ Configuração de Ambiente
 
 As variáveis de ambiente deste projeto ficam em arquivos `.env` na raiz do repositório. Eles servem para separar configurações que mudam entre ambientes, como desenvolvimento, homologação e produção, sem precisar alterar o código-fonte.
