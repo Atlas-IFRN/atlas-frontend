@@ -1,233 +1,107 @@
-# Atlas - Frontend Service
+# Atlas Frontend ⚡
 
-Interface de usuário do ecossistema de microsserviços Atlas, responsável pela experiência web do sistema de gerenciamento de bolsas de estudo. Este projeto foi estruturado com foco em escalabilidade, manutenção e padronização visual para evoluir em conjunto com os demais serviços da plataforma.
+Interface de usuário do ecossistema **Atlas** — SPA para alunos e professores interagirem com trilhas de conhecimento, bolsas de estudo e perfil acadêmico.
 
-## ✨ Tech Stack
+## Stack
 
-| Tecnologia | Papel no projeto |
-| --- | --- |
-| React 19 | Base da interface reativa e componentizada |
-| Vite | Build tool e ambiente de desenvolvimento com Hot Reload |
-| TypeScript | Tipagem estática para reduzir erros e melhorar a manutenção |
-| Docker | Padronização do ambiente de execução local |
-| Atomic Design | Organização dos componentes de UI em camadas reutilizáveis |
+| Tecnologia | Papel |
+|------------|-------|
+| React 19 | Interface reativa e componentizada |
+| Vite | Build tool com Hot Reload |
+| TypeScript | Tipagem estática |
+| Atomic Design | Organização de componentes em camadas reutilizáveis |
 
-## 🏗️ Arquitetura de Pastas
+## Arquitetura de pastas
 
-A pasta `src` concentra toda a implementação da interface. A organização foi pensada para separar responsabilidades e tornar a evolução do frontend previsível.
+```
+src/
+├── components/     # Atomic Design: atoms / molecules / organisms / templates
+├── pages/          # Telas de rota
+├── hooks/          # Hooks customizados (estado, efeitos, integração)
+├── services/       # Camada de acesso à API
+└── assets/         # Imagens, ícones, recursos estáticos
+```
 
-| Pasta | Responsabilidade |
-| --- | --- |
-| `src/components` | Biblioteca de componentes reutilizáveis, organizada por Atomic Design |
-| `src/pages` | Telas de rota, responsáveis por compor a experiência de cada página |
-| `src/hooks` | Hooks customizados para encapsular lógica reutilizável de estado, efeitos e integração |
-| `src/services` | Camada de acesso a APIs e integração com o backend |
-| `src/assets` | Imagens, ícones, ilustrações e demais recursos estáticos |
+### Atomic Design
 
-### `src/components` e Atomic Design
+| Camada | Responsabilidade | Exemplos |
+|--------|-----------------|----------|
+| `atoms` | Blocos mínimos de UI | botões, inputs, labels |
+| `molecules` | Composições coesas de átomos | campos com label + erro, cards |
+| `organisms` | Seções completas | headers, formulários, listas filtradas |
+| `templates` | Estruturas de página sem dados de negócio | layouts, shells visuais |
 
-O diretório `src/components` deve seguir rigorosamente a metodologia Atomic Design.
+> Quando criar um componente: classifique na camada correta antes de commitar. Componentes de baixo nível devem ser desacoplados de regras de negócio.
 
-| Camada | Objetivo | Exemplos |
-| --- | --- | --- |
-| `atoms` | Menores blocos de interface, com responsabilidade única | botões, inputs, labels, ícones |
-| `molecules` | Combinações simples de átomos que formam um comportamento coeso | campos com label e mensagem de erro, cards resumidos |
-| `organisms` | Seções mais completas da interface, compostas por moléculas e átomos | cabeçalhos, formulários complexos, listas com filtros |
-| `templates` | Estruturas de página sem dependência de dados de negócio | layouts base, colunas, shells visuais |
+## Executando localmente
 
-Regras práticas para essa organização:
+### Com Docker (recomendado)
 
-- Componentes de baixo nível devem permanecer desacoplados de regras de negócio.
-- A composição deve acontecer de baixo para cima, do átomo ao template.
-- Telas finais não devem “furar” a hierarquia e importar diretamente detalhes internos quando existir um componente apropriado.
-- Novos componentes devem ser classificados na camada correta antes de serem adicionados ao repositório.
-### Nota sobre arquivos `.gitkeep`
+Este serviço é orquestrado junto com todos os outros pelo repositório central de infraestrutura:
 
-O Git não rastreia diretórios vazios por padrão. Para garantir que a estrutura de pastas do Atomic Design seja enviada ao repositório no commit inicial, foram adicionados arquivos `.gitkeep` em cada uma das camadas:
+> **[Atlas-IFRN/atlas-infra](https://github.com/Atlas-IFRN/atlas-infra)** — Docker Compose canônico, Nginx, scripts de deploy e backup.
 
-- `src/components/atoms/.gitkeep`
-- `src/components/molecules/.gitkeep`
-- `src/components/organisms/.gitkeep`
-- `src/components/templates/.gitkeep`
-
-Assim que você clonar o projeto e criar o primeiro componente real dentro de uma dessas pastas, o arquivo `.gitkeep` correspondente **pode (e deve) ser excluído** para manter o diretório limpo. O arquivo será automaticamente substituído pelo componente e deixará de ser necessário.
-## 🐳 Setup com Docker
-
-### Pré-requisitos
-
-| Requisito | Observação |
-| --- | --- |
-| Docker Engine / Docker Desktop | Necessário para construir e executar o container |
-| Docker Compose | Usado para subir o serviço `frontend` |
-| Node.js | Não é obrigatório para executar via container, mas ajuda em tarefas locais |
-
-### Execução do zero
-
-1. Acesse a raiz do projeto (onde estão `package.json` e `docker-compose.yml`).
-
-2. Garanta que o arquivo `.env.development` exista ou crie um `.env` com as variáveis necessárias.
-
-3. Suba a aplicação com build da imagem:
+Para rodar o frontend em modo dev isolado (com Hot Reload):
 
 ```bash
-docker compose up --build
+# Pré-requisito: infra compartilhada rodando
+git clone https://github.com/Atlas-IFRN/atlas-infra
+cd atlas-infra && docker compose -f docker-compose.dev.yml up -d
+
+# Neste repositório
+cp .env.development.example .env.development
+docker build -f Dockerfile.dev -t atlas-frontend-dev .
+docker run --rm -p 5173:5173 -v $(pwd):/app -v /app/node_modules --env-file .env.development atlas-frontend-dev
 ```
 
-4. Acesse a interface no navegador:
+Acesse: `http://localhost:5173`
 
-```text
-http://localhost:5173
+### Sem Docker (Node nativo)
+
+```bash
+npm install
+npm run dev
 ```
 
-### Nota importante para Windows
+> **Windows:** use WSL 2 como backend do Docker Desktop para evitar problemas de volume e performance.
 
-Para usuários de Windows, recomenda-se fortemente:
+## Variáveis de ambiente
 
-- Usar WSL 2 como backend do Docker Desktop.
-- Executar o Docker Desktop e o terminal como Administrador, especialmente na primeira configuração.
-- Verificar se o compartilhamento de arquivos e a integração com a distro WSL estão habilitados.
+| Arquivo | Uso |
+|---------|-----|
+| `.env.development` | Dev local (lido pelo Vite e pelo container) |
+| `.env.example` | Template versionado — sem secrets |
 
-Esses passos evitam problemas comuns de performance, montagem de volumes e comunicação entre o host Windows e o container.
-
-### Setup Local sem Docker
-
-Caso prefira rodar a aplicação localmente utilizando Node.js nativo (sem Docker):
-
-1. Acesse a raiz do projeto.
-2. Certifique-se de que está rodando a versão do Node.js definida no `requirements.txt`.
-3. Instale as dependências:
-   ```bash
-   npm install
-   ```
-4. Configure as variáveis de ambiente necessárias num arquivo `.env.development` baseado no escopo esperado, caso necessário.
-5. Inicie o servidor de desenvolvimento:
-   ```bash
-   npm run dev
-   ```
-6. Acesse no navegador:
-   ```text
-   http://localhost:5173
-   ```
-
-## ⚙️ Configuração de Ambiente
-
-As variáveis de ambiente deste projeto ficam em arquivos `.env` na raiz do repositório. Eles servem para separar configurações que mudam entre ambientes, como desenvolvimento, homologação e produção, sem precisar alterar o código-fonte.
-
-### O que são arquivos `.env`
-
-Arquivos `.env` são arquivos de texto simples usados para armazenar pares `chave=valor`. No contexto deste projeto, eles ajudam a definir, por exemplo, a URL do backend, o nome do ambiente e outras configurações que variam conforme o contexto de execução.
-
-### Hierarquia de arquivos
-
-| Arquivo | Uso | Observação |
-| --- | --- | --- |
-| `.env` | Base padrão de configuração | Pode conter valores comuns a todos os ambientes |
-| `.env.development` | Usado no desenvolvimento local | É o arquivo carregado pelo fluxo de `npm run dev` e pelo Docker Compose deste projeto |
-| `.env.example` | Modelo para novos devs | Deve ser versionado, mas sem segredos reais |
-
-No projeto atual, o `docker-compose.yml` aponta para `.env.development` via `env_file`, então esse arquivo é lido no momento em que o container sobe.
-
-### Prefixo `VITE_`
-
-No Vite, variáveis de ambiente só são expostas ao código do frontend se começarem com `VITE_`. Isso é uma proteção deliberada da ferramenta: apenas variáveis explicitamente marcadas como públicas entram no bundle acessível pelo navegador.
-
-Na prática, isso significa que `API_URL` sozinho não fica disponível no frontend, mas `VITE_API_URL` fica acessível em tempo de execução do código React.
-
-### Acesso no código
-
-Exemplo técnico de uso no frontend:
-
-```ts
-const apiUrl = import.meta.env.VITE_API_URL
-```
-
-Esse valor pode ser usado para criar clientes HTTP, configurar interceptors do Axios ou montar chamadas para o backend.
-
-### Exemplo de configuração
+Apenas variáveis com prefixo `VITE_` são expostas ao bundle do browser:
 
 ```env
 VITE_API_URL=http://localhost:8000/api
 VITE_ENV_NAME=development
 ```
 
-### Integração com Docker
-
-O `docker-compose.yml` lê o arquivo `.env.development` através de `env_file` e injeta essas variáveis no container na inicialização. Isso mantém a configuração centralizada e evita hardcode no código.
-
-Importante: o Docker disponibiliza essas variáveis para o processo dentro do container, mas quem decide quais delas vão aparecer no frontend é o Vite, por meio do prefixo `VITE_`.
-
-### Segurança e `.gitignore`
-
-Nunca suba arquivos `.env` reais para o GitHub quando eles contiverem dados sensíveis, como tokens, credenciais, chaves privadas ou URLs internas não públicas. O repositório deve versionar apenas o exemplo `.env.example`, para documentar a estrutura esperada sem expor segredos.
-
-Boas práticas recomendadas:
-
-- Mantenha segredos fora do frontend sempre que possível.
-- Versione apenas arquivos de exemplo, não os arquivos reais de ambiente.
-- Garanta que arquivos locais sensíveis estejam cobertos por `.gitignore`.
-- Use valores diferentes por ambiente para evitar que configuração de desenvolvimento vaze para produção.
-
-## 🔁 Fluxo de Desenvolvimento
-
-### Adicionando novas dependências
-
-Quando uma dependência for adicionada ao projeto, o container deve ser reconstruído para garantir que o ambiente reflita o novo estado do `package.json` e do lockfile.
-
-```bash
-docker compose up --build
+Acesso no código:
+```ts
+const apiUrl = import.meta.env.VITE_API_URL
 ```
 
-Se você alterar dependências dentro do container ou atualizar o lockfile, prefira reconstruir a imagem em vez de depender apenas do container já em execução.
-
-### Hot Reload com volumes do Docker
-
-O `docker-compose.yml` monta o código-fonte como volume:
-
-```yaml
-volumes:
-	- .:/app
-	- /app/node_modules
-```
-
-Isso permite que mudanças feitas no código sejam refletidas imediatamente no navegador durante o desenvolvimento, aproveitando o Hot Reload do Vite.
-
-Em resumo:
-
-- Alterou um arquivo em `src`? O container recebe a mudança via volume.
-- Salvou o arquivo? O Vite recompila apenas o necessário.
-- Evitou reinstalar dependências a cada ciclo? O volume separado de `node_modules` ajuda a preservar o ambiente do container.
-
-## 🧭 Padrões de Código
-
-O projeto segue uma base de qualidade voltada para clareza, previsibilidade e manutenção contínua.
-
-| Padrão | Diretriz |
-| --- | --- |
-| ESLint | A base de lint deve ser respeitada antes de qualquer merge |
-| Clean Code | Nomes claros, funções pequenas e responsabilidade única |
-| Atomic Design | Obrigatório para novos componentes de UI |
-| TypeScript | Tipos explícitos quando agregarem legibilidade e segurança |
-
-### Boas práticas esperadas
-
-- Prefira composição em vez de duplicação.
-- Mantenha componentes com responsabilidade única.
-- Extraia regras de negócio e integração com API para `services` e `hooks` quando fizer sentido.
-- Evite acoplamento excessivo entre páginas e detalhes de implementação.
-
-## 📌 Comandos Úteis
+## Comandos úteis
 
 | Comando | Finalidade |
-| --- | --- |
-| `docker compose up --build` | Sobe a aplicação com rebuild da imagem |
-| `npm run dev` | Executa o frontend em modo desenvolvimento fora do container |
-| `npm run build` | Gera o build de produção |
-| `npm run lint` | Executa as regras de ESLint |
+|---------|------------|
+| `npm run dev` | Dev sem container |
+| `npm run build` | Build de produção |
+| `npm run lint` | ESLint |
 
-## 🌐 Visão Geral do Projeto
+## Padrões de código
 
-O Atlas - Frontend Service é a camada de apresentação do ecossistema Atlas. Seu objetivo é entregar uma interface consistente para operar o sistema de bolsas de estudo, consumindo os serviços do backend por meio de uma arquitetura modular, escalável e fácil de manter.
+- **ESLint** obrigatório antes de qualquer merge
+- **Clean Code** — nomes claros, funções com responsabilidade única
+- **Atomic Design** obrigatório para novos componentes de UI
+- **TypeScript** — tipos explícitos quando agregam legibilidade
 
----
+> Extraia regras de negócio e integração com API para `services/` e `hooks/`. Evite acoplar páginas a detalhes de implementação.
 
-> Dica: ao evoluir o projeto, mantenha a separação entre apresentação, regra de negócio e integração com API. Isso reduz retrabalho e facilita a escala da base de código.
+## Hot Reload com Docker
+
+O `Dockerfile.dev` monta o código como volume, então mudanças em `src/` são refletidas imediatamente sem rebuild. O volume separado de `node_modules` preserva o ambiente do container.
+
