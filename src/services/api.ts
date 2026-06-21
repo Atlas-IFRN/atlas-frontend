@@ -1,13 +1,11 @@
-import axios, { type AxiosError } from 'axios'
+import axios from 'axios'
 
 interface ApiAuthHandlers {
   getAccessToken: () => string | null
-  onUnauthorized: () => void
 }
 
 const defaultAuthHandlers: ApiAuthHandlers = {
   getAccessToken: () => null,
-  onUnauthorized: () => undefined,
 }
 
 let authHandlers = defaultAuthHandlers
@@ -23,7 +21,8 @@ export function setApiAuthHandlers(handlers: ApiAuthHandlers) {
 }
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  // Em produção, use a origem pública do Nginx; nunca um microsserviço.
+  baseURL: import.meta.env.VITE_API_URL || window.location.origin,
 })
 
 api.interceptors.request.use((config) => {
@@ -35,16 +34,5 @@ api.interceptors.request.use((config) => {
 
   return config
 })
-
-api.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      authHandlers.onUnauthorized()
-    }
-
-    return Promise.reject(error)
-  },
-)
 
 export default api

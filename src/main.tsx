@@ -7,9 +7,7 @@ import { AppProviders } from './providers/AppProviders.tsx'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AppProviders>
-      <App 
-      
-      />
+      <App />
     </AppProviders>
   </StrictMode>,
 )

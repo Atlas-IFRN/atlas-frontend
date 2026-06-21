@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState, type PropsWithChildren } from 'react'
-import { useNavigate } from 'react-router-dom'
 import {
   AuthContext,
   type AuthUser,
@@ -8,10 +7,10 @@ import {
 import { setApiAuthHandlers } from '../services/api'
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const navigate = useNavigate()
   const [user, setUser] = useState<AuthUser | null>(null)
   const [accessToken, setAccessToken] = useState<string | null>(null)
   const [refreshToken, setRefreshToken] = useState<string | null>(null)
+  const isAuthenticated = Boolean(user && accessToken)
 
   const login = useCallback((data: LoginData) => {
     setUser(data.user)
@@ -28,16 +27,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     return setApiAuthHandlers({
       getAccessToken: () => accessToken,
-      onUnauthorized: () => {
-        logout()
-        navigate('/login', { replace: true })
-      },
     })
-  }, [accessToken, logout, navigate])
+  }, [accessToken])
 
   const value = useMemo(
-    () => ({ user, accessToken, refreshToken, login, logout }),
-    [user, accessToken, refreshToken, login, logout],
+    () => ({ user, accessToken, refreshToken, isAuthenticated, login, logout }),
+    [user, accessToken, refreshToken, isAuthenticated, login, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
