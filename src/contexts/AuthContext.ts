@@ -27,6 +27,7 @@ export interface AuthContextValue {
   user: AuthUser | null
   accessToken: string | null
   refreshToken: string | null
+  isAuthenticated: boolean
   login: (data: LoginData) => void
   logout: () => void
 }
