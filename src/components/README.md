@@ -24,3 +24,17 @@ Exemplo:
 ```
 
 Nesse exemplo, o componente comeca com `px-4` no mobile e aumenta o padding horizontal conforme a largura da tela alcanca cada breakpoint oficial. O componente `ResponsiveShell`, em `src/components/templates/ResponsiveShell.tsx`, usa esse padrao como referencia.
+
+## Icones
+
+A biblioteca oficial de icones da aplicacao e `lucide-react`. Use o wrapper `Icon`, em `src/components/ui/Icon.tsx`, para manter o tamanho e o traco consistentes entre sidebar, botoes, badges e demais componentes.
+
+```tsx
+import { Icon } from '@/components/ui/Icon'
+
+export function Example() {
+  return <Icon name="Home" />
+}
+```
+
+O wrapper aplica `size={18}` e `strokeWidth={1.75}` por padrao. Quando um novo icone for necessario, importe-o individualmente de `lucide-react` e adicione-o ao registry `icons` em `Icon.tsx`. Essa estrategia preserva tree-shaking e evita imports dinamicos da biblioteca inteira.
