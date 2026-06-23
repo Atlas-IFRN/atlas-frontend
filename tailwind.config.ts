@@ -41,6 +41,20 @@ const config = {
         'border-2': 'var(--border-2)', // Borda 2
         'border-strong': 'var(--border-strong)', // Borda forte
       },
+      fontFamily: {
+        display: ['var(--font-display)'],
+        sans: ['var(--font-sans)'],
+        mono: ['var(--font-mono)'],
+      },
+      fontSize: {
+        xs: ['var(--font-size-xs)', { lineHeight: 'var(--line-height-xs)' }],
+        sm: ['var(--font-size-sm)', { lineHeight: 'var(--line-height-sm)' }],
+        base: ['var(--font-size-base)', { lineHeight: 'var(--line-height-base)' }],
+        lg: ['var(--font-size-lg)', { lineHeight: 'var(--line-height-lg)' }],
+        xl: ['var(--font-size-xl)', { lineHeight: 'var(--line-height-xl)' }],
+        '2xl': ['var(--font-size-2xl)', { lineHeight: 'var(--line-height-2xl)' }],
+        '3xl': ['var(--font-size-3xl)', { lineHeight: 'var(--line-height-3xl)' }],
+      },
     },
   },
   plugins: [],
