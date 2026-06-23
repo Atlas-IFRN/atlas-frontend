@@ -1,10 +1,11 @@
 import { Outlet } from 'react-router-dom'
+import { ResponsiveShell } from '../components/templates/ResponsiveShell'
 
 export function AppLayout() {
   return (
-    <div className="app-layout">
-      {/* A sidebar compartilhada será adicionada aqui. */}
+    <ResponsiveShell>
+      {/* A sidebar compartilhada sera adicionada aqui. */}
       <Outlet />
-    </div>
+    </ResponsiveShell>
   )
 }
