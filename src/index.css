@@ -1,13 +1,49 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
+  --page-bg: #0a1018;
+  --shell-bg: #0a1018;
+  --content-bg: #0f1822;
+  --card-bg: #18222f;
+  --surface: #18222f;
+  --surface-2: #1e2a38;
+  --surface-3: #243140;
+
+  --primary: #5b9bf5;
+  --primary-600: #3b82f0;
+  --primary-700: #2563eb;
+  --primary-soft: #5b9bf529;
+  --primary-soft-2: #5b9bf547;
+
+  --teal: #2ba383;
+  --purple: #8273e0;
+  --amber: #e6a943;
+  --progress: #e08a7d;
+  --danger: #d45b5b;
+  --pink: #d6457e;
+
+  --info-soft: #5b9bf52e;
+  --success-soft: #2ba3832e;
+  --warning-soft: #e6a9432e;
+  --danger-soft: #d45b5b2e;
+  --progress-soft: #e08a7d2e;
+  --pink-soft: #d6457e2e;
+  --teal-soft: #2ba3832e;
+  --purple-soft: #8273e033;
+
+  --text: #eaf1f7;
+  --text-soft: #c3d1dc;
+  --text-muted: #8da0b0;
+  --text-faint: #647889;
+  --border: #5b9bf51f;
+  --border-2: #5b9bf52e;
+  --border-strong: #5b9bf54d;
+
+  --text-h: var(--text);
+  --bg: var(--page-bg);
+  --code-bg: var(--surface-2);
+  --accent: var(--primary);
+  --accent-bg: var(--primary-soft);
+  --accent-border: var(--primary-soft-2);
+  --social-bg: var(--surface-2);
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
@@ -27,26 +63,6 @@
 
   @media (max-width: 1024px) {
     font-size: 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
   }
 }
 
@@ -109,3 +125,5 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+
