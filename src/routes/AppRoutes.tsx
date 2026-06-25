@@ -9,8 +9,9 @@ const AuthCallbackPage = lazy(() => import('../pages/auth/AuthCallbackPage'))
 
 // Componentes da pagina de demonstracao (excluir depois de testar).
 const StatusBadgeDemoPage = lazy(
-  () => import('../pages/components/StatusBadgeDemoPage'),
-)
+  () => import('../pages/components/StatusBadgeDemoPage')),
+const ButtonDemoPage = lazy(
+  () => import('../pages/components/ButtonDemoPage')),
 
 const FeedPage = lazy(() => import('../pages/feed/FeedPage'))
 const CreatePostPage = lazy(() => import('../pages/feed/CreatePostPage'))
@@ -96,10 +97,8 @@ export function AppRoutes() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
-        <Route
-          path="/components/status-badges"
-          element={<StatusBadgeDemoPage />}
-        />
+        <Route path="/components/status-badges" element={<StatusBadgeDemoPage />} />
+        <Route path="/components/buttons" element={<ButtonDemoPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
