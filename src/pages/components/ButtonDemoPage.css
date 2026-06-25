@@ -1,0 +1,84 @@
+.button-demo-page {
+  background: var(--page-bg);
+  box-sizing: border-box;
+  color: var(--text);
+  min-height: 100svh;
+  padding: 28px 28px 36px;
+  text-align: left;
+}
+
+.button-demo-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.button-demo-title {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+}
+
+.button-demo-index,
+.button-demo-nav,
+.button-demo-panel h2 {
+  color: var(--primary);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+}
+
+.button-demo-index {
+  opacity: 0.78;
+}
+
+.button-demo-title h1 {
+  color: var(--text);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.button-demo-nav {
+  margin: 0;
+}
+
+.button-demo-panel {
+  background: color-mix(in srgb, var(--surface) 76%, var(--content-bg));
+  border: 1px solid var(--border-2);
+  border-radius: 16px;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+  padding: 22px 20px;
+}
+
+.button-demo-panel h2 {
+  margin: 0 0 16px;
+  text-transform: uppercase;
+}
+
+.button-demo-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+@media (max-width: 680px) {
+  .button-demo-page {
+    padding: 22px 14px 28px;
+  }
+
+  .button-demo-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .button-demo-panel {
+    padding: 18px 16px;
+  }
+}
