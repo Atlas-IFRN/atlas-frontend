@@ -1,0 +1,73 @@
+.atlas-status-badge {
+  --status-badge-bg: var(--surface-2);
+  --status-badge-border: transparent;
+  --status-badge-color: var(--text-muted);
+  --status-badge-height: 28px;
+  --status-badge-padding-x: 12px;
+
+  align-items: center;
+  background: var(--status-badge-bg);
+  border: 1px solid var(--status-badge-border);
+  border-radius: 999px;
+  box-sizing: border-box;
+  color: var(--status-badge-color);
+  display: inline-flex;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  justify-content: center;
+  line-height: 1;
+  min-block-size: var(--status-badge-height);
+  padding-block: 0;
+  padding-inline: var(--status-badge-padding-x);
+  white-space: nowrap;
+}
+
+.atlas-status-badge--sm {
+  --status-badge-height: 24px;
+  --status-badge-padding-x: 10px;
+
+  font-size: 0.6875rem;
+}
+
+.atlas-status-badge--md {
+  --status-badge-height: 28px;
+  --status-badge-padding-x: 12px;
+}
+
+.atlas-status-badge--primary {
+  --status-badge-bg: var(--primary-soft);
+  --status-badge-color: var(--primary-700);
+}
+
+.atlas-status-badge--completed,
+.atlas-status-badge--active,
+.atlas-status-badge--approved,
+.atlas-status-badge--success {
+  --status-badge-bg: var(--success-soft);
+  --status-badge-color: var(--teal);
+}
+
+.atlas-status-badge--in-progress,
+.atlas-status-badge--pending,
+.atlas-status-badge--warning {
+  --status-badge-bg: var(--progress-soft);
+  --status-badge-color: var(--amber);
+}
+
+.atlas-status-badge--danger,
+.atlas-status-badge--rejected {
+  --status-badge-bg: var(--danger-soft);
+  --status-badge-color: #ff7b7b;
+}
+
+.atlas-status-badge--pink {
+  --status-badge-bg: var(--pink-soft);
+  --status-badge-color: #f070a5;
+}
+
+.atlas-status-badge--neutral,
+.atlas-status-badge--inactive {
+  --status-badge-bg: color-mix(in srgb, var(--surface-2) 74%, transparent);
+  --status-badge-color: var(--text-muted);
+}

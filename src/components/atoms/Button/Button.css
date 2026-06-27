@@ -1,0 +1,194 @@
+.atlas-button {
+  --button-bg: transparent;
+  --button-bg-hover: transparent;
+  --button-border: transparent;
+  --button-color: var(--text);
+  --button-shadow: none;
+  --button-height: 38px;
+  --button-padding-x: 18px;
+  --button-icon-size: 18px;
+
+  appearance: none;
+  align-items: center;
+  background: var(--button-bg);
+  border: 1px solid var(--button-border);
+  border-radius: 11px;
+  box-shadow: var(--button-shadow);
+  box-sizing: border-box;
+  color: var(--button-color);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  gap: 0.5rem;
+  justify-content: center;
+  line-height: 1;
+  min-block-size: var(--button-height);
+  min-inline-size: max-content;
+  padding-block: 0;
+  padding-inline: var(--button-padding-x);
+  position: relative;
+  text-decoration: none;
+
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.atlas-button:hover:not(:disabled) {
+  background: var(--button-bg-hover);
+  border-color:var(--button-border-hover, var(--button-border));
+  transform: translateY(-1px);
+}
+
+.atlas-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.atlas-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.atlas-button:disabled,
+.atlas-button[aria-disabled='true'] {
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.62;
+  transform: none;
+}
+
+.atlas-button__icon,
+.atlas-button__spinner {
+  flex: 0 0 auto;
+  block-size: var(--button-icon-size);
+  inline-size: var(--button-icon-size);
+}
+
+.atlas-button__icon {
+  stroke-width: 2;
+}
+
+.atlas-button__label {
+  min-width: 0;
+}
+
+.atlas-button__spinner {
+  animation: atlas-button-spin 800ms linear infinite;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  border-top-color: transparent;
+}
+
+.atlas-button[data-icon-only='true'] {
+  /* Botao apenas com icone precisa ser quadrado para nao parecer espremido. */
+  inline-size: var(--button-height);
+  min-inline-size: var(--button-height);
+  padding-inline: 0;
+}
+
+.atlas-button--sm {
+  --button-height: 32px;
+  --button-padding-x: 16px;
+  --button-icon-size: 16px;
+
+  border-radius: 9px;
+  font-size: 0.75rem;
+}
+
+.atlas-button--md {
+  --button-height: 38px;
+  --button-padding-x: 18px;
+  --button-icon-size: 18px;
+}
+
+.atlas-button--lg {
+  --button-height: 44px;
+  --button-padding-x: 26px;
+  --button-icon-size: 20px;
+
+  border-radius: 12px;
+  font-size: 15px;
+  box-shadow: 0 4px 14px #1f7ae047;
+}
+
+.atlas-button--pill {
+  --button-height: 30px;
+  --button-padding-x: 16px;
+  --button-icon-size: 15px;
+
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+.atlas-button--primary {
+  --button-bg: linear-gradient(180deg, #68a6ff 0%, var(--primary-600) 100%);
+  --button-bg-hover: linear-gradient(180deg, #7ab1ff 0%, var(--primary) 100%);
+  --button-border: color-mix(in srgb, var(--primary) 72%, transparent);
+  --button-color: #ffffff;
+  --box-shadow: 0 4px 14px #1f7ae047;
+}
+
+.atlas-button--outline {
+  --button-bg: color-mix(in srgb, var(--surface) 52%, transparent);
+  --button-border: var(--border-strong);
+  --button-border-hover: var(--surface-3);
+  --button-color: var(--text-soft);
+  --button-shadow: var(--sh-sm);
+}
+
+.atlas-button--soft {
+  --button-bg: color-mix(in srgb, var(--primary) 20%, var(--surface-2));
+  --button-bg-hover: color-mix(in srgb, var(--primary) 28%, var(--surface-2));
+  --button-border: color-mix(in srgb, var(--primary) 8%, transparent);
+  --button-color: color-mix(in srgb, var(--primary) 78%, var(--text-soft));
+}
+
+.atlas-button--ghost {
+  --button-bg: transparent;
+  --button-bg-hover: var(--surface-3);
+  --button-border: color-mix(in srgb, var(--primary) 0%, transparent);
+  --button-color: var(--text-muted);
+}
+
+.atlas-button--dark {
+  --button-bg: color-mix(in srgb, #020711 88%, var(--surface));
+  --button-bg-hover: color-mix(in srgb, #061120 82%, var(--surface));
+  --button-border: color-mix(in srgb, var(--border-2) 22%, transparent);
+  --button-color: var(--text);
+}
+
+.atlas-button--danger {
+  --button-bg: color-mix(in srgb, var(--danger) 26%, var(--surface));
+  --button-bg-hover: var(--text);
+  --button-border: color-mix(in srgb, var(--danger) 12%, transparent);
+  --button-color: var(--danger);
+}
+
+.atlas-button--primary:disabled,
+.atlas-button--primary[aria-disabled='true'] {
+  --button-bg: color-mix(in srgb, var(--primary) 54%, var(--surface-2));
+  --button-border: transparent;
+  --button-color: color-mix(in srgb, var(--text-muted) 72%, #ffffff);
+}
+
+@keyframes atlas-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-button,
+  .atlas-button__spinner {
+    animation-duration: 1.4s;
+    transition: none;
+  }
+}
