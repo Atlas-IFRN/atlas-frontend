@@ -1,3 +1,5 @@
+@import './wise-core.css';
+
 .route-status {
   display: grid;
   min-height: 100vh;
