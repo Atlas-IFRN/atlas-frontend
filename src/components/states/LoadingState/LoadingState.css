@@ -1,0 +1,111 @@
+.atlas-loading-state {
+  --loading-sheen: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--primary) 14%, transparent) 48%,
+    transparent 100%
+  );
+
+  box-sizing: border-box;
+  color: var(--text-soft);
+  inline-size: 100%;
+}
+
+.atlas-loading-state--skeleton {
+  display: grid;
+  gap: 18px;
+}
+
+.atlas-loading-state__skeleton-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+}
+
+.atlas-loading-state__skeleton-card {
+  background: color-mix(in srgb, var(--surface) 82%, var(--content-bg));
+  border: 1px solid var(--border-2);
+  border-radius: 12px;
+  box-sizing: border-box;
+  display: block;
+  min-block-size: 260px;
+  overflow: hidden;
+  position: relative;
+}
+
+.atlas-loading-state__skeleton-card::after {
+  animation: atlas-loading-shimmer 1.5s ease-in-out infinite;
+  background: var(--loading-sheen);
+  content: '';
+  inset: 0;
+  position: absolute;
+  transform: translateX(-100%);
+}
+
+.atlas-loading-state--spinner {
+  align-items: center;
+  background: color-mix(in srgb, var(--surface) 76%, var(--content-bg));
+  border: 1px solid var(--border-2);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+  min-block-size: 88px;
+  padding: 20px;
+  text-align: center;
+}
+
+.atlas-loading-state__spinner {
+  animation: atlas-loading-spin 800ms linear infinite;
+  border: 3px solid color-mix(in srgb, var(--primary) 32%, transparent);
+  border-radius: 999px;
+  border-top-color: var(--primary);
+  block-size: 30px;
+  inline-size: 30px;
+}
+
+.atlas-loading-state__message {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-sm);
+}
+
+.atlas-loading-state__sr-only {
+  block-size: 1px;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  inline-size: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+}
+
+@keyframes atlas-loading-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes atlas-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-loading-state__skeleton-card::after,
+  .atlas-loading-state__spinner {
+    animation-duration: 2.2s;
+  }
+}
+
+@media (max-width: 680px) {
+  .atlas-loading-state__skeleton-grid {
+    gap: 16px;
+  }
+
+  .atlas-loading-state__skeleton-card {
+    min-block-size: 180px;
+  }
+}
