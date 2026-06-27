@@ -1,0 +1,102 @@
+.atlas-filter-tag {
+  --filter-tag-bg: color-mix(in srgb, var(--surface) 70%, transparent);
+  --filter-tag-bg-hover: color-mix(in srgb, var(--surface-2) 82%, transparent);
+  --filter-tag-border: var(--border-2);
+  --filter-tag-color: var(--text-soft);
+  --filter-tag-height: 32px;
+  --filter-tag-icon-size: 8px;
+  --filter-tag-padding-x: 14px;
+
+  appearance: none;
+  align-items: center;
+  background: var(--filter-tag-bg);
+  border: 1px solid var(--filter-tag-border);
+  border-radius: 999px;
+  box-sizing: border-box;
+  color: var(--filter-tag-color);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  gap: 0.375rem;
+  justify-content: center;
+  line-height: 1;
+  min-block-size: var(--filter-tag-height);
+  min-inline-size: max-content;
+  padding-block: 0;
+  padding-inline: var(--filter-tag-padding-x);
+  text-decoration: none;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.atlas-filter-tag:hover:not(:disabled) {
+  background: var(--filter-tag-bg-hover);
+  border-color: var(--border-strong);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+.atlas-filter-tag:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.atlas-filter-tag:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.atlas-filter-tag--active {
+  --filter-tag-bg: linear-gradient(180deg, #68a6ff 0%, var(--primary-600) 100%);
+  --filter-tag-bg-hover: linear-gradient(180deg, #7ab1ff 0%, var(--primary) 100%);
+  --filter-tag-border: color-mix(in srgb, var(--primary) 74%, transparent);
+  --filter-tag-color: #ffffff;
+
+  box-shadow: 0 4px 12px #1f7ae03d;
+}
+
+.atlas-filter-tag--default {
+  --filter-tag-bg: color-mix(in srgb, var(--content-bg) 72%, var(--surface));
+  --filter-tag-bg-hover: color-mix(in srgb, var(--surface-2) 88%, transparent);
+  --filter-tag-border: var(--border-2);
+  --filter-tag-color: var(--text-soft);
+}
+
+.atlas-filter-tag:disabled,
+.atlas-filter-tag[aria-disabled='true'] {
+  --filter-tag-bg: color-mix(in srgb, var(--surface) 46%, transparent);
+  --filter-tag-bg-hover: var(--filter-tag-bg);
+  --filter-tag-border: color-mix(in srgb, var(--border-2) 46%, transparent);
+  --filter-tag-color: var(--text-faint);
+
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.62;
+  transform: none;
+}
+
+.atlas-filter-tag__icon {
+  block-size: var(--filter-tag-icon-size);
+  flex: 0 0 auto;
+  fill: currentColor;
+  inline-size: var(--filter-tag-icon-size);
+  stroke-width: 3;
+}
+
+.atlas-filter-tag__label {
+  min-width: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-filter-tag {
+    transition: none;
+  }
+}
