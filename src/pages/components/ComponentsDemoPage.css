@@ -97,6 +97,15 @@
   margin: 0;
 }
 
+.components-demo-kicker {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.18em;
+  margin: 0 0 16px;
+  text-transform: uppercase;
+}
+
 .components-demo-grid,
 .components-demo-row {
   align-items: center;

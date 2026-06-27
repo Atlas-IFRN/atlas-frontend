@@ -17,6 +17,7 @@ import {
 import { Button } from '../../components/atoms/Button'
 import { IconTile } from '../../components/atoms/IconTile'
 import { StatusBadge } from '../../components/atoms/StatusBadge'
+import { TextTag } from '../../components/atoms/TextTag'
 import { EmptyState, ErrorState, LoadingState } from '../../components/states'
 import './ComponentsDemoPage.css'
 
@@ -40,6 +41,15 @@ const iconTileVariants = [
 ] as const
 
 const iconTileSizes = ['sm', 'md', 'lg'] as const
+const textTags = [
+  'Algoritmos',
+  'Estatistica',
+  'Cloud',
+  'DevOps',
+  'Banco de dados',
+  'Metricas',
+] as const
+const textTagVariants = ['default', 'outline', 'subtle'] as const
 
 export default function ComponentsDemoPage() {
   return (
@@ -53,6 +63,7 @@ export default function ComponentsDemoPage() {
         <nav className="components-demo-nav" aria-label="Componentes">
           <a href="#buttons">Botoes</a>
           <a href="#status-badges">Badges</a>
+          <a href="#text-tags">TextTags</a>
           <a href="#icon-tiles">IconTiles</a>
           <a href="#states">Estados</a>
         </nav>
@@ -110,9 +121,37 @@ export default function ComponentsDemoPage() {
 
       </section>
 
-      <section className="components-demo-panel" aria-labelledby="icon-tiles">
+      <section className="components-demo-panel" aria-labelledby="text-tags">
         <div className="components-demo-panel-heading">
           <span>03</span>
+          <h2 id="text-tags">TextTag</h2>
+        </div>
+
+        <p className="components-demo-kicker">Tags simples (texto)</p>
+
+        <div className="components-demo-row">
+          {textTags.map((tag) => (
+            <TextTag key={tag}>{tag}</TextTag>
+          ))}
+        </div>
+
+        <div className="components-demo-row">
+          {textTagVariants.map((variant) => (
+            <TextTag key={variant} variant={variant}>
+              {variant}
+            </TextTag>
+          ))}
+        </div>
+
+        <div className="components-demo-row">
+          <TextTag size="sm">Pequena</TextTag>
+          <TextTag size="md">Padrao</TextTag>
+        </div>
+      </section>
+
+      <section className="components-demo-panel" aria-labelledby="icon-tiles">
+        <div className="components-demo-panel-heading">
+          <span>04</span>
           <h2 id="icon-tiles">IconTile</h2>
         </div>
 
@@ -120,7 +159,6 @@ export default function ComponentsDemoPage() {
           {iconTileVariants.map(({ label, value, icon }) => (
             <div className="components-demo-item" key={value}>
               <IconTile icon={icon} variant={value} aria-label={label} />
-              <span>{label}</span>
             </div>
           ))}
         </div>
@@ -145,7 +183,7 @@ export default function ComponentsDemoPage() {
 
       <section className="components-demo-panel" aria-labelledby="states">
         <div className="components-demo-panel-heading">
-          <span>04</span>
+          <span>05</span>
           <h2 id="states">Estados</h2>
         </div>
 
