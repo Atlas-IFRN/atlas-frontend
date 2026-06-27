@@ -49,6 +49,7 @@ const textTags = [
   'Banco de dados',
   'Metricas',
 ] as const
+const textTagVariants = ['default', 'outline', 'subtle'] as const
 
 export default function ComponentsDemoPage() {
   return (
@@ -131,6 +132,14 @@ export default function ComponentsDemoPage() {
         <div className="components-demo-row">
           {textTags.map((tag) => (
             <TextTag key={tag}>{tag}</TextTag>
+          ))}
+        </div>
+
+        <div className="components-demo-row">
+          {textTagVariants.map((variant) => (
+            <TextTag key={variant} variant={variant}>
+              {variant}
+            </TextTag>
           ))}
         </div>
 

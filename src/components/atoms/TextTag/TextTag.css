@@ -23,6 +23,24 @@
   white-space: nowrap;
 }
 
+.atlas-text-tag--default {
+  --text-tag-bg: color-mix(in srgb, var(--text-faint) 22%, var(--surface) 78%);
+  --text-tag-border: color-mix(in srgb, var(--text-faint) 16%, transparent);
+  --text-tag-color: var(--text-soft);
+}
+
+.atlas-text-tag--outline {
+  --text-tag-bg: transparent;
+  --text-tag-border: color-mix(in srgb, var(--text-faint) 38%, transparent);
+  --text-tag-color: var(--text-soft);
+}
+
+.atlas-text-tag--subtle {
+  --text-tag-bg: color-mix(in srgb, var(--text-faint) 10%, transparent);
+  --text-tag-border: transparent;
+  --text-tag-color: var(--text-muted);
+}
+
 .atlas-text-tag--sm {
   --text-tag-height: 30px;
   --text-tag-padding-x: 12px;

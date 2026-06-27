@@ -1,2 +1,2 @@
 export { TextTag } from './TextTag'
-export type { TextTagProps, TextTagSize } from './TextTag'
+export type { TextTagProps, TextTagSize, TextTagVariant } from './TextTag'
