@@ -14,6 +14,9 @@ const StatusBadgeDemoPage = lazy(
 const ButtonDemoPage = lazy(
   () => import('../pages/components/ButtonDemoPage'),
 )
+const IconTileDemoPage = lazy(
+  () => import('../pages/components/IconTileDemoPage'),
+)
 const StateDemoPage = lazy(
   () => import('../pages/components/StateDemoPage'),
 )
@@ -103,6 +106,7 @@ export function AppRoutes() {
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/components/status-badges" element={<StatusBadgeDemoPage />} />
         <Route path="/components/buttons" element={<ButtonDemoPage />} />
+        <Route path="/components/icon-tiles" element={<IconTileDemoPage />} />
         <Route path="/components/states" element={<StateDemoPage />} />
 
         <Route element={<ProtectedRoute />}>
