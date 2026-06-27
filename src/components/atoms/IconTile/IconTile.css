@@ -1,0 +1,76 @@
+.atlas-icon-tile {
+  --icon-tile-bg: var(--primary-soft);
+  --icon-tile-border: color-mix(in srgb, var(--primary) 18%, transparent);
+  --icon-tile-color: var(--primary);
+  --icon-tile-icon-size: 20px;
+  --icon-tile-radius: 10px;
+  --icon-tile-size: 40px;
+
+  align-items: center;
+  background: var(--icon-tile-bg);
+  block-size: var(--icon-tile-size);
+  border: 1px solid var(--icon-tile-border);
+  border-radius: var(--icon-tile-radius);
+  box-sizing: border-box;
+  color: var(--icon-tile-color);
+  display: inline-flex;
+  flex: 0 0 auto;
+  inline-size: var(--icon-tile-size);
+  justify-content: center;
+  min-block-size: var(--icon-tile-size);
+  min-inline-size: var(--icon-tile-size);
+}
+
+.atlas-icon-tile__icon {
+  block-size: var(--icon-tile-icon-size);
+  flex: 0 0 auto;
+  inline-size: var(--icon-tile-icon-size);
+}
+
+.atlas-icon-tile--sm {
+  --icon-tile-icon-size: 16px;
+  --icon-tile-radius: 8px;
+  --icon-tile-size: 32px;
+}
+
+.atlas-icon-tile--md {
+  --icon-tile-icon-size: 20px;
+  --icon-tile-radius: 10px;
+  --icon-tile-size: 40px;
+}
+
+.atlas-icon-tile--lg {
+  --icon-tile-icon-size: 24px;
+  --icon-tile-radius: 12px;
+  --icon-tile-size: 48px;
+}
+
+.atlas-icon-tile--primary {
+  --icon-tile-bg: var(--primary-soft);
+  --icon-tile-border: color-mix(in srgb, var(--primary) 18%, transparent);
+  --icon-tile-color: var(--primary);
+}
+
+.atlas-icon-tile--success {
+  --icon-tile-bg: var(--success-soft);
+  --icon-tile-border: color-mix(in srgb, var(--teal) 18%, transparent);
+  --icon-tile-color: var(--teal);
+}
+
+.atlas-icon-tile--warning {
+  --icon-tile-bg: var(--warning-soft);
+  --icon-tile-border: color-mix(in srgb, var(--amber) 18%, transparent);
+  --icon-tile-color: var(--amber);
+}
+
+.atlas-icon-tile--danger {
+  --icon-tile-bg: var(--danger-soft);
+  --icon-tile-border: color-mix(in srgb, var(--danger) 20%, transparent);
+  --icon-tile-color: var(--danger);
+}
+
+.atlas-icon-tile--neutral {
+  --icon-tile-bg: color-mix(in srgb, var(--surface-2) 62%, transparent);
+  --icon-tile-border: color-mix(in srgb, var(--text-muted) 14%, transparent);
+  --icon-tile-color: var(--text-muted);
+}
