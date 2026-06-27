@@ -9,9 +9,11 @@ const AuthCallbackPage = lazy(() => import('../pages/auth/AuthCallbackPage'))
 
 // Componentes da pagina de demonstracao (excluir depois de testar).
 const StatusBadgeDemoPage = lazy(
-  () => import('../pages/components/StatusBadgeDemoPage')),
+  () => import('../pages/components/StatusBadgeDemoPage'),
+)
 const ButtonDemoPage = lazy(
-  () => import('../pages/components/ButtonDemoPage')),
+  () => import('../pages/components/ButtonDemoPage'),
+)
 
 const FeedPage = lazy(() => import('../pages/feed/FeedPage'))
 const CreatePostPage = lazy(() => import('../pages/feed/CreatePostPage'))
