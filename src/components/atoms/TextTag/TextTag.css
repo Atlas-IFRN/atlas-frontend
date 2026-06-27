@@ -1,0 +1,54 @@
+.atlas-text-tag {
+  --text-tag-bg: color-mix(in srgb, var(--text-faint) 22%, var(--surface) 78%);
+  --text-tag-border: color-mix(in srgb, var(--text-faint) 16%, transparent);
+  --text-tag-color: var(--text-soft);
+  --text-tag-height: 36px;
+  --text-tag-padding-x: 14px;
+
+  align-items: center;
+  background: var(--text-tag-bg);
+  border: 1px solid var(--text-tag-border);
+  border-radius: 999px;
+  box-sizing: border-box;
+  color: var(--text-tag-color);
+  display: inline-flex;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  justify-content: center;
+  line-height: 1;
+  min-block-size: var(--text-tag-height);
+  padding-block: 0;
+  padding-inline: var(--text-tag-padding-x);
+  white-space: nowrap;
+}
+
+.atlas-text-tag--default {
+  --text-tag-bg: color-mix(in srgb, var(--text-faint) 22%, var(--surface) 78%);
+  --text-tag-border: color-mix(in srgb, var(--text-faint) 16%, transparent);
+  --text-tag-color: var(--text-soft);
+}
+
+.atlas-text-tag--outline {
+  --text-tag-bg: transparent;
+  --text-tag-border: color-mix(in srgb, var(--text-faint) 38%, transparent);
+  --text-tag-color: var(--text-soft);
+}
+
+.atlas-text-tag--subtle {
+  --text-tag-bg: color-mix(in srgb, var(--text-faint) 10%, transparent);
+  --text-tag-border: transparent;
+  --text-tag-color: var(--text-muted);
+}
+
+.atlas-text-tag--sm {
+  --text-tag-height: 30px;
+  --text-tag-padding-x: 12px;
+
+  font-size: var(--font-size-xs);
+}
+
+.atlas-text-tag--md {
+  --text-tag-height: 36px;
+  --text-tag-padding-x: 14px;
+}
