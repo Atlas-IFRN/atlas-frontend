@@ -106,6 +106,37 @@
   text-transform: uppercase;
 }
 
+.components-demo-kicker-spaced {
+  margin-top: 24px;
+}
+
+.components-demo-avatar-row {
+  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+}
+
+.components-demo-avatar-swatch {
+  align-items: center;
+  color: var(--text-muted);
+  display: inline-grid;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  gap: 8px;
+  justify-items: center;
+  letter-spacing: 0.08em;
+  min-width: 48px;
+  text-transform: uppercase;
+}
+
+.components-demo-userchip-list {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
 .components-demo-grid,
 .components-demo-row {
   align-items: center;

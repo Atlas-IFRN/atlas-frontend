@@ -16,11 +16,17 @@ import {
   XCircle,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import {
+  Avatar,
+  type AvatarColor,
+  type AvatarSize,
+} from '../../components/atoms/Avatar'
 import { Button } from '../../components/atoms/Button'
 import { FilterTag } from '../../components/atoms/FilterTag'
 import { IconTile } from '../../components/atoms/IconTile'
 import { StatusBadge } from '../../components/atoms/StatusBadge'
 import { TextTag } from '../../components/atoms/TextTag'
+import { UserChip } from '../../components/molecules/UserChip'
 import { EmptyState, ErrorState, LoadingState } from '../../components/states'
 import './ComponentsDemoPage.css'
 
@@ -44,6 +50,18 @@ const iconTileVariants = [
 ] as const
 
 const iconTileSizes = ['sm', 'md', 'lg'] as const
+const avatarColors: Array<{ color: AvatarColor; name: string }> = [
+  { color: 'blue', name: 'Maria Santos' },
+  { color: 'teal', name: 'Joao Lima' },
+  { color: 'purple', name: 'Paula Alves' },
+  { color: 'amber', name: 'Ana Clara' },
+  { color: 'pink', name: 'Rafaela Silva' },
+]
+const avatarSizes: Array<{ label: string; size: AvatarSize }> = [
+  { label: 'sm', size: 'sm' },
+  { label: 'md', size: 'md' },
+  { label: 'lg', size: 'lg' },
+]
 const textTags = [
   'Algoritmos',
   'Estatistica',
@@ -83,6 +101,7 @@ export default function ComponentsDemoPage() {
         </div>
 
         <nav className="components-demo-nav" aria-label="Componentes">
+          <a href="#identity">Identidade</a>
           <a href="#buttons">Botoes</a>
           <a href="#status-badges">Badges</a>
           <a href="#filter-tags">FilterTags</a>
@@ -92,9 +111,63 @@ export default function ComponentsDemoPage() {
         </nav>
       </header>
 
-      <section className="components-demo-panel" aria-labelledby="buttons">
+      <section className="components-demo-panel" aria-labelledby="identity">
         <div className="components-demo-panel-heading">
           <span>01</span>
+          <h2 id="identity">Identidade</h2>
+        </div>
+
+        <p className="components-demo-kicker">Avatares - paleta padronizada</p>
+
+        <div className="components-demo-avatar-row">
+          {avatarColors.map(({ color, name }) => (
+            <div className="components-demo-avatar-swatch" key={color}>
+              <Avatar color={color} name={name} />
+              <span>{color}</span>
+            </div>
+          ))}
+        </div>
+
+        <p className="components-demo-kicker components-demo-kicker-spaced">
+          Tamanhos
+        </p>
+
+        <div className="components-demo-avatar-row">
+          {avatarSizes.map(({ label, size }) => (
+            <div className="components-demo-avatar-swatch" key={size}>
+              <Avatar name="Maria Santos" size={size} />
+              <span>{label}</span>
+            </div>
+          ))}
+        </div>
+
+        <p className="components-demo-kicker components-demo-kicker-spaced">
+          UserChip
+        </p>
+
+        <div className="components-demo-userchip-list">
+          <UserChip
+            color="blue"
+            name="Maria Santos"
+            role="Estudante · TADS"
+          />
+          <UserChip
+            color="teal"
+            name="Prof. Joao Lima"
+            role="Professor · Banco de Dados"
+          />
+          <UserChip
+            color="purple"
+            name="Ana Beatriz"
+            role="Estudante"
+            size="sm"
+          />
+        </div>
+      </section>
+
+      <section className="components-demo-panel" aria-labelledby="buttons">
+        <div className="components-demo-panel-heading">
+          <span>02</span>
           <h2 id="buttons">Botoes</h2>
         </div>
 
@@ -132,7 +205,7 @@ export default function ComponentsDemoPage() {
         aria-labelledby="status-badges"
       >
         <div className="components-demo-panel-heading">
-          <span>02</span>
+          <span>03</span>
           <h2 id="status-badges">StatusBadge</h2>
         </div>
 
@@ -146,7 +219,7 @@ export default function ComponentsDemoPage() {
 
       <section className="components-demo-panel" aria-labelledby="filter-tags">
         <div className="components-demo-panel-heading">
-          <span>03</span>
+          <span>04</span>
           <h2 id="filter-tags">FilterTag</h2>
         </div>
 
@@ -177,9 +250,12 @@ export default function ComponentsDemoPage() {
             label="Desabilitado"
             onClick={() => setActiveFilters(['disabled'])}
           />
+        </div>
+      </section>
+
       <section className="components-demo-panel" aria-labelledby="text-tags">
         <div className="components-demo-panel-heading">
-          <span>03</span>
+          <span>05</span>
           <h2 id="text-tags">TextTag</h2>
         </div>
 
@@ -207,7 +283,7 @@ export default function ComponentsDemoPage() {
 
       <section className="components-demo-panel" aria-labelledby="icon-tiles">
         <div className="components-demo-panel-heading">
-          <span>04</span>
+          <span>06</span>
           <h2 id="icon-tiles">IconTile</h2>
         </div>
 
@@ -239,7 +315,7 @@ export default function ComponentsDemoPage() {
 
       <section className="components-demo-panel" aria-labelledby="states">
         <div className="components-demo-panel-heading">
-          <span>05</span>
+          <span>07</span>
           <h2 id="states">Estados</h2>
         </div>
 
