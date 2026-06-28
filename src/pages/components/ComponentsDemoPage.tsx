@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   ArrowRight,
   Check,
@@ -14,7 +15,9 @@ import {
   X,
   XCircle,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { Button } from '../../components/atoms/Button'
+import { FilterTag } from '../../components/atoms/FilterTag'
 import { IconTile } from '../../components/atoms/IconTile'
 import { StatusBadge } from '../../components/atoms/StatusBadge'
 import { TextTag } from '../../components/atoms/TextTag'
@@ -51,7 +54,26 @@ const textTags = [
 ] as const
 const textTagVariants = ['default', 'outline', 'subtle'] as const
 
+type FilterTagDemoItem = {
+  icon?: LucideIcon
+  label: string
+  value: string
+}
+
+const filterTags: FilterTagDemoItem[] = [
+  { label: 'Backend', value: 'backend', icon: Circle },
+  { label: 'Frontend', value: 'frontend', icon: Circle },
+  { label: 'IA', value: 'ia', icon: Circle },
+  { label: 'IoT', value: 'iot', icon: Circle },
+  { label: 'Dados', value: 'dados', icon: Circle },
+]
+
 export default function ComponentsDemoPage() {
+  const [activeFilters, setActiveFilters] = useState<string[]>([
+    'backend',
+    'frontend',
+  ])
+
   return (
     <main className="components-demo-page">
       <header className="components-demo-header">
@@ -63,6 +85,7 @@ export default function ComponentsDemoPage() {
         <nav className="components-demo-nav" aria-label="Componentes">
           <a href="#buttons">Botoes</a>
           <a href="#status-badges">Badges</a>
+          <a href="#filter-tags">FilterTags</a>
           <a href="#text-tags">TextTags</a>
           <a href="#icon-tiles">IconTiles</a>
           <a href="#states">Estados</a>
@@ -121,6 +144,39 @@ export default function ComponentsDemoPage() {
 
       </section>
 
+      <section className="components-demo-panel" aria-labelledby="filter-tags">
+        <div className="components-demo-panel-heading">
+          <span>03</span>
+          <h2 id="filter-tags">FilterTag</h2>
+        </div>
+
+        <div className="components-demo-row">
+          {filterTags.map(({ label, value, icon }) => {
+            const isActive = activeFilters.includes(value)
+
+            return (
+              <FilterTag
+                active={isActive}
+                iconLeft={isActive ? icon : undefined}
+                key={value}
+                label={label}
+                onClick={() =>
+                  setActiveFilters((current) =>
+                    current.includes(value)
+                      ? current.filter((filter) => filter !== value)
+                      : [...current, value],
+                  )
+                }
+              />
+            )
+          })}
+
+          <FilterTag
+            disabled
+            iconLeft={Circle}
+            label="Desabilitado"
+            onClick={() => setActiveFilters(['disabled'])}
+          />
       <section className="components-demo-panel" aria-labelledby="text-tags">
         <div className="components-demo-panel-heading">
           <span>03</span>
