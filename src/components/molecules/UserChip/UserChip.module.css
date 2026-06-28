@@ -1,0 +1,36 @@
+.chip {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.content {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+  justify-items: start;
+  line-height: 1;
+}
+
+.sm [data-user-chip-name] {
+  font-size: 13px;
+}
+
+.sm [data-user-chip-role] {
+  font-size: 11px;
+}
+
+.lg {
+  gap: 14px;
+}
+
+.lg [data-user-chip-name] {
+  font-size: 18px;
+}
+
+.lg [data-user-chip-role] {
+  font-size: 14px;
+}
