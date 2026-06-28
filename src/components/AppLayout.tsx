@@ -9,13 +9,13 @@ import {
   BookOpen,
   Briefcase,
   Home,
-  Menu,
   User,
   Users,
 } from 'lucide-react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { UserChip } from './molecules/UserChip'
+import { TopBar } from './molecules/TopBar'
 import logoIcon from '../assets/brand/atlas-logo.svg'
 import logoFull from '../assets/brand/atlas-logo-full.svg'
 
@@ -76,10 +76,6 @@ export function AppLayout() {
     ],
     [talentBankPath],
   )
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = 'dark'
-  }, [])
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 1023px)')
@@ -226,17 +222,17 @@ export function AppLayout() {
         </aside>
 
         <main className="content">
-          <header className="topbar">
-            <button
-              type="button"
-              className="topbar-menu-button"
-              aria-label={toggleLabel}
-              aria-expanded={isMobile ? mobileOpen : !collapsed}
-              onClick={toggleSidebar}
-            >
-              <Menu size={20} strokeWidth={2} aria-hidden="true" />
-            </button>
-          </header>
+          <TopBar
+            user={{
+              name: userName,
+              role: userRole,
+              color: 'blue',
+            }}
+            sidebarToggleLabel={toggleLabel}
+            sidebarExpanded={isMobile ? mobileOpen : !collapsed}
+            onToggleSidebar={toggleSidebar}
+            onOpenNotifications={() => undefined}
+          />
 
           <div className="content-scroll">
             <Outlet />

@@ -155,7 +155,7 @@
   --button-bg: transparent;
   --button-bg-hover: var(--surface-3);
   --button-border: color-mix(in srgb, var(--primary) 0%, transparent);
-  --button-color: var(--text-muted);
+  --button-color: var(--text-soft);
 }
 
 .atlas-button--dark {
