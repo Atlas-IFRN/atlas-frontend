@@ -16,6 +16,8 @@ import atlasLogo from '../../assets/brand/atlas-logo.svg'
 import './AuthPages.css'
 
 const suapErrorMessages: Record<string, string> = {
+  callback_failed:
+    'Não foi possível concluir o retorno do SUAP. Tente entrar novamente.',
   access_denied:
     'Acesso negado no SUAP. Tente novamente usando sua conta institucional.',
   server_error:
