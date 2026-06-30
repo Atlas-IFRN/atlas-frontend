@@ -1,0 +1,119 @@
+.atlas-tech-tag {
+  --tech-tag-accent: var(--primary);
+
+  --tech-tag-default-bg: var(--surface-2);
+  --tech-tag-default-border: var(--border-2);
+  --tech-tag-default-color: var(--text);
+
+  --tech-tag-tinted-bg: color-mix(in srgb, var(--tech-tag-accent) 16%, var(--surface));
+  --tech-tag-tinted-border: color-mix(in srgb, var(--tech-tag-accent) 42%, transparent);
+  --tech-tag-tinted-color: var(--tech-tag-accent);
+
+  --tech-tag-solid-bg: linear-gradient(180deg,color-mix(in srgb, var(--tech-tag-accent) 84%, #ffffff 16%) 0%,var(--tech-tag-accent) 100%);
+  --tech-tag-solid-border: color-mix(in srgb, var(--tech-tag-accent) 68%, transparent);
+  --tech-tag-solid-color: #ffffff;
+  
+  --tech-tag-bg-current: var(--tech-tag-default-bg);
+  --tech-tag-border-current: var(--tech-tag-default-border);
+  --tech-tag-color-current: var(--tech-tag-default-color);
+
+  align-items: center;
+  background: var(--tech-tag-bg-current);
+  border: 1px solid var(--tech-tag-border-current);
+  border-radius: 999px;
+  box-sizing: border-box;
+  color: var(--tech-tag-color-current);
+  display: inline-flex;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  gap: 10px;
+  justify-content: center;
+  min-block-size: 29px;
+  min-inline-size: max-content;
+  padding-block: 0;
+  padding-inline: 7px 11px;
+  white-space: nowrap;
+}
+
+.atlas-tech-tag--language {
+  --tech-tag-accent: #3178c6;
+}
+
+.atlas-tech-tag--framework {
+  --tech-tag-accent: #61dafb;
+}
+
+.atlas-tech-tag--tool {
+  --tech-tag-accent: #ff6f00;
+}
+
+.atlas-tech-tag--infra {
+  --tech-tag-accent: #4169e1;
+}
+
+.atlas-tech-tag--outline {
+  --tech-tag-bg-current: var(--tech-tag-default-bg);
+  --tech-tag-border-current: var(--tech-tag-default-border);
+  --tech-tag-color-current: var(--tech-tag-default-color);
+}
+
+.atlas-tech-tag--tinted {
+  --tech-tag-bg-current: var(--tech-tag-tinted-bg);
+  --tech-tag-border-current: var(--tech-tag-tinted-border);
+  --tech-tag-color-current: var(--tech-tag-tinted-color);
+}
+
+.atlas-tech-tag--solid {
+  --tech-tag-bg-current: var(--tech-tag-solid-bg);
+  --tech-tag-border-current: var(--tech-tag-solid-border);
+  --tech-tag-color-current: var(--tech-tag-solid-color);
+
+  box-shadow: 0 6px 14px color-mix(in srgb, var(--tech-tag-accent) 28%, transparent);
+}
+
+.atlas-tech-tag__icon {
+  align-items: center;
+  block-size: 17px;
+  display: inline-flex;
+  flex: 0 0 auto;
+  inline-size: 17px;
+  justify-content: center;
+  margin-inline-start: -2px;
+}
+
+.atlas-tech-tag__label {
+  min-width: 0;
+}
+
+.atlas-tech-icon {
+  --tech-icon-bg: var(--tech-icon-brand, var(--tech-tag-accent));
+  --tech-icon-mark: #ffffff;
+
+  block-size: 17px;
+  color: var(--tech-icon-mark);
+  display: block;
+  flex: 0 0 auto;
+  inline-size: 17px;
+  margin-left: 10px;
+}
+
+.atlas-tech-tag--solid .atlas-tech-icon {
+  --tech-icon-bg: color-mix(
+    in srgb,
+    #ffffff 26%,
+    var(--tech-icon-brand, var(--tech-tag-accent))
+  );
+  --tech-icon-mark: #ffffff;
+}
+
+.atlas-tech-icon__background {
+  fill: var(--tech-icon-bg);
+}
+
+.atlas-tech-icon__mark {
+  fill: currentColor;
+  transform: scale(0.66);
+  transform-box: fill-box;
+  transform-origin: center;
+}

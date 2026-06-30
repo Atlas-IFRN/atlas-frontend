@@ -25,6 +25,13 @@ import { Button } from '../../components/atoms/Button'
 import { FilterTag } from '../../components/atoms/FilterTag'
 import { IconTile } from '../../components/atoms/IconTile'
 import { StatusBadge } from '../../components/atoms/StatusBadge'
+import {
+  TechIcon,
+  TechTag,
+  techIconColors,
+  type TechIconName,
+  type TechTagCategory,
+} from '../../components/atoms/TechTag'
 import { TextTag } from '../../components/atoms/TextTag'
 import { UserChip } from '../../components/molecules/UserChip'
 import { EmptyState, ErrorState, LoadingState } from '../../components/states'
@@ -72,6 +79,169 @@ const textTags = [
 ] as const
 const textTagVariants = ['default', 'outline', 'subtle'] as const
 
+type TechTagDemoItem = {
+  accentColor?: string
+  category: TechTagCategory
+  icon?: TechIconName
+  label: string
+}
+
+const techTags: TechTagDemoItem[] = [
+  {
+    accentColor: techIconColors.python,
+    category: 'language',
+    icon: 'python',
+    label: 'Python',
+  },
+  {
+    accentColor: techIconColors.react,
+    category: 'framework',
+    icon: 'react',
+    label: 'React',
+  },
+  {
+    accentColor: techIconColors.typescript,
+    category: 'language',
+    icon: 'typescript',
+    label: 'TypeScript',
+  },
+  {
+    accentColor: techIconColors.tensorflow,
+    category: 'framework',
+    icon: 'tensorflow',
+    label: 'TensorFlow',
+  },
+  {
+    accentColor: techIconColors.postgresql,
+    category: 'infra',
+    icon: 'postgresql',
+    label: 'PostgreSQL',
+  },
+  {
+    accentColor: techIconColors.docker,
+    category: 'infra',
+    icon: 'docker',
+    label: 'Docker',
+  },
+  {
+    accentColor: techIconColors.nodejs,
+    category: 'framework',
+    icon: 'nodejs',
+    label: 'Node.js',
+  },
+  {
+    accentColor: techIconColors['raspberry-pi'],
+    category: 'tool',
+    icon: 'raspberry-pi',
+    label: 'Raspberry Pi',
+  },
+  {
+    accentColor: techIconColors.java,
+    category: 'language',
+    icon: 'java',
+    label: 'Java',
+  },
+  {
+    accentColor: techIconColors['c-plus-plus'],
+    category: 'language',
+    icon: 'c-plus-plus',
+    label: 'C++',
+  },
+  {
+    accentColor: techIconColors.go,
+    category: 'language',
+    icon: 'go',
+    label: 'Go',
+  },
+  {
+    accentColor: techIconColors.rust,
+    category: 'language',
+    icon: 'rust',
+    label: 'Rust',
+  },
+  {
+    accentColor: techIconColors.nextjs,
+    category: 'framework',
+    icon: 'nextjs',
+    label: 'Next.js',
+  },
+  {
+    accentColor: techIconColors.vue,
+    category: 'framework',
+    icon: 'vue',
+    label: 'Vue',
+  },
+  {
+    accentColor: techIconColors.angular,
+    category: 'framework',
+    icon: 'angular',
+    label: 'Angular',
+  },
+  {
+    accentColor: techIconColors.spring,
+    category: 'framework',
+    icon: 'spring',
+    label: 'Spring',
+  },
+  {
+    accentColor: techIconColors.kubernetes,
+    category: 'infra',
+    icon: 'kubernetes',
+    label: 'Kubernetes',
+  },
+  {
+    accentColor: techIconColors.mongodb,
+    category: 'infra',
+    icon: 'mongodb',
+    label: 'MongoDB',
+  },
+  {
+    accentColor: techIconColors.redis,
+    category: 'infra',
+    icon: 'redis',
+    label: 'Redis',
+  },
+  {
+    accentColor: techIconColors.git,
+    category: 'tool',
+    icon: 'git',
+    label: 'Git',
+  },
+  {
+    accentColor: techIconColors.figma,
+    category: 'tool',
+    icon: 'figma',
+    label: 'Figma',
+  },
+  {
+    accentColor: techIconColors.postman,
+    category: 'tool',
+    icon: 'postman',
+    label: 'Postman',
+  },
+  {
+    accentColor: techIconColors.vite,
+    category: 'tool',
+    icon: 'vite',
+    label: 'Vite',
+  },
+]
+
+const tintedTechTags = techTags.filter(({ label }) =>
+  ['Python', 'React', 'TypeScript', 'Docker', 'Node.js', 'Java'].includes(label),
+)
+
+const solidTechTags: TechTagDemoItem[] = [
+  techTags[0],
+  techTags[1],
+  techTags[4],
+  techTags[10],
+  {
+    category: 'infra',
+    label: 'Sem icone',
+  },
+]
+
 type FilterTagDemoItem = {
   icon?: LucideIcon
   label: string
@@ -85,6 +255,10 @@ const filterTags: FilterTagDemoItem[] = [
   { label: 'IoT', value: 'iot', icon: Circle },
   { label: 'Dados', value: 'dados', icon: Circle },
 ]
+
+function renderTechIcon(icon?: TechIconName) {
+  return icon ? <TechIcon name={icon} /> : undefined
+}
 
 export default function ComponentsDemoPage() {
   const [activeFilters, setActiveFilters] = useState<string[]>([
@@ -106,6 +280,7 @@ export default function ComponentsDemoPage() {
           <a href="#status-badges">Badges</a>
           <a href="#filter-tags">FilterTags</a>
           <a href="#text-tags">TextTags</a>
+          <a href="#tech-tags">TechTags</a>
           <a href="#icon-tiles">IconTiles</a>
           <a href="#states">Estados</a>
         </nav>
@@ -281,9 +456,69 @@ export default function ComponentsDemoPage() {
         </div>
       </section>
 
-      <section className="components-demo-panel" aria-labelledby="icon-tiles">
+      <section className="components-demo-panel" aria-labelledby="tech-tags">
         <div className="components-demo-panel-heading">
           <span>06</span>
+          <h2 id="tech-tags">TechTag</h2>
+        </div>
+
+        <p className="components-demo-kicker">
+          Tags de tecnologia - com icone (simple icons)
+        </p>
+
+        <div className="components-demo-row">
+          {techTags.map(({ accentColor, category, icon, label }) => (
+            <TechTag
+              accentColor={accentColor}
+              category={category}
+              icon={renderTechIcon(icon)}
+              key={label}
+            >
+              {label}
+            </TechTag>
+          ))}
+        </div>
+
+        <p className="components-demo-kicker components-demo-kicker-spaced">
+          Variacao tinted (cor da marca)
+        </p>
+
+        <div className="components-demo-row">
+          {tintedTechTags.map(({ accentColor, category, icon, label }) => (
+            <TechTag
+              accentColor={accentColor}
+              category={category}
+              icon={renderTechIcon(icon)}
+              key={label}
+              variant="tinted"
+            >
+              {label}
+            </TechTag>
+          ))}
+        </div>
+
+        <p className="components-demo-kicker components-demo-kicker-spaced">
+          Variacao solid
+        </p>
+
+        <div className="components-demo-row">
+          {solidTechTags.map(({ accentColor, category, icon, label }) => (
+            <TechTag
+              accentColor={accentColor}
+              category={category}
+              icon={renderTechIcon(icon)}
+              key={label}
+              variant={icon ? 'solid' : 'outline'}
+            >
+              {label}
+            </TechTag>
+          ))}
+        </div>
+      </section>
+
+      <section className="components-demo-panel" aria-labelledby="icon-tiles">
+        <div className="components-demo-panel-heading">
+          <span>07</span>
           <h2 id="icon-tiles">IconTile</h2>
         </div>
 
@@ -315,7 +550,7 @@ export default function ComponentsDemoPage() {
 
       <section className="components-demo-panel" aria-labelledby="states">
         <div className="components-demo-panel-heading">
-          <span>07</span>
+          <span>08</span>
           <h2 id="states">Estados</h2>
         </div>
 
