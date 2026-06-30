@@ -190,7 +190,7 @@ export function AppRoutes() {
 
             <Route element={<RoleRoute allowedRoles={TEACHER_ROLES} />}>
               <Route
-                path="/painel-professor"
+                path="/teacher"
                 element={<TeacherPanelPage />}
               />
               <Route
