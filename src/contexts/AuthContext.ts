@@ -1,4 +1,4 @@
-  import { createContext, useContext } from 'react'
+import { createContext, useContext } from 'react'
 
 export interface AuthUser {
   id: string
@@ -7,14 +7,15 @@ export interface AuthUser {
   fullName: string
   email: string
   role: string
-  ira: number
-  period: number
+  ira: number | null
+  period: number | null
   aboutMe: string
   linkedin: string
   github: string
   curriculoLattes: string
   courseName: string
   institutionName: string
+  isNewUser?: boolean
 }
 
 export interface LoginData {

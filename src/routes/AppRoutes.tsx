@@ -1,18 +1,16 @@
 import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { AppLayout } from '../layouts/AppLayout'
+import { AppLayout } from '../components/AppLayout'
+import { useAuth } from '../contexts/AuthContext'
 import { ProtectedRoute } from './ProtectedRoute'
 import { RoleRoute } from './RoleRoute'
 
 const LoginPage = lazy(() => import('../pages/auth/LoginPage'))
 const AuthCallbackPage = lazy(() => import('../pages/auth/AuthCallbackPage'))
 
-// Componentes da pagina de demonstracao (excluir depois de testar).
-const StatusBadgeDemoPage = lazy(
-  () => import('../pages/components/StatusBadgeDemoPage')),
-const ButtonDemoPage = lazy(
-  () => import('../pages/components/ButtonDemoPage')),
-
+const ComponentsDemoPage = lazy(
+  () => import('../pages/components/ComponentsDemoPage'),
+)
 const FeedPage = lazy(() => import('../pages/feed/FeedPage'))
 const CreatePostPage = lazy(() => import('../pages/feed/CreatePostPage'))
 const EditPostPage = lazy(() => import('../pages/feed/EditPostPage'))
@@ -83,57 +81,103 @@ const NotesPage = lazy(
 const CreateNotePage = lazy(
   () => import('../pages/talent-bank/CreateNotePage'),
 )
+const TeacherPanelPage = lazy(
+  () => import('../pages/teacher-panel/TeacherPanelPage'),
+)
 
 const TEACHER_ROLES = ['teacher', 'professor']
 const STUDENT_ROLES = ['student', 'aluno']
 
-function LoadingPage() {
-  return <main className="route-status">Carregando...</main>
+function hasRole(role: string | undefined, roles: string[]) {
+  return role !== undefined && roles.includes(role)
+}
+
+function TalentBankEntryPage() {
+  const { user } = useAuth()
+  const role = user?.role.trim().toLowerCase()
+
+  if (hasRole(role, STUDENT_ROLES)) {
+    return <Navigate to="/banco-talentos/registration" replace />
+  }
+
+  if (hasRole(role, TEACHER_ROLES)) {
+    return <TalentBankPage />
+  }
+
+  return <Navigate to="/feed" replace />
 }
 
 export function AppRoutes() {
   return (
-    <Suspense fallback={<LoadingPage />}>
+    <Suspense>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
-        <Route path="/components/status-badges" element={<StatusBadgeDemoPage />} />
-        <Route path="/components/buttons" element={<ButtonDemoPage />} />
+        <Route path="/componentes" element={<ComponentsDemoPage />} />
 
         <Route element={<ProtectedRoute />}>
+
           <Route element={<AppLayout />}>
             <Route path="/feed" element={<FeedPage />} />
             <Route path="/feed/new" element={<CreatePostPage />} />
             <Route path="/feed/:postId/edit" element={<EditPostPage />} />
 
+            <Route path="/bolsas" element={<ScholarshipsPage />} />
             <Route path="/scholarships" element={<ScholarshipsPage />} />
+            <Route
+              path="/bolsas/:scholarshipId"
+              element={<ScholarshipDetailsPage />}
+            />
             <Route
               path="/scholarships/:scholarshipId"
               element={<ScholarshipDetailsPage />}
             />
 
+            <Route path="/perfil" element={<ProfilePage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/perfil/edit" element={<EditProfilePage />} />
             <Route path="/profile/edit" element={<EditProfilePage />} />
             <Route path="/profiles/:userId" element={<UserProfilePage />} />
 
+            <Route path="/trilhas" element={<TracksPage />} />
             <Route path="/tracks" element={<TracksPage />} />
+            <Route path="/trilhas/:trackId" element={<TrackDetailsPage />} />
             <Route path="/tracks/:trackId" element={<TrackDetailsPage />} />
+            <Route
+              path="/trilhas/:trackId/modules/:moduleId"
+              element={<ModuleDetailsPage />}
+            />
             <Route
               path="/tracks/:trackId/modules/:moduleId"
               element={<ModuleDetailsPage />}
+            />
+            <Route
+              path="/trilhas/:trackId/modules/:moduleId/contents/:contentId"
+              element={<ContentDetailsPage />}
             />
             <Route
               path="/tracks/:trackId/modules/:moduleId/contents/:contentId"
               element={<ContentDetailsPage />}
             />
 
+            <Route path="/banco-talentos" element={<TalentBankEntryPage />} />
+            <Route path="/talent-bank" element={<TalentBankEntryPage />} />
+            <Route
+              path="/banco-talentos/registration"
+              element={<CreateRegistrationPage />}
+            />
             <Route
               path="/talent-bank/registration"
               element={<CreateRegistrationPage />}
             />
+            <Route path="/banco-talentos/my-notes" element={<MyNotesPage />} />
             <Route path="/talent-bank/my-notes" element={<MyNotesPage />} />
 
             <Route element={<RoleRoute allowedRoles={STUDENT_ROLES} />}>
+              <Route
+                path="/bolsas/applications"
+                element={<MyApplicationsPage />}
+              />
               <Route
                 path="/scholarships/applications"
                 element={<MyApplicationsPage />}
@@ -142,43 +186,80 @@ export function AppRoutes() {
 
             <Route element={<RoleRoute allowedRoles={TEACHER_ROLES} />}>
               <Route
+                path="/teacher"
+                element={<TeacherPanelPage />}
+              />
+              <Route
+                path="/bolsas/new"
+                element={<CreateScholarshipPage />}
+              />
+              <Route
                 path="/scholarships/new"
                 element={<CreateScholarshipPage />}
+              />
+              <Route
+                path="/bolsas/:scholarshipId/edit"
+                element={<EditScholarshipPage />}
               />
               <Route
                 path="/scholarships/:scholarshipId/edit"
                 element={<EditScholarshipPage />}
               />
               <Route
+                path="/bolsas/:scholarshipId/applications"
+                element={<ScholarshipApplicationsPage />}
+              />
+              <Route
                 path="/scholarships/:scholarshipId/applications"
                 element={<ScholarshipApplicationsPage />}
               />
+              <Route path="/trilhas/new" element={<CreateTrackPage />} />
               <Route path="/tracks/new" element={<CreateTrackPage />} />
+              <Route path="/trilhas/:trackId/edit" element={<EditTrackPage />} />
               <Route path="/tracks/:trackId/edit" element={<EditTrackPage />} />
+              <Route
+                path="/trilhas/:trackId/modules/new"
+                element={<CreateModulePage />}
+              />
               <Route
                 path="/tracks/:trackId/modules/new"
                 element={<CreateModulePage />}
+              />
+              <Route
+                path="/trilhas/:trackId/modules/:moduleId/edit"
+                element={<EditModulePage />}
               />
               <Route
                 path="/tracks/:trackId/modules/:moduleId/edit"
                 element={<EditModulePage />}
               />
               <Route
+                path="/trilhas/:trackId/modules/:moduleId/contents/new"
+                element={<CreateContentPage />}
+              />
+              <Route
                 path="/tracks/:trackId/modules/:moduleId/contents/new"
                 element={<CreateContentPage />}
+              />
+              <Route
+                path="/trilhas/:trackId/modules/:moduleId/contents/:contentId/edit"
+                element={<EditContentPage />}
               />
               <Route
                 path="/tracks/:trackId/modules/:moduleId/contents/:contentId/edit"
                 element={<EditContentPage />}
               />
-
               <Route
-                path="/talent-bank"
-                element={<TalentBankPage />}
+                path="/banco-talentos/:studentId/notes"
+                element={<NotesPage />}
               />
               <Route
                 path="/talent-bank/:studentId/notes"
                 element={<NotesPage />}
+              />
+              <Route
+                path="/banco-talentos/:studentId/notes/new"
+                element={<CreateNotePage />}
               />
               <Route
                 path="/talent-bank/:studentId/notes/new"

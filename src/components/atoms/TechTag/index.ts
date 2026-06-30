@@ -1,0 +1,6 @@
+export { techIconColors } from './TechIcon.colors'
+export type { TechIconName } from './TechIcon.colors'
+export { TechIcon } from './TechIcon'
+export type { TechIconProps } from './TechIcon'
+export { TechTag } from './TechTag'
+export type { TechTagCategory, TechTagProps, TechTagVariant } from './TechTag'

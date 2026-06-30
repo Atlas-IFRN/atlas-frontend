@@ -1,0 +1,70 @@
+.atlas-error-state {
+  align-items: flex-start;
+  background: color-mix(in srgb, var(--danger) 9%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--danger) 34%, transparent);
+  border-radius: 12px;
+  box-sizing: border-box;
+  color: var(--text);
+  display: grid;
+  gap: 16px;
+  inline-size: 100%;
+  justify-items: start;
+  padding: 24px;
+  text-align: left;
+}
+
+.atlas-error-state__icon {
+  align-items: center;
+  background: var(--danger-soft);
+  border-radius: 999px;
+  color: var(--danger);
+  display: inline-flex;
+  justify-content: center;
+  min-block-size: 56px;
+  min-inline-size: 56px;
+}
+
+.atlas-error-state__content {
+  display: grid;
+  gap: 8px;
+}
+
+.atlas-error-state__content h2 {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: var(--line-height-xl);
+  margin: 0;
+}
+
+.atlas-error-state__content p {
+  color: var(--text-soft);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-base);
+}
+
+.atlas-error-state__detail {
+  background: color-mix(in srgb, #020711 72%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--danger) 20%, transparent);
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  inline-size: 100%;
+  line-height: var(--line-height-sm);
+  margin: 0;
+  max-block-size: 140px;
+  overflow: auto;
+  padding: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 680px) {
+  .atlas-error-state {
+    padding: 20px;
+  }
+}
