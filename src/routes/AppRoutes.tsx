@@ -88,10 +88,6 @@ const TeacherPanelPage = lazy(
 const TEACHER_ROLES = ['teacher', 'professor']
 const STUDENT_ROLES = ['student', 'aluno']
 
-function LoadingPage() {
-  return <main className="route-status">Carregando...</main>
-}
-
 function hasRole(role: string | undefined, roles: string[]) {
   return role !== undefined && roles.includes(role)
 }
@@ -113,7 +109,7 @@ function TalentBankEntryPage() {
 
 export function AppRoutes() {
   return (
-    <Suspense fallback={<LoadingPage />}>
+    <Suspense>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
