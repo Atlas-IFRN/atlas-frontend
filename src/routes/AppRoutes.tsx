@@ -81,6 +81,9 @@ const NotesPage = lazy(
 const CreateNotePage = lazy(
   () => import('../pages/talent-bank/CreateNotePage'),
 )
+const TeacherPanelPage = lazy(
+  () => import('../pages/teacher-panel/TeacherPanelPage'),
+)
 
 const TEACHER_ROLES = ['teacher', 'professor']
 const STUDENT_ROLES = ['student', 'aluno']
@@ -186,6 +189,10 @@ export function AppRoutes() {
             </Route>
 
             <Route element={<RoleRoute allowedRoles={TEACHER_ROLES} />}>
+              <Route
+                path="/painel-professor"
+                element={<TeacherPanelPage />}
+              />
               <Route
                 path="/bolsas/new"
                 element={<CreateScholarshipPage />}
