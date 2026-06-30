@@ -27,7 +27,7 @@
   font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 600;
-  gap: 7px;
+  gap: 10px;
   justify-content: center;
   min-block-size: 29px;
   min-inline-size: max-content;
@@ -95,6 +95,7 @@
   display: block;
   flex: 0 0 auto;
   inline-size: 17px;
+  margin-left: 10px;
 }
 
 .atlas-tech-tag--solid .atlas-tech-icon {
