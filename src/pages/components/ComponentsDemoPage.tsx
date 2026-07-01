@@ -1,12 +1,16 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
+  BookOpen,
   Check,
   CheckCircle2,
   Circle,
+  FileText,
   FileQuestion,
   Home,
   Info,
+  LogIn,
   Plus,
   RefreshCcw,
   Settings,
@@ -24,6 +28,7 @@ import {
 import { Button } from '../../components/atoms/Button'
 import { FilterTag } from '../../components/atoms/FilterTag'
 import { IconTile } from '../../components/atoms/IconTile'
+import { StatCard } from '../../components/atoms/StatCard'
 import { StatusBadge } from '../../components/atoms/StatusBadge'
 import {
   TechIcon,
@@ -261,6 +266,7 @@ function renderTechIcon(icon?: TechIconName) {
 }
 
 export default function ComponentsDemoPage() {
+  const navigate = useNavigate()
   const [activeFilters, setActiveFilters] = useState<string[]>([
     'backend',
     'frontend',
@@ -277,6 +283,7 @@ export default function ComponentsDemoPage() {
         <nav className="components-demo-nav" aria-label="Componentes">
           <a href="#identity">Identidade</a>
           <a href="#buttons">Botoes</a>
+          <a href="#stat-cards">StatCards</a>
           <a href="#status-badges">Badges</a>
           <a href="#filter-tags">FilterTags</a>
           <a href="#text-tags">TextTags</a>
@@ -377,10 +384,48 @@ export default function ComponentsDemoPage() {
 
       <section
         className="components-demo-panel"
-        aria-labelledby="status-badges"
+        aria-labelledby="stat-cards"
       >
         <div className="components-demo-panel-heading">
           <span>03</span>
+          <h2 id="stat-cards">StatCard</h2>
+        </div>
+
+        <div className="components-demo-stat-grid">
+          <StatCard
+            actionHref="#stat-cards"
+            actionLabel="Ver trilhas"
+            icon={BookOpen}
+            label="Trilhas ativas"
+            value={5}
+          />
+
+          <StatCard
+            actionHref="#stat-cards"
+            actionLabel="Ver minhas"
+            icon={FileText}
+            label="Minhas candidaturas"
+            value={2}
+          />
+
+          <StatCard
+            actionAriaLabel="Ir para a rota de login"
+            actionLabel="Ir para login"
+            icon={LogIn}
+            label="Exemplo com rota"
+            onAction={() => navigate('/login')}
+            tone="purple"
+            value="URL"
+          />
+        </div>
+      </section>
+
+      <section
+        className="components-demo-panel"
+        aria-labelledby="status-badges"
+      >
+        <div className="components-demo-panel-heading">
+          <span>04</span>
           <h2 id="status-badges">StatusBadge</h2>
         </div>
 
@@ -394,7 +439,7 @@ export default function ComponentsDemoPage() {
 
       <section className="components-demo-panel" aria-labelledby="filter-tags">
         <div className="components-demo-panel-heading">
-          <span>04</span>
+          <span>05</span>
           <h2 id="filter-tags">FilterTag</h2>
         </div>
 
@@ -430,7 +475,7 @@ export default function ComponentsDemoPage() {
 
       <section className="components-demo-panel" aria-labelledby="text-tags">
         <div className="components-demo-panel-heading">
-          <span>05</span>
+          <span>06</span>
           <h2 id="text-tags">TextTag</h2>
         </div>
 
@@ -458,7 +503,7 @@ export default function ComponentsDemoPage() {
 
       <section className="components-demo-panel" aria-labelledby="tech-tags">
         <div className="components-demo-panel-heading">
-          <span>06</span>
+          <span>07</span>
           <h2 id="tech-tags">TechTag</h2>
         </div>
 
@@ -518,7 +563,7 @@ export default function ComponentsDemoPage() {
 
       <section className="components-demo-panel" aria-labelledby="icon-tiles">
         <div className="components-demo-panel-heading">
-          <span>07</span>
+          <span>08</span>
           <h2 id="icon-tiles">IconTile</h2>
         </div>
 
@@ -550,7 +595,7 @@ export default function ComponentsDemoPage() {
 
       <section className="components-demo-panel" aria-labelledby="states">
         <div className="components-demo-panel-heading">
-          <span>08</span>
+          <span>09</span>
           <h2 id="states">Estados</h2>
         </div>
 
