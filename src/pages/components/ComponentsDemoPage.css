@@ -145,6 +145,12 @@
   gap: 14px;
 }
 
+.components-demo-stat-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 348px));
+}
+
 .components-demo-row + .components-demo-row,
 .components-demo-grid + .components-demo-row,
 .components-demo-state-grid + .components-demo-row {
