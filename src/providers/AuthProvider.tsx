@@ -109,7 +109,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       getAccessToken: () => accessToken,
       onUnauthorized: () => {
         logout()
-        navigate('/login', { replace: true })
+        navigate('/entrar', { replace: true })
       },
     })
   }, [accessToken, logout, navigate])

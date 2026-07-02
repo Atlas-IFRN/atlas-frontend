@@ -8,7 +8,7 @@ interface RoleRouteProps {
 
 export function RoleRoute({
   allowedRoles,
-  redirectTo = '/feed',
+  redirectTo = '/inicio',
 }: RoleRouteProps) {
   const { user } = useAuth()
   const role = user?.role.trim().toLowerCase()

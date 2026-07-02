@@ -70,7 +70,7 @@ export default function LoginPage() {
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/feed" replace />
+    return <Navigate to="/inicio" replace />
   }
 
   return (
