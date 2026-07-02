@@ -30,8 +30,6 @@ interface NavItem {
   activePrefix?: string
 }
 
-const TEACHER_ROLES = new Set(['teacher', 'professor'])
-
 function getRoleLabel(role: string | undefined) {
   const normalizedRole = role?.trim().toLowerCase()
 
@@ -54,27 +52,22 @@ export function AppLayout() {
   const [collapsed, setCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const normalizedRole = user?.role.trim().toLowerCase()
-  const isTeacher = normalizedRole ? TEACHER_ROLES.has(normalizedRole) : false
-  const talentBankPath = isTeacher
-    ? '/banco-talentos'
-    : '/banco-talentos/registration'
   const userName = user?.fullName || user?.firstName || 'Atlas'
   const userRole = getRoleLabel(user?.role)
   const menu = useMemo<NavItem[]>(
     () => [
-      { to: '/feed', label: 'Início', Icon: Home },
+      { to: '/inicio', label: 'Início', Icon: Home },
       { to: '/trilhas', label: 'Trilhas', Icon: BookOpen },
       { to: '/bolsas', label: 'Bolsas P&D', Icon: Briefcase },
       {
-        to: talentBankPath,
+        to: '/banco-talentos',
         label: 'Banco de Talentos',
         Icon: Users,
         activePrefix: '/banco-talentos',
       },
       { to: '/perfil', label: 'Meu Perfil', Icon: User },
     ],
-    [talentBankPath],
+    [],
   )
 
   useEffect(() => {
@@ -136,7 +129,7 @@ export function AppLayout() {
   function handleUserChipClick() {
     logout()
     setMobileOpen(false)
-    navigate('/login', { replace: true })
+    navigate('/entrar', { replace: true })
   }
 
   function matchesPath(path: string) {
