@@ -5,7 +5,7 @@ import { useAuth, type LoginData } from '../../contexts/AuthContext'
 import { exchangeSuapCodeForSession } from '../../services/auth'
 import './AuthPages.css'
 
-const CALLBACK_FAILED_URL = '/login?error=callback_failed'
+const CALLBACK_FAILED_URL = '/entrar?error=callback_failed'
 const STUDENT_ROLES = new Set(['student', 'aluno'])
 const TEACHER_ROLES = new Set(['teacher', 'professor'])
 
@@ -18,11 +18,11 @@ function getRedirectPath(role: string) {
   const normalizedRole = role.trim().toLowerCase()
 
   if (TEACHER_ROLES.has(normalizedRole)) {
-    return '/teacher'
+    return '/professor'
   }
 
   if (STUDENT_ROLES.has(normalizedRole)) {
-    return '/feed'
+    return '/inicio'
   }
 
   throw new Error('Unsupported user role')
