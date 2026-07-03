@@ -13,20 +13,13 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      // Cada serviço expõe tudo sob /api/<service>/, então basta um prefixo
+      // por serviço. O ai não precisa mais de rewrite: as rotas agora vivem
+      // em /api/ai/... (antes eram servidas na raiz do FastAPI).
       '/api/auth': proxyToLocalService(8000),
-      '/api/tracks': proxyToLocalService(8001),
-      '/api/modules': proxyToLocalService(8001),
-      '/api/contents': proxyToLocalService(8001),
-      '/api/user-tracks': proxyToLocalService(8001),
-      '/api/module-progress': proxyToLocalService(8001),
-      '/api/content-progress': proxyToLocalService(8001),
-      '/api/submissions': proxyToLocalService(8001),
+      '/api/track': proxyToLocalService(8001),
       '/api/scholarship': proxyToLocalService(8002),
-      '/api/talents': proxyToLocalService(8002),
-      '/api/ia': {
-        ...proxyToLocalService(8003),
-        rewrite: (requestPath) => requestPath.replace(/^\/api\/ia/, ''),
-      },
+      '/api/ai': proxyToLocalService(8003),
     },
   },
   resolve: {
