@@ -27,6 +27,12 @@
   inline-size: var(--icon-tile-icon-size);
 }
 
+.atlas-icon-tile__icon > svg {
+  block-size: 100%;
+  inline-size: 100%;
+  stroke: currentColor;
+}
+
 .atlas-icon-tile--sm {
   --icon-tile-icon-size: 16px;
   --icon-tile-radius: 8px;

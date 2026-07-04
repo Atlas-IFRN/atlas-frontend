@@ -1,0 +1,58 @@
+.atlas-info-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-md);
+  box-sizing: border-box;
+  color: var(--text);
+  text-align: left;
+}
+
+.atlas-info-card.card-pad {
+  padding: var(--s-6);
+}
+
+.atlas-info-card__header {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--s-3);
+  margin-bottom: var(--s-3);
+}
+
+.atlas-info-card__heading {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.atlas-info-card__eyebrow {
+  color: var(--text-muted);
+  margin: 0 0 var(--s-1);
+}
+
+.atlas-info-card__title {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: var(--font-size-base);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: var(--line-height-lg);
+  margin: 0;
+}
+
+.atlas-info-card__action {
+  flex: 0 0 auto;
+}
+
+.atlas-info-card__body {
+  color: var(--text-soft);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: var(--line-height-sm);
+}
+
+.atlas-info-card__body > :where(p, ul, ol) {
+  margin: 0;
+}
+
+.atlas-info-card__body > :where(p, ul, ol) + :where(p, ul, ol) {
+  margin-top: var(--s-4);
+}
