@@ -12,7 +12,7 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { Button } from '../../components/atoms/Button'
 import { useAuth } from '../../contexts/AuthContext'
 import { getSuapLoginUrl } from '../../services/auth'
-import atlasLogo from '../../assets/brand/atlas-logo.svg'
+import atlasLogo from '../../assets/brand/atlas-logo-full-white.svg'
 import './AuthPages.css'
 
 const suapErrorMessages: Record<string, string> = {
@@ -81,7 +81,6 @@ export default function LoginPage() {
             <span className="auth-card__logo" aria-hidden="true">
               <img src={atlasLogo} alt="" />
             </span>
-            <span>ATLAS</span>
           </div>
 
           <div className="auth-card__intro">
