@@ -1,5 +1,5 @@
 import { forwardRef } from 'react'
-import type { HTMLAttributes } from 'react'
+import type { HTMLAttributes, ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import { Icon } from '../../ui/Icon'
 import type { IconName } from '../../ui/Icon'
@@ -19,17 +19,25 @@ type IconTileBaseProps = Omit<HTMLAttributes<HTMLSpanElement>, 'children'> & {
 }
 
 type IconTileWithComponent = {
+  children?: never
   icon: LucideIcon
   name?: never
 }
 
 type IconTileWithName = {
+  children?: never
   icon?: never
   name: IconName
 }
 
+type IconTileWithChildren = {
+  children: ReactNode
+  icon?: never
+  name?: never
+}
+
 export type IconTileProps = IconTileBaseProps &
-  (IconTileWithComponent | IconTileWithName)
+  (IconTileWithComponent | IconTileWithName | IconTileWithChildren)
 
 const iconSizes = {
   sm: 16,
@@ -42,6 +50,7 @@ export const IconTile = forwardRef<HTMLSpanElement, IconTileProps>(
     {
       icon: IconComponent,
       name,
+      children,
       size = 'md',
       variant = 'primary',
       className,
@@ -71,6 +80,7 @@ export const IconTile = forwardRef<HTMLSpanElement, IconTileProps>(
 
     const accessibleRole =
       role ?? (hasAccessibleName && !isDecorative ? 'img' : undefined)
+    const hasCustomIcon = children !== undefined && children !== null
 
     return (
       <span
@@ -85,7 +95,11 @@ export const IconTile = forwardRef<HTMLSpanElement, IconTileProps>(
         data-variant={variant}
         data-size={size}
       >
-        {IconComponent ? (
+        {hasCustomIcon ? (
+          <span className="atlas-icon-tile__icon" aria-hidden="true">
+            {children}
+          </span>
+        ) : IconComponent ? (
           <IconComponent
             aria-hidden="true"
             className="atlas-icon-tile__icon"
@@ -93,7 +107,7 @@ export const IconTile = forwardRef<HTMLSpanElement, IconTileProps>(
             size={iconSizes[size]}
             strokeWidth={1.85}
           />
-        ) : (
+        ) : name ? (
           <Icon
             aria-hidden="true"
             className="atlas-icon-tile__icon"
@@ -102,7 +116,7 @@ export const IconTile = forwardRef<HTMLSpanElement, IconTileProps>(
             size={iconSizes[size]}
             strokeWidth={1.85}
           />
-        )}
+        ) : null}
       </span>
     )
   },

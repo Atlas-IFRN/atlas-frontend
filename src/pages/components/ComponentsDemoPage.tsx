@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
   BookOpen,
@@ -14,6 +14,7 @@ import {
   Plus,
   RefreshCcw,
   Settings,
+  Sparkles,
   Trash2,
   TriangleAlert,
   X,
@@ -38,6 +39,7 @@ import {
   type TechTagCategory,
 } from '../../components/atoms/TechTag'
 import { TextTag } from '../../components/atoms/TextTag'
+import { InfoCard } from '../../components/molecules/InfoCard'
 import { UserChip } from '../../components/molecules/UserChip'
 import { EmptyState, ErrorState, LoadingState } from '../../components/states'
 import './ComponentsDemoPage.css'
@@ -284,6 +286,7 @@ export default function ComponentsDemoPage() {
           <a href="#identity">Identidade</a>
           <a href="#buttons">Botoes</a>
           <a href="#stat-cards">StatCards</a>
+          <a href="#info-card">InfoCard</a>
           <a href="#status-badges">Badges</a>
           <a href="#filter-tags">FilterTags</a>
           <a href="#text-tags">TextTags</a>
@@ -420,12 +423,61 @@ export default function ComponentsDemoPage() {
         </div>
       </section>
 
+      <section className="components-demo-panel" aria-labelledby="info-card">
+        <div className="components-demo-panel-heading">
+          <span>04</span>
+          <h2 id="info-card">InfoCard</h2>
+        </div>
+
+        <div className="components-demo-info-grid">
+          <InfoCard title="O que e o Banco de Talentos?">
+            <p>
+              Uma vitrine curada de estudantes interessados em bolsas de
+              pesquisa, inovacao e extensao.
+            </p>
+            <p>
+              Professores avaliam portfolios, confirmam conhecimentos por
+              entrevista e convidam estudantes para projetos.
+            </p>
+          </InfoCard>
+
+          <InfoCard
+            eyebrow="Visao geral"
+            icon={<Sparkles />}
+            iconTone="primary"
+            title="Como funciona"
+          >
+            <p>
+              Trilhas concluidas, tecnologias validadas e desafios entregues
+              ajudam a formar um sinal tecnico mais confiavel.
+            </p>
+          </InfoCard>
+
+          <InfoCard
+            action={
+              <Link
+                className="atlas-button atlas-button--soft atlas-button--sm"
+                to="/componentes#info-card"
+              >
+                Ver todos
+              </Link>
+            }
+            title="Sobre"
+          >
+            <p>
+              Use o slot de acao para links e comandos contextuais sem mudar a
+              estrutura visual do bloco.
+            </p>
+          </InfoCard>
+        </div>
+      </section>
+
       <section
         className="components-demo-panel"
         aria-labelledby="status-badges"
       >
         <div className="components-demo-panel-heading">
-          <span>04</span>
+          <span>05</span>
           <h2 id="status-badges">StatusBadge</h2>
         </div>
 
@@ -439,7 +491,7 @@ export default function ComponentsDemoPage() {
 
       <section className="components-demo-panel" aria-labelledby="filter-tags">
         <div className="components-demo-panel-heading">
-          <span>05</span>
+          <span>06</span>
           <h2 id="filter-tags">FilterTag</h2>
         </div>
 
@@ -475,7 +527,7 @@ export default function ComponentsDemoPage() {
 
       <section className="components-demo-panel" aria-labelledby="text-tags">
         <div className="components-demo-panel-heading">
-          <span>06</span>
+          <span>07</span>
           <h2 id="text-tags">TextTag</h2>
         </div>
 
@@ -503,7 +555,7 @@ export default function ComponentsDemoPage() {
 
       <section className="components-demo-panel" aria-labelledby="tech-tags">
         <div className="components-demo-panel-heading">
-          <span>07</span>
+          <span>08</span>
           <h2 id="tech-tags">TechTag</h2>
         </div>
 
@@ -563,7 +615,7 @@ export default function ComponentsDemoPage() {
 
       <section className="components-demo-panel" aria-labelledby="icon-tiles">
         <div className="components-demo-panel-heading">
-          <span>08</span>
+          <span>09</span>
           <h2 id="icon-tiles">IconTile</h2>
         </div>
 
@@ -595,7 +647,7 @@ export default function ComponentsDemoPage() {
 
       <section className="components-demo-panel" aria-labelledby="states">
         <div className="components-demo-panel-heading">
-          <span>09</span>
+          <span>10</span>
           <h2 id="states">Estados</h2>
         </div>
 
