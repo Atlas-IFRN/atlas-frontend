@@ -96,7 +96,7 @@ export function AppRoutes() {
 
           <Route element={<AppLayout />}>
             <Route path="/inicio" element={<FeedPage />} />
-            <Route path="/inicio/novo" element={<CreatePostPage />} />
+            <Route path="/inicio/criar" element={<CreatePostPage />} />
             <Route path="/inicio/:postId/editar" element={<EditPostPage />} />
 
             <Route path="/bolsas" element={<ScholarshipsPage />} />
@@ -150,7 +150,7 @@ export function AppRoutes() {
               <Route path="/trilhas/nova" element={<CreateTrackPage />} />
               <Route path="/trilhas/:trackId/editar" element={<EditTrackPage />} />
               <Route
-                path="/trilhas/:trackId/modulos/novo"
+                path="/trilhas/:trackId/modulos/criar"
                 element={<CreateModulePage />}
               />
               <Route
@@ -158,7 +158,7 @@ export function AppRoutes() {
                 element={<EditModulePage />}
               />
               <Route
-                path="/trilhas/:trackId/modulos/:moduleId/conteudos/novo"
+                path="/trilhas/:trackId/modulos/:moduleId/conteudos/criar"
                 element={<CreateContentPage />}
               />
               <Route
@@ -170,7 +170,7 @@ export function AppRoutes() {
                 element={<NotesPage />}
               />
               <Route
-                path="/banco-talentos/:studentId/notas/nova"
+                path="/banco-talentos/:studentId/notas/criar"
                 element={<CreateNotePage />}
               />
             </Route>
