@@ -136,7 +136,7 @@ export function AppRoutes() {
                 element={<TeacherPanelPage />}
               />
               <Route
-                path="/bolsas/nova"
+                path="/bolsas/criar"
                 element={<CreateScholarshipPage />}
               />
               <Route
@@ -147,7 +147,7 @@ export function AppRoutes() {
                 path="/bolsas/:scholarshipId/candidaturas"
                 element={<ScholarshipApplicationsPage />}
               />
-              <Route path="/trilhas/nova" element={<CreateTrackPage />} />
+              <Route path="/trilhas/criar" element={<CreateTrackPage />} />
               <Route path="/trilhas/:trackId/editar" element={<EditTrackPage />} />
               <Route
                 path="/trilhas/:trackId/modulos/criar"
