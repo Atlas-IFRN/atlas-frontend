@@ -14,11 +14,50 @@
   --primary-soft-2: #5b9bf547;
 
   --teal: #2ba383;
+  --success: var(--teal);
   --purple: #8273e0;
   --amber: #e6a943;
+  --warning: var(--amber);
   --progress: #e08a7d;
   --danger: #d45b5b;
   --pink: #d6457e;
+
+  --trail-backend: #1fa978;
+  --trail-backend-dark: #0f5c44;
+  --trail-frontend: #2f8fe8;
+  --trail-frontend-dark: #1a5fb8;
+  --trail-ai: #8170e0;
+  --trail-ai-dark: #4b3a9e;
+  --trail-cicd: #e89a2f;
+  --trail-cicd-dark: #8c5a14;
+  --trail-devops: #d45b5b;
+  --trail-devops-dark: #8b2e2e;
+
+  --trail-banner-backend: linear-gradient(
+    135deg,
+    var(--trail-backend),
+    var(--trail-backend-dark)
+  );
+  --trail-banner-frontend: linear-gradient(
+    135deg,
+    var(--trail-frontend),
+    var(--trail-frontend-dark)
+  );
+  --trail-banner-ai: linear-gradient(
+    135deg,
+    var(--trail-ai),
+    var(--trail-ai-dark)
+  );
+  --trail-banner-cicd: linear-gradient(
+    135deg,
+    var(--trail-cicd),
+    var(--trail-cicd-dark)
+  );
+  --trail-banner-devops: linear-gradient(
+    135deg,
+    var(--trail-devops),
+    var(--trail-devops-dark)
+  );
 
   --info-soft: #5b9bf52e;
   --success-soft: #2ba3832e;
