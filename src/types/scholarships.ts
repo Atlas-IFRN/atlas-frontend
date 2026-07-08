@@ -70,3 +70,39 @@ export interface Scholarship {
   createdAt: string
   updatedAt: string
 }
+
+export interface ScholarshipLinkInput {
+  label: string
+  url: string
+  displayOrder: number
+}
+
+export interface ScholarshipRequirementInput {
+  title: string
+  description: string
+  displayOrder: number
+}
+
+export interface ScholarshipPhaseInput {
+  title: string | null
+  startDate: string
+  endDate: string
+  type: ScholarshipPhaseType
+  displayOrder: number
+}
+
+export interface CreateScholarshipInput {
+  title: string
+  description: string
+  activityDescription: string
+  valuePerMonth: number
+  durationInMonths: number
+  vacancies: number
+  minimumPeriod: number
+  minimumIra: number
+  status: ScholarshipStatus
+  technologyIds: string[]
+  phases: ScholarshipPhaseInput[]
+  links: ScholarshipLinkInput[]
+  requirements: ScholarshipRequirementInput[]
+}

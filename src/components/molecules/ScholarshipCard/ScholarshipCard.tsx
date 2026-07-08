@@ -13,6 +13,8 @@ import type { Scholarship, ScholarshipStatus } from '../../../types/scholarships
 import './ScholarshipCard.css'
 
 export interface ScholarshipCardProps {
+  className?: string
+  interactive?: boolean
   scholarship: Scholarship
 }
 
@@ -97,13 +99,21 @@ function formatRequirement(scholarship: Scholarship) {
   return `A partir do ${period} · IRA ≥ ${ira}`
 }
 
-export function ScholarshipCard({ scholarship }: ScholarshipCardProps) {
+export function ScholarshipCard({
+  className,
+  interactive = true,
+  scholarship,
+}: ScholarshipCardProps) {
   const navigate = useNavigate()
   const deadline = formatDeadline(scholarship.registrationEnd)
   const detailsPath = `/bolsas/${scholarship.id}`
-  const goToDetails = () => navigate(detailsPath)
+  const goToDetails = () => {
+    if (interactive) {
+      navigate(detailsPath)
+    }
+  }
   const handleCardKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-    if (event.target !== event.currentTarget) {
+    if (!interactive || event.target !== event.currentTarget) {
       return
     }
 
@@ -112,15 +122,22 @@ export function ScholarshipCard({ scholarship }: ScholarshipCardProps) {
       goToDetails()
     }
   }
+  const cardClassName = ['atlas-scholarship-card', className]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <article
-      aria-label={`Ver detalhes da bolsa ${scholarship.title}`}
-      className="atlas-scholarship-card"
-      onClick={goToDetails}
+      aria-label={
+        interactive
+          ? `Ver detalhes da bolsa ${scholarship.title}`
+          : `Pré-visualização da bolsa ${scholarship.title}`
+      }
+      className={cardClassName}
+      onClick={interactive ? goToDetails : undefined}
       onKeyDown={handleCardKeyDown}
-      role="link"
-      tabIndex={0}
+      role={interactive ? 'link' : undefined}
+      tabIndex={interactive ? 0 : undefined}
     >
       <div className="atlas-scholarship-card__main">
         <div className="atlas-scholarship-card__meta">
@@ -197,6 +214,7 @@ export function ScholarshipCard({ scholarship }: ScholarshipCardProps) {
         <div className="atlas-scholarship-card__action-area">
           <Button
             className="atlas-scholarship-card__button"
+            disabled={!interactive}
             iconRight={ArrowRight}
             onClick={(event) => {
               event.stopPropagation()
