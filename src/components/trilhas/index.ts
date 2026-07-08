@@ -1,6 +1,12 @@
 import './TrailsCatalog.css'
 
-export type { TrailFilter, TrailsStats } from './types'
+export type {
+  Trail,
+  TrailAreaLabel,
+  TrailFilter,
+  TrailTheme,
+  TrailsStats,
+} from './types'
 export { Toolbar } from './molecules/Toolbar'
 export { TrailBanner } from './molecules/TrailBanner'
 export { TrailFooterMeta } from './molecules/TrailFooterMeta'

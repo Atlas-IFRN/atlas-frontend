@@ -6,7 +6,7 @@ import {
   Code2,
   GitBranchPlus,
 } from 'lucide-react'
-import type { TrailTheme } from '../../pages/tracks/trailsData'
+import type { TrailTheme } from './types'
 
 type TrailBannerIconProps = ComponentProps<typeof Braces> & {
   theme: TrailTheme
