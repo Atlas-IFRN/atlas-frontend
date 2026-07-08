@@ -24,13 +24,32 @@ export function setApiAuthHandlers(handlers: ApiAuthHandlers) {
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
+  xsrfCookieName: 'csrftoken',
+  xsrfHeaderName: 'X-CSRFToken',
 })
+
+function getCookieValue(name: string) {
+  if (typeof document === 'undefined') {
+    return null
+  }
+
+  const cookie = document.cookie
+    .split('; ')
+    .find((item) => item.startsWith(`${name}=`))
+
+  return cookie ? decodeURIComponent(cookie.split('=').slice(1).join('=')) : null
+}
 
 api.interceptors.request.use((config) => {
   const token = authHandlers.getAccessToken()
+  const csrfToken = getCookieValue('csrftoken')
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
+  }
+
+  if (csrfToken) {
+    config.headers['X-CSRFToken'] = csrfToken
   }
 
   return config

@@ -14,7 +14,7 @@ import { Button } from '../../components/atoms/Button'
 import { FilterTag } from '../../components/atoms/FilterTag'
 import { ScholarshipCard } from '../../components/molecules/ScholarshipCard'
 import { EmptyState, ErrorState, LoadingState } from '../../components/states'
-import type { Scholarship, ScholarshipStatus } from '../../types/api'
+import type { Scholarship, ScholarshipStatus } from '../../types/scholarships'
 import './ScholarshipsPage.css'
 
 type ScholarshipFilter =

@@ -3,9 +3,13 @@ import type {
   PaginatedResponse,
   Scholarship,
   ScholarshipApplicationStatus,
+  ScholarshipLink,
+  ScholarshipPhase,
+  ScholarshipPhaseType,
+  ScholarshipRequirement,
   ScholarshipStatus,
   ScholarshipUserApplication,
-} from '../types/api'
+} from '../types/scholarships'
 
 interface ScholarshipTechnologyApi {
   id: string
@@ -16,6 +20,29 @@ interface ScholarshipUserApplicationApi {
   applied: boolean
   application_id: string | null
   status: ScholarshipApplicationStatus | null
+}
+
+interface ScholarshipLinkApi {
+  id: string
+  label: string
+  url: string
+  display_order: number
+}
+
+interface ScholarshipRequirementApi {
+  id: string
+  title: string
+  description: string
+  display_order: number
+}
+
+interface ScholarshipPhaseApi {
+  id: string
+  title: string | null
+  start_date: string
+  end_date: string
+  type: ScholarshipPhaseType
+  display_order: number
 }
 
 interface ScholarshipApi {
@@ -30,6 +57,9 @@ interface ScholarshipApi {
   minimum_ira: number | string
   published_by: string
   status: ScholarshipStatus
+  phases?: ScholarshipPhaseApi[]
+  links?: ScholarshipLinkApi[]
+  requirements?: ScholarshipRequirementApi[]
   technologies?: ScholarshipTechnologyApi[]
   user_application?: ScholarshipUserApplicationApi | null
   registration_end?: string | null
@@ -50,7 +80,8 @@ type ScholarshipListApiResponse =
   | PaginatedResponse<ScholarshipApi>
 
 export interface ScholarshipListParams {
-  ordering?: 'created_at' | '-created_at' | 'registration_end' | '-registration_end'
+  ordering?:
+    'created_at' | '-created_at' | 'registration_end' | '-registration_end'
   page?: number
   pageSize?: number
   status?: ScholarshipStatus
@@ -103,7 +134,51 @@ function toUserApplication(
   }
 }
 
+function toLink(link: ScholarshipLinkApi): ScholarshipLink {
+  return {
+    id: link.id,
+    label: link.label,
+    url: link.url,
+    displayOrder: link.display_order,
+  }
+}
+
+function toRequirement(
+  requirement: ScholarshipRequirementApi,
+): ScholarshipRequirement {
+  return {
+    id: requirement.id,
+    title: requirement.title,
+    description: requirement.description,
+    displayOrder: requirement.display_order,
+  }
+}
+
+function toPhase(phase: ScholarshipPhaseApi): ScholarshipPhase {
+  return {
+    id: phase.id,
+    title: phase.title,
+    startDate: phase.start_date,
+    endDate: phase.end_date,
+    type: phase.type,
+    displayOrder: phase.display_order,
+  }
+}
+
+function getRegistrationEnd(
+  registrationEnd: string | null | undefined,
+  phases: ScholarshipPhase[],
+) {
+  if (registrationEnd) {
+    return registrationEnd
+  }
+
+  return phases.find((phase) => phase.type === 'Registration')?.endDate ?? null
+}
+
 function toScholarship(scholarship: ScholarshipApi): Scholarship {
+  const phases = (scholarship.phases ?? []).map(toPhase)
+
   return {
     id: scholarship.id,
     title: scholarship.title,
@@ -116,9 +191,12 @@ function toScholarship(scholarship: ScholarshipApi): Scholarship {
     minimumIra: toNumber(scholarship.minimum_ira),
     publishedBy: scholarship.published_by,
     status: scholarship.status,
+    phases,
+    links: (scholarship.links ?? []).map(toLink),
+    requirements: (scholarship.requirements ?? []).map(toRequirement),
     technologies: scholarship.technologies ?? [],
     userApplication: toUserApplication(scholarship.user_application),
-    registrationEnd: scholarship.registration_end ?? null,
+    registrationEnd: getRegistrationEnd(scholarship.registration_end, phases),
     createdAt: scholarship.created_at,
     updatedAt: scholarship.updated_at,
   }
@@ -180,7 +258,9 @@ function normalizeListResponse(
   }
 }
 
-function toApplication(application: ScholarshipApplicationApi): ScholarshipApplication {
+function toApplication(
+  application: ScholarshipApplicationApi,
+): ScholarshipApplication {
   return {
     id: application.id,
     scholarship: application.scholarship,
@@ -220,11 +300,31 @@ export async function listScholarships({
   return normalizeListResponse(data, page, pageSize)
 }
 
+export async function getScholarship(
+  scholarshipId: string,
+): Promise<Scholarship> {
+  const { data } = await api.get<ScholarshipApi>(
+    `scholarship/scholarships/${scholarshipId}/`,
+  )
+
+  return toScholarship(data)
+}
+
 export async function applyToScholarship(
   scholarshipId: string,
 ): Promise<ScholarshipApplication> {
   const { data } = await api.post<ScholarshipApplicationApi>(
     `scholarship/scholarships/${scholarshipId}/apply/`,
+  )
+
+  return toApplication(data)
+}
+
+export async function cancelScholarshipApplication(
+  scholarshipId: string,
+): Promise<ScholarshipApplication> {
+  const { data } = await api.patch<ScholarshipApplicationApi>(
+    `scholarship/scholarships/${scholarshipId}/cancel/`,
   )
 
   return toApplication(data)
