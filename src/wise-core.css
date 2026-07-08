@@ -359,7 +359,14 @@
 .content-scroll {
   flex: 1;
   min-height: 0;
+  -ms-overflow-style: none;
   overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.content-scroll::-webkit-scrollbar {
+  height: 0;
+  width: 0;
 }
 
 .shell-pad .route-status {
