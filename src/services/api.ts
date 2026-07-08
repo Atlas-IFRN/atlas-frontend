@@ -1,4 +1,4 @@
-import axios, { type AxiosError } from 'axios'
+import axios, { type AxiosError, type AxiosInstance } from 'axios'
 
 interface ApiAuthHandlers {
   getAccessToken: () => string | null
@@ -22,12 +22,6 @@ export function setApiAuthHandlers(handlers: ApiAuthHandlers) {
   }
 }
 
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  xsrfCookieName: 'csrftoken',
-  xsrfHeaderName: 'X-CSRFToken',
-})
-
 function getCookieValue(name: string) {
   if (typeof document === 'undefined') {
     return null
@@ -40,30 +34,46 @@ function getCookieValue(name: string) {
   return cookie ? decodeURIComponent(cookie.split('=').slice(1).join('=')) : null
 }
 
-api.interceptors.request.use((config) => {
-  const token = authHandlers.getAccessToken()
-  const csrfToken = getCookieValue('csrftoken')
+function applyApiInterceptors(client: AxiosInstance) {
+  client.interceptors.request.use((config) => {
+    const token = authHandlers.getAccessToken()
+    const csrfToken = getCookieValue('csrftoken')
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-
-  if (csrfToken) {
-    config.headers['X-CSRFToken'] = csrfToken
-  }
-
-  return config
-})
-
-api.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      authHandlers.onUnauthorized()
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
     }
 
-    return Promise.reject(error)
-  },
-)
+    if (csrfToken) {
+      config.headers['X-CSRFToken'] = csrfToken
+    }
+
+    return config
+  })
+
+  client.interceptors.response.use(
+    (response) => response,
+    (error: AxiosError) => {
+      if (error.response?.status === 401) {
+        authHandlers.onUnauthorized()
+      }
+
+      return Promise.reject(error)
+    },
+  )
+
+  return client
+}
+
+export function createApiClient(baseURL: string) {
+  return applyApiInterceptors(
+    axios.create({
+      baseURL,
+      xsrfCookieName: 'csrftoken',
+      xsrfHeaderName: 'X-CSRFToken',
+    }),
+  )
+}
+
+export const api = createApiClient(import.meta.env.VITE_API_URL)
 
 export default api
