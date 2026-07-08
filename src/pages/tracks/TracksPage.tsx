@@ -22,8 +22,6 @@ export default function TracksPage() {
   )
 
   useEffect(() => {
-    document.title = 'ATLAS · Trilhas'
-
     const description =
       'Catálogo de trilhas do ATLAS com percursos por área tecnológica, progresso, busca e filtros.'
     let metaDescription = document.querySelector<HTMLMetaElement>(
