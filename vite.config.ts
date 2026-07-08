@@ -1,12 +1,23 @@
 import { defineConfig } from 'vite'
+import type { ProxyOptions } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
-const proxyToLocalService = (port: number) => ({
-  target: `http://localhost:${port}`,
-  changeOrigin: true,
-  secure: false,
-})
+const proxyToLocalService = (port: number): ProxyOptions => {
+  const target = `http://localhost:${port}`
+
+  return {
+    target,
+    changeOrigin: true,
+    secure: false,
+    configure: (proxy) => {
+      proxy.on('proxyReq', (proxyReq) => {
+        proxyReq.setHeader('origin', target)
+        proxyReq.setHeader('referer', `${target}/`)
+      })
+    },
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig({

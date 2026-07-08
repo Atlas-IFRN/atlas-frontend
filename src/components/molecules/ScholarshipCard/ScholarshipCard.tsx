@@ -9,7 +9,7 @@ import {
   type TechIconName,
   type TechTagCategory,
 } from '../../atoms/TechTag'
-import type { Scholarship, ScholarshipStatus } from '../../../types/api'
+import type { Scholarship, ScholarshipStatus } from '../../../types/scholarships'
 import './ScholarshipCard.css'
 
 export interface ScholarshipCardProps {
