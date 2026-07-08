@@ -1,28 +1,12 @@
+import type { Trail, TrailAreaLabel, TrailTheme } from '../../components/trilhas'
+
 export const TRAIL_AREAS = [
   { label: 'Backend', value: 'backend' },
   { label: 'Frontend', value: 'frontend' },
   { label: 'Inteligência Artificial', value: 'ai' },
   { label: 'CI/CD', value: 'cicd' },
   { label: 'DevOps', value: 'devops' },
-] as const
-
-export type TrailArea = (typeof TRAIL_AREAS)[number]
-export type TrailTheme = TrailArea['value']
-export type TrailAreaLabel = TrailArea['label']
-
-export interface Trail {
-  id: string
-  title: string
-  area: TrailAreaLabel
-  theme: TrailTheme
-  enrolled: boolean
-  isNew: boolean
-  progress: number | null
-  modules: number
-  hours: number
-  skills: string[]
-  description: string
-}
+] as const satisfies ReadonlyArray<{ label: TrailAreaLabel; value: TrailTheme }>
 
 export const TRILHAS: Trail[] = [
   {
