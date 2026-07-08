@@ -14,6 +14,7 @@ export function ProgressBar({
   value,
   label,
   className,
+  'aria-label': ariaLabel,
   ...props
 }: ProgressBarProps) {
   const safeValue = clampProgress(value)
@@ -22,7 +23,7 @@ export function ProgressBar({
   return (
     <div
       {...props}
-      aria-label={label}
+      aria-label={label ?? ariaLabel}
       aria-valuemax={100}
       aria-valuemin={0}
       aria-valuenow={safeValue}
