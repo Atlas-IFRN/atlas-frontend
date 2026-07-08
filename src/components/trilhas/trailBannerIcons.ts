@@ -13,7 +13,7 @@ type TrailBannerIconProps = ComponentProps<typeof Braces> & {
 }
 
 function assertNeverTheme(theme: never): never {
-  throw new Error(`Tema de trilha sem icone configurado: ${theme}`)
+  throw new Error(`Tema de trilha sem ícone configurado: ${theme}`)
 }
 
 export function TrailBannerIcon({ theme, ...props }: TrailBannerIconProps) {
