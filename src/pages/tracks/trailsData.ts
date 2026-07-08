@@ -8,8 +8,39 @@ export const TRAIL_AREAS = [
   { label: 'DevOps', value: 'devops' },
 ] as const satisfies ReadonlyArray<{ label: TrailAreaLabel; value: TrailTheme }>
 
+type TrailMock = Omit<
+  Trail,
+  | 'durationLabel'
+  | 'longDescription'
+  | 'outcomes'
+  | 'prerequisites'
+  | 'teacher'
+  | 'evaluation'
+  | 'modulesList'
+>
+
+const defaultTeacher = {
+  name: 'Professor orientador',
+  initials: 'PO',
+  area: 'ATLAS',
+  bio: 'Dados do professor serão exibidos pelo serviço de autenticação quando disponíveis.',
+}
+
+function withTrailDefaults(trail: TrailMock): Trail {
+  return {
+    ...trail,
+    durationLabel: `${Math.max(1, Math.ceil(trail.hours / 10))} semanas`,
+    longDescription: [trail.description],
+    outcomes: [],
+    prerequisites: [],
+    teacher: defaultTeacher,
+    evaluation: null,
+    modulesList: [],
+  }
+}
+
 export const TRILHAS: Trail[] = [
-  {
+  withTrailDefaults({
     id: 'desenvolvimento-backend',
     title: 'Desenvolvimento Backend',
     area: 'Backend',
@@ -22,8 +53,8 @@ export const TRILHAS: Trail[] = [
     skills: ['Python', 'FastAPI', 'PostgreSQL', 'REST', 'Docker'],
     description:
       'Domine APIs robustas, modelagem de dados, autenticação e arquitetura em produção com Python. Esta trilha conduz o aluno do zero até a entrega de serviços completos, prontos para serem avaliados por IA e usados como prova de competência no Banco de Talentos do NADIC.',
-  },
-  {
+  }),
+  withTrailDefaults({
     id: 'desenvolvimento-frontend',
     title: 'Desenvolvimento Frontend',
     area: 'Frontend',
@@ -36,8 +67,8 @@ export const TRILHAS: Trail[] = [
     skills: ['HTML/CSS', 'JavaScript', 'React', 'TypeScript', 'Vite'],
     description:
       'Do HTML semântico ao React avançado: componentização, estado, testes e acessibilidade. Você sai capaz de entregar interfaces profissionais, com qualidade técnica validada automaticamente pelo ATLAS.',
-  },
-  {
+  }),
+  withTrailDefaults({
     id: 'inteligencia-artificial-ml',
     title: 'Inteligência Artificial & ML',
     area: 'Inteligência Artificial',
@@ -50,8 +81,8 @@ export const TRILHAS: Trail[] = [
     skills: ['Python', 'Scikit-learn', 'PyTorch', 'LLMs', 'NLP'],
     description:
       'Fundamentos de ML, redes neurais e LLMs aplicados a problemas reais. A trilha combina teoria matemática e prática com datasets do próprio NADIC, preparando o aluno para projetos de pesquisa.',
-  },
-  {
+  }),
+  withTrailDefaults({
     id: 'cicd-entrega-continua',
     title: 'CI/CD & Entrega Contínua',
     area: 'CI/CD',
@@ -64,8 +95,8 @@ export const TRILHAS: Trail[] = [
     skills: ['GitHub Actions', 'Jenkins', 'SonarQube'],
     description:
       'Pipelines de integração, testes automatizados e estratégias de deploy seguro. Aprenda a entregar software com confiança e rastreabilidade em equipes reais.',
-  },
-  {
+  }),
+  withTrailDefaults({
     id: 'devops-cloud',
     title: 'DevOps & Cloud',
     area: 'DevOps',
@@ -78,5 +109,5 @@ export const TRILHAS: Trail[] = [
     skills: ['Linux', 'Docker', 'Kubernetes', 'Terraform', 'AWS'],
     description:
       'Infraestrutura como código, observabilidade e cultura DevOps em sistemas críticos. Trilha voltada para alunos que querem atuar com plataformas em nuvem e operar sistemas em produção.',
-  },
+  }),
 ]
