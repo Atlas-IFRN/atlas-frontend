@@ -15,7 +15,7 @@ export interface ErrorStateProps extends HTMLAttributes<HTMLElement> {
 
 export function ErrorState({
   icon: Icon = AlertCircle,
-  title = 'Nao foi possivel carregar os dados',
+  title = 'Não foi possível carregar os dados',
   message,
   technicalDetail,
   retryLabel = 'Tentar novamente',

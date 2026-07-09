@@ -85,6 +85,22 @@
   color: var(--text-faint);
 }
 
+.atlas-scholarship-card__status[data-status='Enrolled'] {
+  color: var(--amber);
+}
+
+.atlas-scholarship-card__status[data-status='Approved'] {
+  color: var(--teal);
+}
+
+.atlas-scholarship-card__status[data-status='Rejected'] {
+  color: #ff7b7b;
+}
+
+.atlas-scholarship-card__status[data-status='Cancelled'] {
+  color: var(--text-faint);
+}
+
 .atlas-scholarship-card__deadline {
   flex: 0 0 auto;
   font-weight: 500;

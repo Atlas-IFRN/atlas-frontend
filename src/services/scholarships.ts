@@ -162,6 +162,29 @@ interface ScholarshipApplicationApi {
   updated_at: string
 }
 
+type ScholarshipApplicationListApiResponse =
+  ApiListResponse<ScholarshipApplicationApi>
+
+export interface ScholarshipApplicationListParams {
+  ordering?:
+    | 'status'
+    | '-status'
+    | 'applied_at'
+    | '-applied_at'
+    | 'updated_at'
+    | '-updated_at'
+  page?: number
+  pageSize?: number
+}
+
+export interface ScholarshipApplicationListResult {
+  items: ScholarshipApplication[]
+  page: number
+  pageSize: number
+  total: number
+  totalPages: number
+}
+
 function toNumber(value: number | string): number {
   const numberValue = Number(value)
 
@@ -333,6 +356,50 @@ function normalizeTechnologyListResponse(
   return []
 }
 
+function normalizeApplicationListResponse(
+  response: ScholarshipApplicationListApiResponse,
+  page: number,
+  pageSize: number,
+): ScholarshipApplicationListResult {
+  if (Array.isArray(response)) {
+    return {
+      items: response.map(toApplication),
+      page,
+      pageSize,
+      total: response.length,
+      totalPages: 1,
+    }
+  }
+
+  if (isDrfResponse(response)) {
+    return {
+      items: response.results.map(toApplication),
+      page,
+      pageSize,
+      total: response.count,
+      totalPages: Math.max(1, Math.ceil(response.count / pageSize)),
+    }
+  }
+
+  if (isAtlasPaginatedResponse(response)) {
+    return {
+      items: response.data.map(toApplication),
+      page: response.page,
+      pageSize: response.pageSize,
+      total: response.total,
+      totalPages: response.totalPages,
+    }
+  }
+
+  return {
+    items: [],
+    page,
+    pageSize,
+    total: 0,
+    totalPages: 1,
+  }
+}
+
 function toCreateScholarshipPayload(
   scholarship: CreateScholarshipInput,
 ): CreateScholarshipPayload {
@@ -439,6 +506,25 @@ export async function listScholarshipTechnologies(): Promise<
   )
 
   return normalizeTechnologyListResponse(data)
+}
+
+export async function listScholarshipApplications({
+  ordering = '-applied_at',
+  page = 1,
+  pageSize = 50,
+}: ScholarshipApplicationListParams = {}): Promise<ScholarshipApplicationListResult> {
+  const { data } = await api.get<ScholarshipApplicationListApiResponse>(
+    'scholarship/applications/',
+    {
+      params: {
+        ordering,
+        page,
+        page_size: pageSize,
+      },
+    },
+  )
+
+  return normalizeApplicationListResponse(data, page, pageSize)
 }
 
 export async function applyToScholarship(
