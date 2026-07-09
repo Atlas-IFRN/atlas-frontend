@@ -1,0 +1,39 @@
+.progress {
+  color: var(--text-soft);
+  display: grid;
+  gap: var(--s-2);
+  inline-size: 100%;
+}
+
+.progress__header {
+  align-items: center;
+  display: flex;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  justify-content: space-between;
+  line-height: var(--line-height-xs);
+}
+
+.progress__value {
+  color: var(--text);
+}
+
+.progress__track {
+  background: color-mix(in srgb, var(--text-faint) 28%, var(--surface));
+  border-radius: var(--r-pill);
+  display: block;
+  block-size: 7px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    color-mix(in srgb, var(--primary) 70%, var(--success))
+  );
+  border-radius: inherit;
+  display: block;
+  block-size: 100%;
+  min-inline-size: 0;
+}

@@ -41,6 +41,20 @@
   --text-tag-color: var(--text-muted);
 }
 
+.atlas-text-tag--dot {
+  gap: var(--s-2);
+}
+
+.atlas-text-tag--dot::before {
+  background: currentColor;
+  border-radius: var(--r-pill);
+  content: '';
+  display: block;
+  flex: 0 0 auto;
+  block-size: 6px;
+  inline-size: 6px;
+}
+
 .atlas-text-tag--sm {
   --text-tag-height: 30px;
   --text-tag-padding-x: 12px;
