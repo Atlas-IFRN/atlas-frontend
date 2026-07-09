@@ -213,16 +213,6 @@ export default function ScholarshipsPage() {
           >
             Criar bolsa
           </Button>
-        ) : isStudent ? (
-          <Button
-            className="scholarships-page__create-button"
-            iconLeft={ClipboardList}
-            onClick={() => navigate('/bolsas/minhas-candidaturas')}
-            size="lg"
-            variant="outline"
-          >
-            Minhas candidaturas
-          </Button>
         ) : null}
       </header>
 

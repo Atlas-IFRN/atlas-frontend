@@ -172,16 +172,6 @@ export default function MyApplicationsPage() {
             de cada processo seletivo.
           </p>
         </div>
-
-        <Button
-          className="scholarships-page__create-button"
-          iconLeft={Briefcase}
-          onClick={() => navigate('/bolsas')}
-          size="lg"
-          variant="outline"
-        >
-          Ver bolsas
-        </Button>
       </header>
 
       <div className="scholarships-page__toolbar">

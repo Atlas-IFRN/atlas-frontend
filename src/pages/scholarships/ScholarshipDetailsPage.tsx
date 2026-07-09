@@ -1125,7 +1125,7 @@ function getApplyLabel(
     }
 
     if (application.status === 'Rejected') {
-      return 'Candidatura não selecionada'
+      return 'Candidatura reprovada'
     }
 
     return 'Candidatura enviada'
