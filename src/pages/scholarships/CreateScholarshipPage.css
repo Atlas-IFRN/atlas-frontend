@@ -391,8 +391,12 @@
 }
 
 .scholarship-create-tech-picker button[aria-pressed='true'] {
-  border-color: color-mix(in srgb, var(--primary) 68%, transparent);
+  border-color: transparent;
   opacity: 1;
+}
+
+.scholarship-create-tech-picker .atlas-tech-tag--solid {
+  box-shadow: none;
 }
 
 .scholarship-create-tech-picker button:focus-visible {

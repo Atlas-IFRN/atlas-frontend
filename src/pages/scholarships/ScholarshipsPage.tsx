@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import {
   Circle,
-  ClipboardList,
   PackageOpen,
   Plus,
   Search,
@@ -74,12 +73,6 @@ function isTeacherRole(role: string | undefined) {
   return normalizedRole === 'teacher' || normalizedRole === 'professor'
 }
 
-function isStudentRole(role: string | undefined) {
-  const normalizedRole = role?.trim().toLowerCase()
-
-  return normalizedRole === 'student' || normalizedRole === 'aluno'
-}
-
 function matchesFilter(
   scholarship: Scholarship,
   filter: ScholarshipFilter,
@@ -140,7 +133,6 @@ export default function ScholarshipsPage() {
   const [search, setSearch] = useState('')
   const [selectedFilter, setSelectedFilter] = useState<ScholarshipFilter>('all')
   const isTeacher = isTeacherRole(user?.role)
-  const isStudent = isStudentRole(user?.role)
 
   const scholarshipsQuery = useQuery({
     queryKey: ['scholarships', 'list'],

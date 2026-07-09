@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import { Briefcase, Circle, ClipboardList, Search } from 'lucide-react'
+import { Circle, ClipboardList, Search } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { Button } from '../../../components/atoms/Button'
 import { FilterTag } from '../../../components/atoms/FilterTag'
 import { ScholarshipCard } from '../../../components/molecules/ScholarshipCard'
 import {
