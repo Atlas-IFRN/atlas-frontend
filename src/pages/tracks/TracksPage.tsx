@@ -12,16 +12,21 @@ import {
   TrailsToolbar,
   type TrailFilter,
 } from '../../components/trilhas'
-import { TRILHAS } from './trailsData'
+import { useTracks } from '../../hooks/useTracks'
 
 export default function TracksPage() {
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<TrailFilter>('all')
-  const [loadState, setLoadState] = useState<'loading' | 'error' | 'ready'>(
-    'ready',
-  )
+  const {
+    data: trails = [],
+    isError,
+    isLoading,
+    refetch,
+  } = useTracks()
 
   useEffect(() => {
+    document.title = 'ATLAS · Trilhas'
+
     const description =
       'Catálogo de trilhas do ATLAS com percursos por área tecnológica, progresso, busca e filtros.'
     let metaDescription = document.querySelector<HTMLMetaElement>(
@@ -40,7 +45,7 @@ export default function TracksPage() {
   const filteredTrails = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase('pt-BR')
 
-    return TRILHAS.filter((trail) => {
+    return trails.filter((trail) => {
       const matchesFilter =
         filter === 'all' ||
         (filter === 'enrolled' && trail.enrolled) ||
@@ -65,15 +70,15 @@ export default function TracksPage() {
 
       return searchableText.includes(normalizedQuery)
     })
-  }, [filter, query])
+  }, [filter, query, trails])
 
   const stats = useMemo(
     () => ({
-      activeTrails: TRILHAS.length,
+      activeTrails: trails.length,
       certificates: 4,
       scholarships: 8,
     }),
-    [],
+    [trails.length],
   )
 
   function handleClearSearch() {
@@ -82,7 +87,7 @@ export default function TracksPage() {
   }
 
   function handleRetry() {
-    setLoadState('ready')
+    void refetch()
   }
 
   return (
@@ -96,13 +101,13 @@ export default function TracksPage() {
         query={query}
       />
 
-      {loadState === 'loading' ? (
+      {isLoading ? (
         <LoadingState
           message="Carregando trilhas..."
           skeletonCount={6}
           variant="skeleton"
         />
-      ) : loadState === 'error' ? (
+      ) : isError ? (
         <ErrorState
           message="Não foi possível carregar o catálogo de trilhas agora."
           onRetry={handleRetry}
