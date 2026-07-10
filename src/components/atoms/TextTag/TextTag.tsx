@@ -9,6 +9,7 @@ export interface TextTagProps extends HTMLAttributes<HTMLSpanElement> {
   children: ReactNode
   size?: TextTagSize
   variant?: TextTagVariant
+  withDot?: boolean
 }
 
 export const TextTag = forwardRef<HTMLSpanElement, TextTagProps>(
@@ -17,6 +18,7 @@ export const TextTag = forwardRef<HTMLSpanElement, TextTagProps>(
       children,
       size = 'md',
       variant = 'default',
+      withDot = false,
       className,
       ...props
     },
@@ -26,6 +28,7 @@ export const TextTag = forwardRef<HTMLSpanElement, TextTagProps>(
       'atlas-text-tag',
       `atlas-text-tag--${variant}`,
       `atlas-text-tag--${size}`,
+      withDot ? 'atlas-text-tag--dot' : undefined,
       className,
     ]
       .filter(Boolean)

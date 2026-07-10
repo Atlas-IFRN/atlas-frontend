@@ -1,5 +1,6 @@
-import { RoutePage } from '../RoutePage'
+import { ScholarshipFormPage } from '../../components/scholarships'
+import '../../components/scholarships/form/ScholarshipFormPage.css'
 
 export default function CreateScholarshipPage() {
-  return <RoutePage title="Criar bolsa" />
+  return <ScholarshipFormPage mode="create" />
 }

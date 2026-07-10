@@ -42,6 +42,26 @@ import { TextTag } from '../../components/atoms/TextTag'
 import { InfoCard } from '../../components/molecules/InfoCard'
 import { UserChip } from '../../components/molecules/UserChip'
 import { EmptyState, ErrorState, LoadingState } from '../../components/states'
+import {
+  ActiveScholarships,
+  Comment,
+  CommentComposer,
+  FeedFilters,
+  FeedHero,
+  PostCard,
+  PostComposer,
+  RailTrackList,
+  SegmentedProgress,
+  SystemPost,
+  type ActiveScholarship,
+  type FeedFilter,
+  type FeedHeroSlide,
+  type FeedPost,
+  type FeedTrackProgress,
+  type PostComment,
+  type SystemPostData,
+} from '../../components/feed'
+import '../../components/feed/Feed.css'
 import './ComponentsDemoPage.css'
 
 const badgeStatuses = [
@@ -267,12 +287,192 @@ function renderTechIcon(icon?: TechIconName) {
   return icon ? <TechIcon name={icon} /> : undefined
 }
 
+const feedHeroSlides: FeedHeroSlide[] = [
+  {
+    id: 'demo-welcome',
+    eyebrow: 'sexta-feira, 10 de julho de 2026',
+    title: 'Olá, Maria.',
+    titleAccent: 'Sua jornada continua hoje.',
+    description:
+      'Você tem 2 trilhas em andamento e 3 bolsas com prazo próximo.',
+    actions: [
+      { label: 'Continuar trilha', href: '/trilhas', variant: 'primary' },
+      { label: 'Ver bolsas', href: '/bolsas', variant: 'soft' },
+    ],
+  },
+  {
+    id: 'demo-etal',
+    theme: 'green',
+    eyebrow: 'Comunicado IFRN · Pau dos Ferros',
+    title: 'VII ETAL',
+    titleAccent: '2026',
+    description:
+      'Encontro de Tecnologia, Arte e Linguagens: 26 a 28 de novembro.',
+    actions: [
+      { label: 'Quero participar', href: '/inicio', variant: 'primary' },
+    ],
+  },
+]
+
+const feedSystemPosts: SystemPostData[] = [
+  {
+    id: 'demo-sys-1',
+    tone: 'primary',
+    label: 'Nova bolsa disponível',
+    message:
+      '<strong>PIBITI 2026.1</strong> — CI/CD com Kubernetes está com inscrições abertas.',
+    actionLabel: 'Ver edital',
+    actionHref: '/bolsas',
+    time: 'há 2h · ATLAS Sistema',
+  },
+  {
+    id: 'demo-sys-2',
+    tone: 'ifrn',
+    label: 'Comunicado IFRN',
+    message:
+      'O <strong>VII ETAL</strong> será no Campus Pau dos Ferros em novembro.',
+    actionLabel: 'Ver programação',
+    actionHref: '/inicio',
+    time: 'há 1h · IFRN',
+  },
+]
+
+const feedScholarships: ActiveScholarship[] = [
+  {
+    id: 'demo-bolsa-1',
+    title: 'PIBITI 2026.1 · CI/CD',
+    href: '/bolsas',
+    phase: 'inscricao',
+    status: 'Inscrições até 07 mai · faltam 2 dias',
+  },
+  {
+    id: 'demo-bolsa-2',
+    title: 'IoT com ML',
+    href: '/bolsas',
+    phase: 'andamento',
+    status: 'Em andamento · resultado em 12 mai',
+  },
+  {
+    id: 'demo-bolsa-3',
+    title: 'Dados Abertos',
+    href: '/bolsas',
+    phase: 'resultados',
+    status: 'Resultado publicado em 20 mai',
+  },
+]
+
+const feedTracks: FeedTrackProgress[] = [
+  {
+    id: 'demo-trilha-backend',
+    label: 'Desenvolvimento Backend',
+    href: '/trilhas',
+    modules: 18,
+    completedModules: 11,
+    currentModuleProgress: 20,
+  },
+  {
+    id: 'demo-trilha-frontend',
+    label: 'Desenvolvimento Frontend',
+    href: '/trilhas',
+    modules: 22,
+    completedModules: 8,
+    currentModuleProgress: 40,
+  },
+]
+
+const feedComment: PostComment = {
+  id: 'demo-comment',
+  author: {
+    id: 'ana',
+    name: 'Ana Pereira',
+    role: 'Frontend · 2º período',
+    avatarColor: 'pink',
+  },
+  content: 'Boa! O @maria comentou sobre isso também. Salvou demais. #fastapi',
+  time: 'há 45min',
+  likes: 4,
+  replies: [
+    {
+      id: 'demo-comment-reply',
+      author: {
+        id: 'rafael',
+        name: 'Rafael Souza',
+        role: 'Backend · 3º período',
+        avatarColor: 'blue',
+        badge: 'Autor',
+      },
+      content: 'Exatamente! Depois te mando o repositório de exemplo.',
+      time: 'há 40min',
+      likes: 1,
+    },
+  ],
+}
+
+const feedDemoPosts: FeedPost[] = [
+  {
+    id: 'demo-post-long',
+    author: {
+      id: 'rafael',
+      name: 'Rafael Souza',
+      role: 'Backend · 3º período · Trilha Backend',
+      avatarColor: 'blue',
+    },
+    time: 'há 1h',
+    content:
+      'Finalmente entendi como funciona injeção de dependências no FastAPI. A documentação é excelente, mas o que ajudou mesmo foi ver na prática.\n\nO segredo é pensar em `Depends()` como um contêiner: você declara o que a rota precisa e o framework resolve tudo, com cache por request. Isso deixa os testes bem mais simples. Se tiver dúvida sobre #fastapi ou #python, manda mensagem! @ana obrigado pela dica.',
+    variant: 'long-text',
+    embed: {
+      eyebrow: 'Trilha · Backend',
+      title: 'Injeção de Dependências com FastAPI',
+      meta: 'Módulo 12 de 18 · 62% concluído',
+      tone: 'success',
+    },
+    likes: 24,
+    liked: true,
+    shares: 3,
+    comments: [feedComment],
+  },
+  {
+    id: 'demo-post-link',
+    author: {
+      id: 'maria',
+      name: 'Maria Santos',
+      role: 'TADS · 3º período',
+      avatarColor: 'blue',
+    },
+    time: 'ontem',
+    content:
+      'Guia excelente sobre padrões de arquitetura para APIs em produção. #backend',
+    variant: 'link',
+    linkPreview: {
+      url: 'https://martinfowler.com/articles/microservices.html',
+      domain: 'martinfowler.com',
+      title: 'Microservices — a definition of this new architectural term',
+      description:
+        'Um guia sobre o estilo arquitetural de microsserviços e seus trade-offs.',
+      tone: 'blue',
+    },
+    likes: 33,
+    shares: 15,
+    comments: [],
+  },
+]
+
+const feedSegmentedExamples = [
+  { label: 'Em progresso', modules: 18, completedModules: 11, current: 20 },
+  { label: 'Concluída', modules: 8, completedModules: 8, current: 0 },
+  { label: 'Iniciando', modules: 6, completedModules: 0, current: 50 },
+]
+
+const noop = () => undefined
+
 export default function ComponentsDemoPage() {
   const navigate = useNavigate()
   const [activeFilters, setActiveFilters] = useState<string[]>([
     'backend',
     'frontend',
   ])
+  const [feedFilter, setFeedFilter] = useState<FeedFilter>('for-you')
 
   return (
     <main className="components-demo-page">
@@ -293,6 +493,9 @@ export default function ComponentsDemoPage() {
           <a href="#tech-tags">TechTags</a>
           <a href="#icon-tiles">IconTiles</a>
           <a href="#states">Estados</a>
+          <a href="#feed-highlight">Feed</a>
+          <a href="#feed-posts">Posts</a>
+          <a href="#feed-rails">Rails</a>
         </nav>
       </header>
 
@@ -673,6 +876,131 @@ export default function ComponentsDemoPage() {
             technicalDetail="GET /api/scholarships retornou 503 Service Unavailable"
             onRetry={() => undefined}
           />
+        </div>
+      </section>
+
+      <section
+        className="components-demo-panel"
+        aria-labelledby="feed-highlight"
+      >
+        <div className="components-demo-panel-heading">
+          <span>11</span>
+          <h2 id="feed-highlight">Feed · Destaque</h2>
+        </div>
+
+        <p className="components-demo-kicker">
+          FeedHero — carrossel com autoplay e tema por slide (azul / verde)
+        </p>
+
+        <FeedHero slides={feedHeroSlides} />
+      </section>
+
+      <section className="components-demo-panel" aria-labelledby="feed-compose">
+        <div className="components-demo-panel-heading">
+          <span>12</span>
+          <h2 id="feed-compose">Feed · Composer e filtros</h2>
+        </div>
+
+        <div className="components-demo-feed-stack">
+          <PostComposer currentUserName="Maria Santos" />
+          <FeedFilters active={feedFilter} onChange={setFeedFilter} />
+        </div>
+      </section>
+
+      <section className="components-demo-panel" aria-labelledby="feed-system">
+        <div className="components-demo-panel-heading">
+          <span>13</span>
+          <h2 id="feed-system">Feed · Publicações do sistema</h2>
+        </div>
+
+        <p className="components-demo-kicker">
+          SystemPost — variações primary (bolsa) e ifrn (comunicado)
+        </p>
+
+        <div className="components-demo-feed-stack">
+          {feedSystemPosts.map((post) => (
+            <SystemPost key={post.id} post={post} />
+          ))}
+        </div>
+      </section>
+
+      <section className="components-demo-panel" aria-labelledby="feed-posts">
+        <div className="components-demo-panel-heading">
+          <span>14</span>
+          <h2 id="feed-posts">Feed · Publicações</h2>
+        </div>
+
+        <p className="components-demo-kicker">
+          PostCard — compõe cabeçalho, corpo, embed/link, ações e comentários
+        </p>
+
+        <div className="components-demo-post-list">
+          {feedDemoPosts.map((post) => (
+            <PostCard
+              currentUserName="Maria Santos"
+              key={post.id}
+              post={post}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section
+        className="components-demo-panel"
+        aria-labelledby="feed-comments"
+      >
+        <div className="components-demo-panel-heading">
+          <span>15</span>
+          <h2 id="feed-comments">Feed · Comentários</h2>
+        </div>
+
+        <p className="components-demo-kicker">
+          Comment (com resposta) e CommentComposer no estilo LinkedIn
+        </p>
+
+        <div className="components-demo-post-list">
+          <Comment
+            comment={feedComment}
+            currentUserName="Maria Santos"
+            onReply={noop}
+            onToggleLike={noop}
+          />
+          <CommentComposer currentUserName="Maria Santos" onSubmit={noop} />
+        </div>
+      </section>
+
+      <section className="components-demo-panel" aria-labelledby="feed-rails">
+        <div className="components-demo-panel-heading">
+          <span>16</span>
+          <h2 id="feed-rails">Feed · Colunas laterais</h2>
+        </div>
+
+        <p className="components-demo-kicker">
+          ActiveScholarships (fases) e RailTrackList (progresso fragmentado)
+        </p>
+
+        <div className="components-demo-rails">
+          <ActiveScholarships scholarships={feedScholarships} />
+          <RailTrackList tracks={feedTracks} />
+        </div>
+
+        <p className="components-demo-kicker components-demo-kicker-spaced">
+          SegmentedProgress — um segmento por módulo
+        </p>
+
+        <div className="components-demo-segmented">
+          {feedSegmentedExamples.map((example) => (
+            <div key={example.label}>
+              <span className="components-demo-segmented__label">
+                {example.label}
+              </span>
+              <SegmentedProgress
+                completedModules={example.completedModules}
+                currentModuleProgress={example.current}
+                modules={example.modules}
+              />
+            </div>
+          ))}
         </div>
       </section>
     </main>

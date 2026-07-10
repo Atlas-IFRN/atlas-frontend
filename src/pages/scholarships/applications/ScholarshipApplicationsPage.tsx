@@ -1,5 +1,7 @@
-import { RoutePage } from '../../RoutePage'
+import { ScholarshipApplications } from '../../../components/scholarships'
+import '../../../components/scholarships/Scholarships.css'
+import '../../../components/scholarships/applications/ScholarshipApplications.css'
 
 export default function ScholarshipApplicationsPage() {
-  return <RoutePage title="Candidatos da bolsa" />
+  return <ScholarshipApplications />
 }

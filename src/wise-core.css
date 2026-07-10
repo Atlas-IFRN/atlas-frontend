@@ -12,6 +12,7 @@
   --s-5: 20px;
   --s-6: 24px;
   --s-7: 28px;
+  --s-8: 32px;
   --r-sm: 8px;
   --r-md: 12px;
   --r-pill: 999px;
@@ -359,7 +360,14 @@
 .content-scroll {
   flex: 1;
   min-height: 0;
+  -ms-overflow-style: none;
   overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.content-scroll::-webkit-scrollbar {
+  height: 0;
+  width: 0;
 }
 
 .shell-pad .route-status {

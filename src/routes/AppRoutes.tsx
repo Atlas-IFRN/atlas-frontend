@@ -125,8 +125,12 @@ export function AppRoutes() {
 
             <Route element={<RoleRoute allowedRoles={STUDENT_ROLES} />}>
               <Route
-                path="/bolsas/candidaturas"
+                path="/bolsas/minhas-candidaturas"
                 element={<MyApplicationsPage />}
+              />
+              <Route
+                path="/bolsas/candidaturas"
+                element={<Navigate to="/bolsas/minhas-candidaturas" replace />}
               />
             </Route>
 

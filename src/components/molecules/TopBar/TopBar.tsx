@@ -1,5 +1,6 @@
-import { Bell, Menu, Search } from 'lucide-react'
+import { Bell, Menu } from 'lucide-react'
 import { Button } from '../../atoms/Button'
+import { SearchInput } from '../../atoms/SearchInput'
 import type { AvatarColor } from '../../atoms/Avatar'
 import { UserChip } from '../UserChip'
 import './TopBar.css'
@@ -52,15 +53,11 @@ export function TopBar({
         onClick={onToggleSidebar}
       />
 
-      <label className="topbar-search">
-        <Search className="topbar-search__icon" aria-hidden="true" />
-        <input
-          className="topbar-search__input"
-          type="search"
-          aria-label="Buscar"
-          placeholder={searchPlaceholder}
-        />
-      </label>
+      <SearchInput
+        aria-label="Buscar"
+        className="topbar-search"
+        placeholder={searchPlaceholder}
+      />
 
       <div className="topbar-right">
         <span className="topbar-notification-button">

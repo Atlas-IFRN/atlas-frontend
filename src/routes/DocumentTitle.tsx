@@ -10,6 +10,7 @@ const routeTitles = [
   { path: '/inicio/novo', title: 'Novo post' },
   { path: '/inicio/:postId/editar', title: 'Editar post' },
   { path: '/inicio', title: 'Início' },
+  { path: '/bolsas/minhas-candidaturas', title: 'Minhas candidaturas' },
   { path: '/bolsas/candidaturas', title: 'Minhas candidaturas' },
   { path: '/bolsas/nova', title: 'Nova bolsa' },
   { path: '/bolsas/:scholarshipId/editar', title: 'Editar bolsa' },
