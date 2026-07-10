@@ -497,6 +497,18 @@ export async function createScholarship(
   return toScholarship(data)
 }
 
+export async function updateScholarship(
+  scholarshipId: string,
+  scholarship: CreateScholarshipInput,
+): Promise<Scholarship> {
+  const { data } = await api.put<ScholarshipApi>(
+    `scholarship/scholarships/${scholarshipId}/`,
+    toCreateScholarshipPayload(scholarship),
+  )
+
+  return toScholarship(data)
+}
+
 export async function listScholarshipTechnologies(): Promise<
   ScholarshipTechnology[]
 > {

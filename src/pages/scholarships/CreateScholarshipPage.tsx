@@ -25,6 +25,7 @@ import { ScholarshipCard } from '../../components/molecules/ScholarshipCard'
 import {
   createScholarship,
   listScholarshipTechnologies,
+  updateScholarship,
 } from '../../services/scholarships'
 import type {
   CreateScholarshipInput,
@@ -35,6 +36,7 @@ import type {
 } from '../../types/scholarships'
 import './CreateScholarshipPage.css'
 
+type ScholarshipFormMode = 'create' | 'edit'
 type FormSection = 'identification' | 'details' | 'schedule' | 'publish'
 
 interface RequirementDraft {
@@ -66,7 +68,7 @@ interface ScholarshipFormState {
   vacancies: string
   minimumPeriod: string
   minimumIra: string
-  status: Extract<ScholarshipStatus, 'Draft' | 'Open'>
+  status: ScholarshipStatus
   selectedTechnologyIds: string[]
   requirements: RequirementDraft[]
   phases: PhaseDraft[]
@@ -262,6 +264,131 @@ function getStoredFormState() {
   }
 }
 
+function formatDateTimeInput(value: string) {
+  if (!value) {
+    return ''
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return value
+  }
+
+  const parsed = new Date(value)
+
+  if (Number.isNaN(parsed.getTime())) {
+    return value.slice(0, 10)
+  }
+
+  return formatDateInput(parsed)
+}
+
+function sortByDisplayOrder<T extends { displayOrder: number }>(items: T[]) {
+  return [...items].sort(
+    (current, next) => current.displayOrder - next.displayOrder,
+  )
+}
+
+function getInitialRequirements(
+  scholarship: Scholarship,
+): RequirementDraft[] {
+  const requirements = sortByDisplayOrder(scholarship.requirements).map(
+    (requirement) => ({
+      id: requirement.id,
+      title: requirement.title,
+      description: requirement.description,
+    }),
+  )
+
+  return requirements.length > 0
+    ? requirements
+    : [
+        {
+          id: createDraftId('requirement'),
+          title: '',
+          description: '',
+        },
+      ]
+}
+
+function getInitialPhases(scholarship: Scholarship): PhaseDraft[] {
+  let registrationPhaseMapped = false
+  const phases = sortByDisplayOrder(scholarship.phases).map((phase) => {
+    const isFirstRegistration =
+      phase.type === 'Registration' && !registrationPhaseMapped
+
+    if (phase.type === 'Registration') {
+      registrationPhaseMapped = true
+    }
+
+    return {
+      id: isFirstRegistration ? registrationPhaseId : phase.id,
+      title: phase.title ?? '',
+      startDate: formatDateTimeInput(phase.startDate),
+      endDate: formatDateTimeInput(phase.endDate),
+      type: phase.type,
+    }
+  })
+
+  return phases.length > 0 ? phases : getDefaultFormState().phases
+}
+
+function getInitialLinks(scholarship: Scholarship): LinkDraft[] {
+  const links = sortByDisplayOrder(scholarship.links).map((link) => ({
+    id: link.id,
+    label: link.label,
+    url: link.url,
+  }))
+
+  return links.length > 0
+    ? links
+    : [
+        {
+          id: createDraftId('link'),
+          label: '',
+          url: '',
+        },
+      ]
+}
+
+function toFormState(scholarship: Scholarship): ScholarshipFormState {
+  return {
+    title: scholarship.title,
+    description: scholarship.description,
+    activityDescription: scholarship.activityDescription,
+    valuePerMonth: String(scholarship.valuePerMonth),
+    durationInMonths: String(scholarship.durationInMonths),
+    vacancies: String(scholarship.vacancies),
+    minimumPeriod: String(scholarship.minimumPeriod),
+    minimumIra: String(scholarship.minimumIra),
+    status: scholarship.status,
+    selectedTechnologyIds: scholarship.technologies.map(
+      (technology) => technology.id,
+    ),
+    requirements: getInitialRequirements(scholarship),
+    phases: getInitialPhases(scholarship),
+    links: getInitialLinks(scholarship),
+  }
+}
+
+function mergeTechnologies(
+  technologies: ScholarshipTechnology[],
+  fallbackTechnologies: ScholarshipTechnology[],
+) {
+  const byId = new Map<string, ScholarshipTechnology>()
+
+  technologies.forEach((technology) => {
+    byId.set(technology.id, technology)
+  })
+
+  fallbackTechnologies.forEach((technology) => {
+    if (!byId.has(technology.id)) {
+      byId.set(technology.id, technology)
+    }
+  })
+
+  return Array.from(byId.values())
+}
+
 function parseLocaleNumber(value: string) {
   const parsed = Number(value.replace(',', '.'))
 
@@ -338,16 +465,19 @@ function getReadableError(detail: unknown): string | null {
   return null
 }
 
-function getErrorMessage(error: unknown) {
+function getErrorMessage(
+  error: unknown,
+  fallbackMessage = 'Não foi possível criar a bolsa.',
+) {
   if (axios.isAxiosError<ApiErrorBody>(error)) {
     return (
       getReadableError(error.response?.data?.detail) ??
       getReadableError(error.response?.data) ??
-      'Não foi possível criar a bolsa.'
+      fallbackMessage
     )
   }
 
-  return 'Não foi possível criar a bolsa.'
+  return fallbackMessage
 }
 
 function addValidationError(
@@ -417,11 +547,11 @@ function buildValidationErrors(form: ScholarshipFormState) {
     addValidationError(errors, 'minimumPeriod', 'Informe o período mínimo.')
   }
 
-  if (minimumIra < 0 || minimumIra > 10) {
+  if (minimumIra < 1 || minimumIra > 100) {
     addValidationError(
       errors,
       'minimumIra',
-      'Informe um IRA mínimo entre 0 e 10.',
+      'Informe um IRA mínimo entre 1 e 100.',
     )
   }
 
@@ -579,12 +709,25 @@ function FieldErrors({
   )
 }
 
-export default function CreateScholarshipPage() {
+interface ScholarshipFormPageProps {
+  initialScholarship?: Scholarship
+  mode?: ScholarshipFormMode
+}
+
+export function ScholarshipFormPage({
+  initialScholarship,
+  mode = 'create',
+}: ScholarshipFormPageProps) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const isEditMode = mode === 'edit'
+  const initialState =
+    isEditMode && initialScholarship
+      ? () => toFormState(initialScholarship)
+      : getStoredFormState
   const [activeSection, setActiveSection] =
     useState<FormSection>('identification')
-  const [form, setForm] = useState(getStoredFormState)
+  const [form, setForm] = useState<ScholarshipFormState>(initialState)
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
     {},
   )
@@ -598,27 +741,77 @@ export default function CreateScholarshipPage() {
     queryFn: listScholarshipTechnologies,
   })
 
-  const availableTechnologies = technologiesQuery.data ?? emptyTechnologies
+  const availableTechnologies = useMemo(
+    () =>
+      mergeTechnologies(
+        technologiesQuery.data ?? emptyTechnologies,
+        initialScholarship?.technologies ?? emptyTechnologies,
+      ),
+    [initialScholarship?.technologies, technologiesQuery.data],
+  )
   const previewScholarship = useMemo(
     () => toPreviewScholarship(form, availableTechnologies),
     [availableTechnologies, form],
   )
+  const copy = isEditMode
+    ? {
+        alertTitle: 'Não foi possível atualizar a bolsa.',
+        cancelAction: 'Sair sem salvar',
+        cancelDescription:
+          'As alterações não salvas serão descartadas e você voltará para os detalhes da bolsa.',
+        cancelTitle: 'Cancelar edição?',
+        description: 'Revise as informações do edital e salve as alterações.',
+        eyebrow: 'Editar edital',
+        formId: 'edit-scholarship-form',
+        title: 'Editar bolsa de P&D',
+      }
+    : {
+        alertTitle: 'Não foi possível criar a bolsa.',
+        cancelAction: 'Descartar e sair',
+        cancelDescription:
+          'O rascunho local desta bolsa será descartado e você voltará para a listagem.',
+        cancelTitle: 'Cancelar criação?',
+        description:
+          'Preencha as informações do edital. O rascunho é salvo automaticamente.',
+        eyebrow: 'Novo edital',
+        formId: 'create-scholarship-form',
+        title: 'Criar bolsa de P&D',
+      }
 
   useEffect(() => {
-    window.localStorage.setItem(draftStorageKey, JSON.stringify(form))
-  }, [form])
+    if (isEditMode) {
+      return
+    }
 
-  const createMutation = useMutation({
+    window.localStorage.setItem(draftStorageKey, JSON.stringify(form))
+  }, [form, isEditMode])
+
+  const submissionMutation = useMutation({
     mutationFn: async (submission: ScholarshipFormState) => {
       const payload = toCreatePayload(
         submission,
         submission.selectedTechnologyIds,
       )
 
+      if (isEditMode) {
+        if (!initialScholarship) {
+          throw new Error('Bolsa não informada.')
+        }
+
+        return updateScholarship(initialScholarship.id, payload)
+      }
+
       return createScholarship(payload)
     },
     onSuccess: (scholarship) => {
-      window.localStorage.removeItem(draftStorageKey)
+      if (!isEditMode) {
+        window.localStorage.removeItem(draftStorageKey)
+      }
+
+      queryClient.setQueryData(
+        ['scholarships', 'detail', scholarship.id],
+        scholarship,
+      )
       queryClient.invalidateQueries({ queryKey: ['scholarships'] })
       navigate(`/bolsas/${scholarship.id}`)
     },
@@ -801,6 +994,13 @@ export default function CreateScholarshipPage() {
   }
 
   function handleConfirmCancel() {
+    if (isEditMode) {
+      navigate(
+        initialScholarship ? `/bolsas/${initialScholarship.id}` : '/bolsas',
+      )
+      return
+    }
+
     window.localStorage.removeItem(draftStorageKey)
     navigate('/bolsas')
   }
@@ -820,7 +1020,7 @@ export default function CreateScholarshipPage() {
 
     setForm(submission)
     setPendingStatus(status)
-    createMutation.mutate(submission)
+    submissionMutation.mutate(submission)
   }
 
   function handleNumberChange(
@@ -839,14 +1039,14 @@ export default function CreateScholarshipPage() {
     <section className="scholarship-create-page">
       <form
         className="scholarship-create"
-        id="create-scholarship-form"
+        id={copy.formId}
         onSubmit={handleSubmit}
       >
         <header className="scholarship-create__header">
           <div>
-            <span className="scholarship-create__eyebrow">Novo edital</span>
-            <h1>Criar bolsa de P&amp;D</h1>
-            <p>Preencha as informações do edital. O rascunho é salvo automaticamente.</p>
+            <span className="scholarship-create__eyebrow">{copy.eyebrow}</span>
+            <h1>{copy.title}</h1>
+            <p>{copy.description}</p>
           </div>
         </header>
 
@@ -866,10 +1066,12 @@ export default function CreateScholarshipPage() {
           ))}
         </nav>
 
-        {createMutation.isError ? (
+        {submissionMutation.isError ? (
           <section className="scholarship-create-alert" role="alert">
-            <strong>Não foi possível criar a bolsa.</strong>
-            <p>{getErrorMessage(createMutation.error)}</p>
+            <strong>{copy.alertTitle}</strong>
+            <p>
+              {getErrorMessage(submissionMutation.error, copy.alertTitle)}
+            </p>
           </section>
         ) : null}
 
@@ -1030,12 +1232,12 @@ export default function CreateScholarshipPage() {
                 <label className="scholarship-create-field">
                   <span>IRA mínimo *</span>
                   <input
-                    max="10"
-                    min="0"
+                    max="100"
+                    min="1"
                     onChange={(event) =>
                       handleNumberChange(event, 'minimumIra')
                     }
-                    step="0.1"
+                    step="0.01"
                     type="number"
                     value={form.minimumIra}
                   />
@@ -1318,25 +1520,57 @@ export default function CreateScholarshipPage() {
                   >
                     Cancelar
                   </Button>
-                  <Button
-                    disabled={createMutation.isPending}
-                    loading={
-                      createMutation.isPending && pendingStatus === 'Draft'
-                    }
-                    onClick={() => submitScholarship('Draft')}
-                    variant="outline"
-                  >
-                    Salvar rascunho
-                  </Button>
-                  <Button
-                    disabled={createMutation.isPending}
-                    loading={
-                      createMutation.isPending && pendingStatus === 'Open'
-                    }
-                    onClick={() => submitScholarship('Open')}
-                  >
-                    Publicar
-                  </Button>
+                  {isEditMode ? (
+                    <>
+                      <Button
+                        disabled={submissionMutation.isPending}
+                        loading={
+                          submissionMutation.isPending &&
+                          pendingStatus === form.status
+                        }
+                        onClick={() => submitScholarship(form.status)}
+                        variant="outline"
+                      >
+                        Salvar alterações
+                      </Button>
+                      {form.status === 'Draft' ? (
+                        <Button
+                          disabled={submissionMutation.isPending}
+                          loading={
+                            submissionMutation.isPending &&
+                            pendingStatus === 'Open'
+                          }
+                          onClick={() => submitScholarship('Open')}
+                        >
+                          Publicar
+                        </Button>
+                      ) : null}
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        disabled={submissionMutation.isPending}
+                        loading={
+                          submissionMutation.isPending &&
+                          pendingStatus === 'Draft'
+                        }
+                        onClick={() => submitScholarship('Draft')}
+                        variant="outline"
+                      >
+                        Salvar rascunho
+                      </Button>
+                      <Button
+                        disabled={submissionMutation.isPending}
+                        loading={
+                          submissionMutation.isPending &&
+                          pendingStatus === 'Open'
+                        }
+                        onClick={() => submitScholarship('Open')}
+                      >
+                        Publicar
+                      </Button>
+                    </>
+                  )}
                 </footer>
               </div>
             </section>
@@ -1366,10 +1600,9 @@ export default function CreateScholarshipPage() {
             role="alertdialog"
           >
             <div className="scholarship-create-cancel-modal__content">
-              <h2 id="cancel-scholarship-title">Cancelar criação?</h2>
+              <h2 id="cancel-scholarship-title">{copy.cancelTitle}</h2>
               <p id="cancel-scholarship-description">
-                O rascunho local desta bolsa será descartado e você voltará para
-                a listagem.
+                {copy.cancelDescription}
               </p>
             </div>
 
@@ -1381,7 +1614,7 @@ export default function CreateScholarshipPage() {
                 Continuar editando
               </Button>
               <Button onClick={handleConfirmCancel} variant="danger">
-                Descartar e sair
+                {copy.cancelAction}
               </Button>
             </div>
           </section>
@@ -1389,6 +1622,10 @@ export default function CreateScholarshipPage() {
       ) : null}
     </section>
   )
+}
+
+export default function CreateScholarshipPage() {
+  return <ScholarshipFormPage mode="create" />
 }
 
 function toCreatePayload(

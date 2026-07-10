@@ -684,6 +684,10 @@
   box-shadow: none;
 }
 
+.scholarship-detail-edit-button {
+  box-shadow: none;
+}
+
 .scholarship-detail-apply__actions {
   display: grid;
   gap: 10px;

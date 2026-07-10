@@ -510,7 +510,7 @@ export default function ScholarshipDetailsPage() {
 
         <aside className="scholarship-detail-page__sidebar">
           <section className="scholarship-detail-panel scholarship-detail-apply">
-            <span>Bolsa mensal</span>
+            <span>Valor mensal</span>
             <strong>
               {currencyFormatter.format(scholarship.valuePerMonth)}
             </strong>
@@ -538,6 +538,7 @@ export default function ScholarshipDetailsPage() {
                   Candidaturas
                 </Button>
                 <Button
+                  className="scholarship-detail-edit-button"
                   iconLeft={Edit3}
                   onClick={() => navigate(`/bolsas/${scholarship.id}/editar`)}
                   size="lg"
