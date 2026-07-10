@@ -7,29 +7,39 @@ import type {
   TrailModule,
   TrailTeacher,
   TrailTheme,
-} from '../components/trilhas'
+  TrackLevel,
+} from '../types/tracks'
 
 interface ApiPaginatedResponse<T> {
   results?: T[]
 }
 
-interface ApiSkill {
+export interface ApiSkill {
   id: string
   name: string
-  slug: string
+  slug?: string
 }
 
-interface ApiContent {
+export interface ApiContent {
   id: string
+  module?: string
   title: string
+  description?: string
   content_type?: TrailLessonType
+  content_url?: string | null
+  instructions?: string | null
+  language?: string | null
+  evaluation_criteria?: Record<string, number>
   duration_minutes?: number | null
   display_order?: number
 }
 
-interface ApiModule {
+export interface ApiModule {
   id: string
+  track?: string
   title: string
+  description?: string
+  display_order?: number
   contents?: ApiContent[]
   contents_count?: number
 }
@@ -54,7 +64,7 @@ interface ApiEvaluation {
   }>
 }
 
-interface ApiTrack {
+export interface ApiTrack {
   id: string
   creator_id?: string
   title: string
@@ -69,11 +79,50 @@ interface ApiTrack {
   modules_count?: number
   total_duration_minutes?: number | null
   challenges_count?: number
+  status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
   user_progress?: ApiUserProgress | null
   latest_evaluation?: ApiEvaluation | null
   is_new?: boolean
   created_at?: string
 }
+
+export interface CreateTrackPayload {
+  title: string
+  description: string
+  level?: TrackLevel
+  duration_weeks?: number
+  skill_ids?: string[]
+  outcomes?: string[]
+  prerequisites?: string[]
+}
+
+export type UpdateTrackPayload = Partial<CreateTrackPayload> & {
+  status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
+}
+
+export interface CreateModulePayload {
+  track: string
+  title: string
+  description: string
+  display_order: number
+}
+
+export type UpdateModulePayload = Partial<Omit<CreateModulePayload, 'track'>>
+
+export interface CreateContentPayload {
+  module: string
+  title: string
+  description: string
+  content_type: TrailLessonType
+  content_url?: string
+  instructions?: string
+  language?: string
+  evaluation_criteria?: Record<string, number>
+  duration_minutes?: number | null
+  display_order: number
+}
+
+export type UpdateContentPayload = Partial<Omit<CreateContentPayload, 'module'>>
 
 const tracksApi = createApiClient(
   import.meta.env.VITE_TRACKS_API_URL ?? import.meta.env.VITE_API_URL,
@@ -222,7 +271,7 @@ export function mapTrackToTrail(track: ApiTrack): Trail {
   }
 }
 
-function unwrapTracksResponse(data: ApiTrack[] | ApiPaginatedResponse<ApiTrack>) {
+function unwrapPaginatedResponse<T>(data: T[] | ApiPaginatedResponse<T>) {
   if (Array.isArray(data)) {
     return data
   }
@@ -233,13 +282,112 @@ function unwrapTracksResponse(data: ApiTrack[] | ApiPaginatedResponse<ApiTrack>)
 export async function getTracks(): Promise<Trail[]> {
   const { data } = await tracksApi.get<
     ApiTrack[] | ApiPaginatedResponse<ApiTrack>
-  >('tracks/')
+  >('track/tracks/')
 
-  return unwrapTracksResponse(data).map(mapTrackToTrail)
+  return unwrapPaginatedResponse(data).map(mapTrackToTrail)
 }
 
 export async function getTrackById(trackId: string): Promise<Trail> {
-  const { data } = await tracksApi.get<ApiTrack>(`tracks/${trackId}/`)
+  const { data } = await tracksApi.get<ApiTrack>(`track/tracks/${trackId}/`)
 
   return mapTrackToTrail(data)
+}
+
+export async function getTrackDraftById(trackId: string): Promise<ApiTrack> {
+  const { data } = await tracksApi.get<ApiTrack>(`track/tracks/${trackId}/`)
+
+  return data
+}
+
+export async function createTrack(
+  payload: CreateTrackPayload,
+): Promise<ApiTrack> {
+  const { data } = await tracksApi.post<ApiTrack>('track/tracks/', payload)
+
+  return data
+}
+
+export async function updateTrack(
+  trackId: string,
+  payload: UpdateTrackPayload,
+): Promise<ApiTrack> {
+  const { data } = await tracksApi.patch<ApiTrack>(
+    `track/tracks/${trackId}/`,
+    payload,
+  )
+
+  return data
+}
+
+export async function publishTrack(trackId: string): Promise<ApiTrack> {
+  const { data } = await tracksApi.post<ApiTrack>(
+    `track/tracks/${trackId}/publish/`,
+  )
+
+  return data
+}
+
+export async function getSkills(): Promise<ApiSkill[]> {
+  const { data } = await tracksApi.get<ApiSkill[] | ApiPaginatedResponse<ApiSkill>>(
+    'track/skills/',
+  )
+
+  return unwrapPaginatedResponse(data)
+}
+
+export async function createSkill(name: string): Promise<ApiSkill> {
+  const { data } = await tracksApi.post<ApiSkill>('track/skills/', {
+    name,
+    slug: normalizeText(name).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+  })
+
+  return data
+}
+
+export async function createModule(
+  payload: CreateModulePayload,
+): Promise<ApiModule> {
+  const { data } = await tracksApi.post<ApiModule>('track/modules/', payload)
+
+  return data
+}
+
+export async function updateModule(
+  moduleId: string,
+  payload: UpdateModulePayload,
+): Promise<ApiModule> {
+  const { data } = await tracksApi.patch<ApiModule>(
+    `track/modules/${moduleId}/`,
+    payload,
+  )
+
+  return data
+}
+
+export async function deleteModule(moduleId: string): Promise<void> {
+  await tracksApi.delete(`track/modules/${moduleId}/`)
+}
+
+export async function createContent(
+  payload: CreateContentPayload,
+): Promise<ApiContent> {
+  const { data } = await tracksApi.post<ApiContent>('track/contents/', payload)
+
+  return data
+}
+
+export async function updateContent(
+  contentId: string,
+  payload: UpdateContentPayload,
+): Promise<ApiContent> {
+  const { data } = await tracksApi.patch<ApiContent>(
+    `track/contents/${contentId}/`,
+    payload,
+  )
+
+  return data
+}
+
+export async function deleteContent(contentId: string): Promise<void> {
+  await tracksApi.delete(`track/contents/${contentId}/`)
 }

@@ -1,3 +1,5 @@
+export type TrailFilter = 'all' | 'enrolled' | 'new'
+
 export type TrailTheme = 'backend' | 'frontend' | 'ai' | 'cicd' | 'devops'
 
 export type TrailAreaLabel =
@@ -7,16 +9,20 @@ export type TrailAreaLabel =
   | 'CI/CD'
   | 'DevOps'
 
-export type TrailFilter = 'all' | 'enrolled' | 'new'
-
-export type TrackLevel = 'beginner' | 'intermediate' | 'advanced'
+export type TrackLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED'
 
 export type TrailLessonType =
   | 'VIDEO'
   | 'ARTICLE'
   | 'REPOSITORY'
-  | 'CHALLENGE'
   | 'QUIZ'
+  | 'CHALLENGE'
+
+export interface TrailsStats {
+  activeTrails: number
+  certificates: number
+  scholarships: number
+}
 
 export interface TrailLesson {
   id: string
@@ -77,10 +83,4 @@ export interface Trail {
   teacher: TrailTeacher
   evaluation: TrailEvaluation | null
   modulesList: TrailModule[]
-}
-
-export interface TrailsStats {
-  activeTrails: number
-  certificates: number
-  scholarships: number
 }
