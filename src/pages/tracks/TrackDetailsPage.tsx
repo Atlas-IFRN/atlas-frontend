@@ -167,7 +167,7 @@ export default function TrackDetailsPage() {
               {trail.outcomes.length > 0 ? (
                 <TrailOutcomes outcomes={trail.outcomes} />
               ) : null}
-              <TrailEvaluationCard />
+              <TrailEvaluationCard evaluation={trail.evaluation} />
               {trail.prerequisites.length > 0 ? (
                 <TrailPrerequisites prerequisites={trail.prerequisites} />
               ) : null}
