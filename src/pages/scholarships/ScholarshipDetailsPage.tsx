@@ -250,6 +250,7 @@ export default function ScholarshipDetailsPage() {
 
         <div className="scholarship-detail-hero__body">
           <div className="scholarship-detail-hero__top">
+
             <span
               className="scholarship-detail-status"
               data-status={scholarship.status}

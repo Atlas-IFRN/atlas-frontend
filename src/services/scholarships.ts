@@ -147,15 +147,43 @@ export interface ScholarshipListResult {
 export interface ScholarshipApplication {
   id: string
   scholarship: string
+  student: ScholarshipApplicationStudent | null
   studentId: string
   status: ScholarshipApplicationStatus
   appliedAt: string
   updatedAt: string
 }
 
+export interface ScholarshipApplicationStudent {
+  id: string
+  matricula: string
+  firstName: string
+  fullName: string
+  email: string
+  role: string
+  ira: number | null
+  period: number | null
+  courseName: string
+  institutionName: string
+}
+
+interface ScholarshipApplicationStudentApi {
+  id?: string | null
+  matricula?: string | null
+  first_name?: string | null
+  full_name?: string | null
+  email?: string | null
+  role?: string | null
+  ira?: number | string | null
+  period?: number | string | null
+  course_name?: string | null
+  institution_name?: string | null
+}
+
 interface ScholarshipApplicationApi {
   id: string
   scholarship: string
+  student?: ScholarshipApplicationStudentApi | null
   student_id: string
   status: ScholarshipApplicationStatus
   applied_at: string
@@ -175,6 +203,7 @@ export interface ScholarshipApplicationListParams {
     | '-updated_at'
   page?: number
   pageSize?: number
+  scholarship?: string
 }
 
 export interface ScholarshipApplicationListResult {
@@ -189,6 +218,16 @@ function toNumber(value: number | string): number {
   const numberValue = Number(value)
 
   return Number.isFinite(numberValue) ? numberValue : 0
+}
+
+function toNullableNumber(value: number | string | null | undefined): number | null {
+  if (value === null || value === undefined || value === '') {
+    return null
+  }
+
+  const numberValue = Number(value)
+
+  return Number.isFinite(numberValue) ? numberValue : null
 }
 
 function toUserApplication(
@@ -440,10 +479,32 @@ function toApplication(
   return {
     id: application.id,
     scholarship: application.scholarship,
+    student: toApplicationStudent(application.student),
     studentId: application.student_id,
     status: application.status,
     appliedAt: application.applied_at,
     updatedAt: application.updated_at,
+  }
+}
+
+function toApplicationStudent(
+  student: ScholarshipApplicationStudentApi | null | undefined,
+): ScholarshipApplicationStudent | null {
+  if (!student) {
+    return null
+  }
+
+  return {
+    id: student.id ?? '',
+    matricula: student.matricula ?? '',
+    firstName: student.first_name ?? '',
+    fullName: student.full_name ?? student.first_name ?? '',
+    email: student.email ?? '',
+    role: student.role ?? '',
+    ira: toNullableNumber(student.ira),
+    period: toNullableNumber(student.period),
+    courseName: student.course_name ?? '',
+    institutionName: student.institution_name ?? '',
   }
 }
 
@@ -524,16 +585,21 @@ export async function listScholarshipApplications({
   ordering = '-applied_at',
   page = 1,
   pageSize = 50,
+  scholarship,
 }: ScholarshipApplicationListParams = {}): Promise<ScholarshipApplicationListResult> {
+  const params: Record<string, number | string> = {
+    ordering,
+    page,
+    page_size: pageSize,
+  }
+
+  if (scholarship) {
+    params.scholarship = scholarship
+  }
+
   const { data } = await api.get<ScholarshipApplicationListApiResponse>(
     'scholarship/applications/',
-    {
-      params: {
-        ordering,
-        page,
-        page_size: pageSize,
-      },
-    },
+    { params },
   )
 
   return normalizeApplicationListResponse(data, page, pageSize)
@@ -554,6 +620,26 @@ export async function cancelScholarshipApplication(
 ): Promise<ScholarshipApplication> {
   const { data } = await api.patch<ScholarshipApplicationApi>(
     `scholarship/scholarships/${scholarshipId}/cancel/`,
+  )
+
+  return toApplication(data)
+}
+
+export async function approveScholarshipApplication(
+  applicationId: string,
+): Promise<ScholarshipApplication> {
+  const { data } = await api.patch<ScholarshipApplicationApi>(
+    `scholarship/applications/${applicationId}/approve/`,
+  )
+
+  return toApplication(data)
+}
+
+export async function rejectScholarshipApplication(
+  applicationId: string,
+): Promise<ScholarshipApplication> {
+  const { data } = await api.patch<ScholarshipApplicationApi>(
+    `scholarship/applications/${applicationId}/reprove/`,
   )
 
   return toApplication(data)
