@@ -1,5 +1,6 @@
 import api from './api'
 import type {
+  CreateScholarshipInput,
   PaginatedResponse,
   Scholarship,
   ScholarshipApplicationStatus,
@@ -8,6 +9,7 @@ import type {
   ScholarshipPhaseType,
   ScholarshipRequirement,
   ScholarshipStatus,
+  ScholarshipTechnology,
   ScholarshipUserApplication,
 } from '../types/scholarships'
 
@@ -67,6 +69,42 @@ interface ScholarshipApi {
   updated_at: string
 }
 
+interface ScholarshipLinkPayload {
+  label: string
+  url: string
+  display_order: number
+}
+
+interface ScholarshipRequirementPayload {
+  title: string
+  description: string
+  display_order: number
+}
+
+interface ScholarshipPhasePayload {
+  title: string | null
+  start_date: string
+  end_date: string
+  type: ScholarshipPhaseType
+  display_order: number
+}
+
+interface CreateScholarshipPayload {
+  title: string
+  description: string
+  activity_description: string
+  value_per_month: number
+  duration_in_months: number
+  vacancies: number
+  minimum_period: number
+  minimum_ira: number
+  status: ScholarshipStatus
+  technologies: string[]
+  phases: ScholarshipPhasePayload[]
+  links: ScholarshipLinkPayload[]
+  requirements: ScholarshipRequirementPayload[]
+}
+
 interface DrfPaginatedResponse<T> {
   count: number
   next: string | null
@@ -78,6 +116,16 @@ type ScholarshipListApiResponse =
   | ScholarshipApi[]
   | DrfPaginatedResponse<ScholarshipApi>
   | PaginatedResponse<ScholarshipApi>
+
+type ScholarshipTechnologyApiResponse =
+  | ScholarshipTechnologyApi[]
+  | DrfPaginatedResponse<ScholarshipTechnologyApi>
+  | PaginatedResponse<ScholarshipTechnologyApi>
+
+type ApiListResponse<T> =
+  | T[]
+  | DrfPaginatedResponse<T>
+  | PaginatedResponse<T>
 
 export interface ScholarshipListParams {
   ordering?:
@@ -165,6 +213,15 @@ function toPhase(phase: ScholarshipPhaseApi): ScholarshipPhase {
   }
 }
 
+function toTechnology(
+  technology: ScholarshipTechnologyApi,
+): ScholarshipTechnology {
+  return {
+    id: technology.id,
+    name: technology.name,
+  }
+}
+
 function getRegistrationEnd(
   registrationEnd: string | null | undefined,
   phases: ScholarshipPhase[],
@@ -202,15 +259,15 @@ function toScholarship(scholarship: ScholarshipApi): Scholarship {
   }
 }
 
-function isDrfResponse(
-  response: ScholarshipListApiResponse,
-): response is DrfPaginatedResponse<ScholarshipApi> {
+function isDrfResponse<T>(
+  response: ApiListResponse<T>,
+): response is DrfPaginatedResponse<T> {
   return !Array.isArray(response) && 'results' in response
 }
 
-function isAtlasPaginatedResponse(
-  response: ScholarshipListApiResponse,
-): response is PaginatedResponse<ScholarshipApi> {
+function isAtlasPaginatedResponse<T>(
+  response: ApiListResponse<T>,
+): response is PaginatedResponse<T> {
   return !Array.isArray(response) && 'data' in response
 }
 
@@ -255,6 +312,58 @@ function normalizeListResponse(
     pageSize,
     total: 0,
     totalPages: 1,
+  }
+}
+
+function normalizeTechnologyListResponse(
+  response: ScholarshipTechnologyApiResponse,
+): ScholarshipTechnology[] {
+  if (Array.isArray(response)) {
+    return response.map(toTechnology)
+  }
+
+  if (isDrfResponse(response)) {
+    return response.results.map(toTechnology)
+  }
+
+  if (isAtlasPaginatedResponse(response)) {
+    return response.data.map(toTechnology)
+  }
+
+  return []
+}
+
+function toCreateScholarshipPayload(
+  scholarship: CreateScholarshipInput,
+): CreateScholarshipPayload {
+  return {
+    title: scholarship.title,
+    description: scholarship.description,
+    activity_description: scholarship.activityDescription,
+    value_per_month: scholarship.valuePerMonth,
+    duration_in_months: scholarship.durationInMonths,
+    vacancies: scholarship.vacancies,
+    minimum_period: scholarship.minimumPeriod,
+    minimum_ira: scholarship.minimumIra,
+    status: scholarship.status,
+    technologies: scholarship.technologyIds,
+    phases: scholarship.phases.map((phase) => ({
+      title: phase.title,
+      start_date: phase.startDate,
+      end_date: phase.endDate,
+      type: phase.type,
+      display_order: phase.displayOrder,
+    })),
+    links: scholarship.links.map((link) => ({
+      label: link.label,
+      url: link.url,
+      display_order: link.displayOrder,
+    })),
+    requirements: scholarship.requirements.map((requirement) => ({
+      title: requirement.title,
+      description: requirement.description,
+      display_order: requirement.displayOrder,
+    })),
   }
 }
 
@@ -308,6 +417,28 @@ export async function getScholarship(
   )
 
   return toScholarship(data)
+}
+
+export async function createScholarship(
+  scholarship: CreateScholarshipInput,
+): Promise<Scholarship> {
+  const { data } = await api.post<ScholarshipApi>(
+    'scholarship/scholarships/',
+    toCreateScholarshipPayload(scholarship),
+  )
+
+  return toScholarship(data)
+}
+
+export async function listScholarshipTechnologies(): Promise<
+  ScholarshipTechnology[]
+> {
+  const { data } = await api.get<ScholarshipTechnologyApiResponse>(
+    'scholarship/technologies/',
+    { params: { page_size: 200 } },
+  )
+
+  return normalizeTechnologyListResponse(data)
 }
 
 export async function applyToScholarship(
