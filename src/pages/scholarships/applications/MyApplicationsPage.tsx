@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import { Circle, ClipboardList, Search } from 'lucide-react'
+import { Circle, ClipboardList } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { FilterTag } from '../../../components/atoms/FilterTag'
+import { SearchInput } from '../../../components/atoms/SearchInput'
 import { ScholarshipCard } from '../../../components/molecules/ScholarshipCard'
 import {
   EmptyState,
@@ -174,15 +175,13 @@ export default function MyApplicationsPage() {
       </header>
 
       <div className="scholarships-page__toolbar">
-        <label className="scholarships-page__search">
-          <Search aria-hidden="true" size={18} strokeWidth={1.9} />
-          <input
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por bolsa, tecnologia ou status..."
-            type="search"
-            value={search}
-          />
-        </label>
+        <SearchInput
+          aria-label="Buscar candidatura por bolsa, tecnologia ou status"
+          className="scholarships-page__search"
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Buscar por bolsa, tecnologia ou status..."
+          value={search}
+        />
 
         <div className="scholarships-page__filters" aria-label="Filtros">
           {filters.map((filter) => (

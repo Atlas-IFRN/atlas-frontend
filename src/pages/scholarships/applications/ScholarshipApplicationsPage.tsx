@@ -3,7 +3,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import {
   ArrowLeft,
-  CalendarDays,
   CheckCircle2,
   Circle,
   ClipboardList,
@@ -16,6 +15,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Avatar } from '../../../components/atoms/Avatar'
 import { Button } from '../../../components/atoms/Button'
 import { FilterTag } from '../../../components/atoms/FilterTag'
+import { SearchInput } from '../../../components/atoms/SearchInput'
 import { StatCard } from '../../../components/atoms/StatCard'
 import { StatusBadge } from '../../../components/atoms/StatusBadge'
 import {
@@ -595,15 +595,13 @@ export default function ScholarshipApplicationsPage() {
       </section>
 
       <div className="scholarships-page__toolbar scholarship-applications-toolbar">
-        <label className="scholarships-page__search">
-          <Search aria-hidden="true" size={18} strokeWidth={1.9} />
-          <input
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por aluno, identificador ou status..."
-            type="search"
-            value={search}
-          />
-        </label>
+        <SearchInput
+          aria-label="Buscar candidatura por aluno, identificador ou status"
+          className="scholarships-page__search"
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Buscar por aluno, identificador ou status..."
+          value={search}
+        />
 
         <div className="scholarships-page__filters" aria-label="Filtros">
           {filters.map((filter) => (

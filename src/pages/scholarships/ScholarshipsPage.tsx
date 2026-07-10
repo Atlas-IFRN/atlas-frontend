@@ -5,13 +5,13 @@ import {
   Circle,
   PackageOpen,
   Plus,
-  Search,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { listScholarships } from '../../services/scholarships'
 import { Button } from '../../components/atoms/Button'
 import { FilterTag } from '../../components/atoms/FilterTag'
+import { SearchInput } from '../../components/atoms/SearchInput'
 import { ScholarshipCard } from '../../components/molecules/ScholarshipCard'
 import { EmptyState, ErrorState, LoadingState } from '../../components/states'
 import type { Scholarship, ScholarshipStatus } from '../../types/scholarships'
@@ -201,7 +201,7 @@ export default function ScholarshipsPage() {
             className="scholarships-page__create-button"
             iconLeft={Plus}
             onClick={() => navigate('/bolsas/nova')}
-            size="lg"
+            size="sm"
           >
             Criar bolsa
           </Button>
@@ -209,15 +209,13 @@ export default function ScholarshipsPage() {
       </header>
 
       <div className="scholarships-page__toolbar">
-        <label className="scholarships-page__search">
-          <Search aria-hidden="true" size={18} strokeWidth={1.9} />
-          <input
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por título, descrição ou tecnologia..."
-            type="search"
-            value={search}
-          />
-        </label>
+        <SearchInput
+          aria-label="Buscar bolsa por título, descrição ou tecnologia"
+          className="scholarships-page__search"
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Buscar por título, descrição ou tecnologia..."
+          value={search}
+        />
 
         <div className="scholarships-page__filters" aria-label="Filtros">
           {filters.map((filter) => (

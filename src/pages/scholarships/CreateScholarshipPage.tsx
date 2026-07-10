@@ -1613,7 +1613,9 @@ export function ScholarshipFormPage({
               >
                 Continuar editando
               </Button>
-              <Button onClick={handleConfirmCancel} variant="danger">
+              <Button
+                onClick={handleConfirmCancel} 
+                variant="danger">
                 {copy.cancelAction}
               </Button>
             </div>
