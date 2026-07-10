@@ -60,27 +60,23 @@
   max-inline-size: 600px;
 }
 
-.trails-stats-grid {
-  display: grid;
-  gap: var(--s-4);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
 .trails-toolbar {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--s-3);
+  gap: 10px;
 }
 
 .trails-toolbar__search {
-  flex: 0 1 420px;
+  flex: 1 1 320px;
+  min-inline-size: min(100%, 370px);
 }
 
 .trails-toolbar__filters {
   display: flex;
+  flex: 999 1 520px;
   flex-wrap: wrap;
-  gap: var(--s-2);
+  gap: 8px;
 }
 
 .trails-grid {
@@ -341,7 +337,17 @@
   }
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1100px) {
+  .trails-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .trails-page .atlas-loading-state__skeleton-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1440px) {
   .trails-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -352,10 +358,6 @@
 }
 
 @media (max-width: 900px) {
-  .trails-stats-grid {
-    grid-template-columns: 1fr;
-  }
-
   .trails-hero {
     align-items: start;
     flex-direction: column;

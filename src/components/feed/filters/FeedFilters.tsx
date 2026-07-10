@@ -1,4 +1,6 @@
 import type { FeedFilter } from '../../../types/feed'
+import { Circle } from 'lucide-react'
+import { FilterTag } from '../../atoms/FilterTag'
 
 interface FeedFiltersProps {
   active: FeedFilter
@@ -20,16 +22,15 @@ export function FeedFilters({ active, onChange }: FeedFiltersProps) {
         const isActive = filter.value === active
 
         return (
-          <button
+          <FilterTag
             aria-selected={isActive}
-            className={`feed-filter${isActive ? ' feed-filter--active' : ''}`}
+            active={isActive}
+            iconLeft={isActive ? Circle : undefined}
             key={filter.value}
             onClick={() => onChange(filter.value)}
             role="tab"
-            type="button"
-          >
-            {filter.label}
-          </button>
+            label={filter.label}
+          />
         )
       })}
     </div>

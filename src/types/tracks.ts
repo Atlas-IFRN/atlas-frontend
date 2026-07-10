@@ -18,12 +18,6 @@ export type TrailAreaLabel =
   | 'CI/CD'
   | 'DevOps'
 
-export interface TrailsStats {
-  activeTrails: number
-  certificates: number
-  scholarships: number
-}
-
 export interface TrailLesson {
   id: string
   title: string

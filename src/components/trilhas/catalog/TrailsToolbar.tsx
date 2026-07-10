@@ -1,4 +1,5 @@
 import type { ChangeEvent } from 'react'
+import { Circle } from 'lucide-react'
 import { FilterTag } from '../../atoms/FilterTag'
 import { SearchInput } from '../../atoms/SearchInput'
 import type { TrailFilter } from '../../../types/tracks'
@@ -35,6 +36,7 @@ export function TrailsToolbar({
         {TRAIL_FILTER_OPTIONS.map((option) => (
           <FilterTag
             active={filter === option.value}
+            iconLeft={filter === option.value ? Circle : undefined}
             key={option.value}
             label={option.label}
             onClick={() => onFilterChange(option.value)}

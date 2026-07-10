@@ -2,10 +2,11 @@ import { Plus } from 'lucide-react'
 import { ButtonLink } from '../../atoms/ButtonLink'
 
 export interface TrailsHeroProps {
+  canCreate: boolean
   createHref: string
 }
 
-export function TrailsHero({ createHref }: TrailsHeroProps) {
+export function TrailsHero({ canCreate, createHref }: TrailsHeroProps) {
   return (
     <section className="trails-hero" aria-labelledby="trails-page-title">
       <div className="trails-hero__copy">
@@ -17,15 +18,17 @@ export function TrailsHero({ createHref }: TrailsHeroProps) {
         </p>
       </div>
 
-      <ButtonLink
-        className="trails-hero__cta"
-        size="sm"
-        to={createHref}
-        variant="primary"
-      >
-        <Plus aria-hidden="true" size={16} strokeWidth={2} />
-        <span>Criar trilha</span>
-      </ButtonLink>
+      {canCreate ? (
+        <ButtonLink
+          className="trails-hero__cta"
+          size="sm"
+          to={createHref}
+          variant="primary"
+        >
+          <Plus aria-hidden="true" size={16} strokeWidth={2} />
+          <span>Criar trilha</span>
+        </ButtonLink>
+      ) : null}
     </section>
   )
 }

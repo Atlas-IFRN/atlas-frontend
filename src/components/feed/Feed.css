@@ -396,34 +396,6 @@
   gap: var(--s-2);
 }
 
-.feed-filter {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--r-pill);
-  color: var(--text-muted);
-  cursor: pointer;
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 8px 18px;
-  transition:
-    background var(--t-fast),
-    border-color var(--t-fast),
-    color var(--t-fast);
-}
-
-.feed-filter:hover {
-  border-color: var(--border-strong);
-  color: var(--text-soft);
-}
-
-.feed-filter--active,
-.feed-filter--active:hover {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: var(--shell-bg);
-}
-
 /* ---------- System post ---------- */
 
 .system-post {
@@ -1034,6 +1006,12 @@
   .feed-rail {
     display: none;
   }
+
+  .feed-right {
+    align-self: start;
+    position: sticky;
+    inset-block-start: var(--s-4);
+  }
 }
 
 @container feed (min-width: 1060px) {
@@ -1047,10 +1025,16 @@
   .feed-rail {
     display: grid;
   }
+
+  .feed-rail {
+    align-self: start;
+    position: sticky;
+    inset-block-start: var(--s-4);
+  }
 }
 
 @container feed (max-width: 400px) {
-  .feed-filter {
+  .feed-filters > .atlas-filter-tag {
     flex: 1 1 40%;
   }
 
