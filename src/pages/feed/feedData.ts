@@ -3,8 +3,8 @@ import type {
   FeedHeroSlide,
   FeedPost,
   FeedTrackProgress,
-  SystemPostData,
-} from '../../components/feed'
+  SystemPost as SystemPostData,
+} from '../../types/feed'
 
 /**
  * Dados de exemplo do Feed. Nenhuma integração com backend por enquanto:

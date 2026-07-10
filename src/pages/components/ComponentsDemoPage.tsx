@@ -61,6 +61,7 @@ import {
   type PostComment,
   type SystemPostData,
 } from '../../components/feed'
+import '../../components/feed/Feed.css'
 import './ComponentsDemoPage.css'
 
 const badgeStatuses = [

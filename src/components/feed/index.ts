@@ -1,5 +1,3 @@
-import './Feed.css'
-
 export type {
   ActiveScholarship,
   FeedAuthor,
@@ -14,27 +12,23 @@ export type {
   PostVariant,
   SystemPost as SystemPostData,
   SystemPostTone,
-} from './types'
-
-// Molecules
-export { ActiveScholarships } from './molecules/ActiveScholarships'
-export { Comment } from './molecules/Comment'
-export { CommentComposer } from './molecules/CommentComposer'
-export { FeedFilters } from './molecules/FeedFilters'
-export { PostActions } from './molecules/PostActions'
-export { PostBody } from './molecules/PostBody'
-export { PostComposer } from './molecules/PostComposer'
-export { PostEmbed } from './molecules/PostEmbed'
-export { PostHeader } from './molecules/PostHeader'
-export { PostLinkPreview } from './molecules/PostLinkPreview'
-export { PostMedia } from './molecules/PostMedia'
-export { RailTrackList } from './molecules/RailTrackList'
-export { SegmentedProgress } from './molecules/SegmentedProgress'
-export { SystemPost } from './molecules/SystemPost'
-
-// Organisms
-export { FeedHero } from './organisms/FeedHero'
-export { FeedLeftRail } from './organisms/FeedLeftRail'
-export { FeedRightRail } from './organisms/FeedRightRail'
-export { PostCard } from './organisms/PostCard'
-export { PostComments } from './organisms/PostComments'
+} from '../../types/feed'
+export { PostComposer } from './composer/PostComposer'
+export { FeedFilters } from './filters/FeedFilters'
+export { FeedHero } from './hero/FeedHero'
+export { Comment } from './post/Comment'
+export { CommentComposer } from './post/CommentComposer'
+export { PostActions } from './post/PostActions'
+export { PostBody } from './post/PostBody'
+export { PostCard } from './post/PostCard'
+export { PostComments } from './post/PostComments'
+export { PostEmbed } from './post/PostEmbed'
+export { PostHeader } from './post/PostHeader'
+export { PostLinkPreview } from './post/PostLinkPreview'
+export { PostMedia } from './post/PostMedia'
+export { ActiveScholarships } from './rails/ActiveScholarships'
+export { FeedLeftRail } from './rails/FeedLeftRail'
+export { FeedRightRail } from './rails/FeedRightRail'
+export { RailTrackList } from './rails/RailTrackList'
+export { SegmentedProgress } from './rails/SegmentedProgress'
+export { SystemPost } from './system/SystemPost'
