@@ -1,6 +1,6 @@
 import { TextTag } from '../../atoms/TextTag'
 
-interface TrailSkillListProps {
+export interface TrailSkillListProps {
   skills: string[]
 }
 

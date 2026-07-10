@@ -20,6 +20,7 @@ import {
   type TrailDetailTab,
 } from '../../components/trilhas'
 import { useTrack } from '../../hooks/useTracks'
+import '../../components/trilhas/TrailsCatalog.css'
 
 function setMetaContent(
   selector: string,

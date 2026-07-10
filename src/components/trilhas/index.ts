@@ -1,5 +1,3 @@
-import './TrailsCatalog.css'
-
 export type {
   TrackLevel,
   Trail,
@@ -12,25 +10,20 @@ export type {
   TrailTeacher,
   TrailTheme,
   TrailsStats,
-} from './types'
-export { Toolbar } from './molecules/Toolbar'
-export { TrailBanner } from './molecules/TrailBanner'
-export { TrailFooterMeta } from './molecules/TrailFooterMeta'
-export { TrailSkillList } from './molecules/TrailSkillList'
-export { TrailCard } from './organisms/TrailCard'
+} from '../../types/tracks'
+export { TrailsGrid } from './catalog/TrailsGrid'
+export { TrailsHero } from './catalog/TrailsHero'
+export { TrailsStatsGrid } from './catalog/TrailsStatsGrid'
+export { TrailsToolbar } from './catalog/TrailsToolbar'
+export { TrailBreadcrumb } from './detail/TrailBreadcrumb'
+export { TrailDetailHero } from './detail/TrailDetailHero'
+export { TrailDetailSidebar } from './detail/TrailDetailSidebar'
 export {
-  TrailBreadcrumb,
-  TrailDetailHero,
-  TrailDetailSidebar,
   TrailDetailTabs,
-  TrailEvaluationCard,
-  TrailModulesPanel,
-  TrailOutcomes,
-  TrailPrerequisites,
-  TrailProfessorBlock,
   type TrailDetailTab,
-} from './organisms/TrailDetailSections'
-export { TrailsGrid } from './organisms/TrailsGrid'
-export { TrailsHero } from './organisms/TrailsHero'
-export { TrailsStatsGrid } from './organisms/TrailsStatsGrid'
-export { TrailsToolbar } from './organisms/TrailsToolbar'
+} from './detail/TrailDetailTabs'
+export { TrailEvaluationCard } from './detail/TrailEvaluationCard'
+export { TrailModulesPanel } from './detail/TrailModulesPanel'
+export { TrailOutcomes } from './detail/TrailOutcomes'
+export { TrailPrerequisites } from './detail/TrailPrerequisites'
+export { TrailProfessorBlock } from './detail/TrailProfessorBlock'

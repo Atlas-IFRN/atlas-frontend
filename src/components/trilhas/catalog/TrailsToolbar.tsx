@@ -1,22 +1,22 @@
 import type { ChangeEvent } from 'react'
 import { FilterTag } from '../../atoms/FilterTag'
 import { SearchInput } from '../../atoms/SearchInput'
-import { TRAIL_FILTER_OPTIONS } from '../filterOptions'
-import type { TrailFilter } from '../types'
+import type { TrailFilter } from '../../../types/tracks'
+import { TRAIL_FILTER_OPTIONS } from './filterOptions'
 
-export interface ToolbarProps {
+export interface TrailsToolbarProps {
   filter: TrailFilter
   query: string
   onFilterChange: (filter: TrailFilter) => void
   onQueryChange: (query: string) => void
 }
 
-export function Toolbar({
+export function TrailsToolbar({
   filter,
   query,
   onFilterChange,
   onQueryChange,
-}: ToolbarProps) {
+}: TrailsToolbarProps) {
   function handleQueryChange(event: ChangeEvent<HTMLInputElement>) {
     onQueryChange(event.target.value)
   }

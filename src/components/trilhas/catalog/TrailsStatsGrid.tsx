@@ -1,6 +1,6 @@
 import { Award, BookOpen, Briefcase } from 'lucide-react'
 import { StatCard } from '../../atoms/StatCard'
-import type { TrailsStats } from '../types'
+import type { TrailsStats } from '../../../types/tracks'
 
 interface TrailsStatsGridProps {
   stats: TrailsStats

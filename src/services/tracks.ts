@@ -7,7 +7,7 @@ import type {
   TrailModule,
   TrailTeacher,
   TrailTheme,
-} from '../components/trilhas'
+} from '../types/tracks'
 
 interface ApiPaginatedResponse<T> {
   results?: T[]

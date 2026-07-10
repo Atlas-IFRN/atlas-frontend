@@ -10,9 +10,10 @@ import {
   TrailsHero,
   TrailsStatsGrid,
   TrailsToolbar,
-  type TrailFilter,
 } from '../../components/trilhas'
 import { useTracks } from '../../hooks/useTracks'
+import type { TrailFilter } from '../../types/tracks'
+import '../../components/trilhas/TrailsCatalog.css'
 
 export default function TracksPage() {
   const [query, setQuery] = useState('')

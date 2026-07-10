@@ -1,7 +1,7 @@
 import { Plus } from 'lucide-react'
 import { ButtonLink } from '../../atoms/ButtonLink'
 
-interface TrailsHeroProps {
+export interface TrailsHeroProps {
   createHref: string
 }
 

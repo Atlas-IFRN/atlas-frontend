@@ -1,4 +1,4 @@
-import type { TrailFilter } from './types'
+import type { TrailFilter } from '../../../types/tracks'
 
 export const TRAIL_FILTER_OPTIONS = [
   { value: 'all', label: 'Todas' },

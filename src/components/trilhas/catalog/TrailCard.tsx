@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
 import { ProgressBar } from '../../atoms/ProgressBar'
-import type { Trail } from '../types'
-import { TrailBanner } from '../molecules/TrailBanner'
-import { TrailFooterMeta } from '../molecules/TrailFooterMeta'
-import { TrailSkillList } from '../molecules/TrailSkillList'
+import type { Trail } from '../../../types/tracks'
+import { TrailBanner } from './TrailBanner'
+import { TrailFooterMeta } from './TrailFooterMeta'
+import { TrailSkillList } from './TrailSkillList'
 
 interface TrailCardProps {
   trail: Trail

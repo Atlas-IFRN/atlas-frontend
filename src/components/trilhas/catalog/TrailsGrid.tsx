@@ -1,4 +1,4 @@
-import type { Trail } from '../types'
+import type { Trail } from '../../../types/tracks'
 import { TrailCard } from './TrailCard'
 
 interface TrailsGridProps {

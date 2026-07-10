@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Clock, Layers } from 'lucide-react'
 import { ButtonLink } from '../../atoms/ButtonLink'
-import type { Trail } from '../types'
+import type { Trail } from '../../../types/tracks'
 
 interface TrailFooterMetaProps {
   trail: Trail

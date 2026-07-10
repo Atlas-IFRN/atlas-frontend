@@ -1,7 +1,7 @@
 import { StatusBadge } from '../../atoms/StatusBadge'
 import { TextTag } from '../../atoms/TextTag'
-import type { Trail } from '../types'
-import { TrailBannerIcon } from '../trailBannerIcons'
+import type { Trail } from '../../../types/tracks'
+import { TrailBannerIcon } from './trailBannerIcons'
 
 interface TrailBannerProps {
   trail: Trail
