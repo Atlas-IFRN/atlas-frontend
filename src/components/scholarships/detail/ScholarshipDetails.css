@@ -1,3 +1,4 @@
+/* Layout and controls for scholarship details. */
 .scholarship-detail-page {
   --detail-panel-bg: color-mix(in srgb, var(--surface) 88%, var(--content-bg));
   --detail-panel-border: color-mix(in srgb, var(--primary) 24%, transparent);
