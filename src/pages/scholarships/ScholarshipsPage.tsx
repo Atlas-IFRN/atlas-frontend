@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import {
   Circle,
+  ClipboardList,
   PackageOpen,
   Plus,
   Search,
@@ -73,6 +74,12 @@ function isTeacherRole(role: string | undefined) {
   return normalizedRole === 'teacher' || normalizedRole === 'professor'
 }
 
+function isStudentRole(role: string | undefined) {
+  const normalizedRole = role?.trim().toLowerCase()
+
+  return normalizedRole === 'student' || normalizedRole === 'aluno'
+}
+
 function matchesFilter(
   scholarship: Scholarship,
   filter: ScholarshipFilter,
@@ -120,11 +127,11 @@ function getErrorMessage(error: unknown) {
   if (axios.isAxiosError<ApiErrorBody>(error)) {
     return (
       getDetailMessage(error.response?.data?.detail) ??
-      'Nao foi possivel concluir a solicitacao.'
+      'Não foi possível concluir a solicitação.'
     )
   }
 
-  return 'Nao foi possivel concluir a solicitacao.'
+  return 'Não foi possível concluir a solicitação.'
 }
 
 export default function ScholarshipsPage() {
@@ -133,6 +140,7 @@ export default function ScholarshipsPage() {
   const [search, setSearch] = useState('')
   const [selectedFilter, setSelectedFilter] = useState<ScholarshipFilter>('all')
   const isTeacher = isTeacherRole(user?.role)
+  const isStudent = isStudentRole(user?.role)
 
   const scholarshipsQuery = useQuery({
     queryKey: ['scholarships', 'list'],

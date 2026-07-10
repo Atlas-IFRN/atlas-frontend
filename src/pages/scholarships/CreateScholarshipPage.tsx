@@ -182,8 +182,6 @@ function getDefaultFormState(): ScholarshipFormState {
   const today = new Date()
   const registrationStart = formatDateInput(today)
   const registrationEnd = formatDateInput(addDays(today, 14))
-  const selectionStart = formatDateInput(addDays(today, 15))
-  const selectionEnd = formatDateInput(addDays(today, 21))
 
   return {
     title: '',

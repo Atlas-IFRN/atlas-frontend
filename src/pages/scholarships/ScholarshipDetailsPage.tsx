@@ -71,6 +71,9 @@ export default function ScholarshipDetailsPage() {
         queryKey: ['scholarships', 'detail', scholarshipId],
       })
       queryClient.invalidateQueries({ queryKey: ['scholarships', 'list'] })
+      queryClient.invalidateQueries({
+        queryKey: ['scholarships', 'applications', 'my'],
+      })
     },
   })
 
@@ -82,6 +85,9 @@ export default function ScholarshipDetailsPage() {
         queryKey: ['scholarships', 'detail', scholarshipId],
       })
       queryClient.invalidateQueries({ queryKey: ['scholarships', 'list'] })
+      queryClient.invalidateQueries({
+        queryKey: ['scholarships', 'applications', 'my'],
+      })
     },
   })
 
@@ -830,11 +836,11 @@ function getErrorMessage(error: unknown) {
   if (axios.isAxiosError<ApiErrorBody>(error)) {
     return (
       getDetailMessage(error.response?.data?.detail) ??
-      'Nao foi possivel concluir a solicitacao.'
+      'Não foi possível concluir a solicitação.'
     )
   }
 
-  return 'Nao foi possivel concluir a solicitacao.'
+  return 'Não foi possível concluir a solicitação.'
 }
 
 function parseDate(value: string | null | undefined) {
@@ -1119,7 +1125,7 @@ function getApplyLabel(
     }
 
     if (application.status === 'Rejected') {
-      return 'Candidatura não selecionada'
+      return 'Candidatura reprovada'
     }
 
     return 'Candidatura enviada'

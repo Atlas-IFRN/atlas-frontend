@@ -1,5 +1,5 @@
 import type { KeyboardEvent } from 'react'
-import { ArrowRight, Clock3, GraduationCap } from 'lucide-react'
+import { ArrowRight, CalendarDays, Clock3, GraduationCap } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../../atoms/Button'
 import {
@@ -9,10 +9,20 @@ import {
   type TechIconName,
   type TechTagCategory,
 } from '../../atoms/TechTag'
-import type { Scholarship, ScholarshipStatus } from '../../../types/scholarships'
+import type {
+  Scholarship,
+  ScholarshipApplicationStatus,
+  ScholarshipStatus,
+} from '../../../types/scholarships'
 import './ScholarshipCard.css'
 
+export interface ScholarshipCardApplicationInfo {
+  appliedAt: string
+  status: ScholarshipApplicationStatus
+}
+
 export interface ScholarshipCardProps {
+  application?: ScholarshipCardApplicationInfo
   className?: string
   interactive?: boolean
   scholarship: Scholarship
@@ -34,6 +44,13 @@ const statusLabels: Record<ScholarshipStatus, string> = {
   Draft: 'Rascunho',
   Open: 'Vagas abertas',
   RegistrationClosed: 'Inscrições encerradas',
+}
+
+const applicationStatusLabels: Record<ScholarshipApplicationStatus, string> = {
+  Approved: 'Aprovada',
+  Cancelled: 'Candidatura cancelada',
+  Enrolled: 'Inscrito',
+  Rejected: 'Reprovada',
 }
 
 const technologyMetaByName: Record<
@@ -89,6 +106,20 @@ function formatDeadline(deadline: string | null) {
   return deadlineFormatter.format(date).replace('.', '')
 }
 
+function formatAppliedAt(appliedAt: string | undefined) {
+  if (!appliedAt) {
+    return null
+  }
+
+  const date = new Date(appliedAt)
+
+  if (Number.isNaN(date.getTime())) {
+    return null
+  }
+
+  return deadlineFormatter.format(date).replace('.', '')
+}
+
 function formatRequirement(scholarship: Scholarship) {
   const period = `${scholarship.minimumPeriod}º período`
   const ira = scholarship.minimumIra.toLocaleString('pt-BR', {
@@ -100,12 +131,18 @@ function formatRequirement(scholarship: Scholarship) {
 }
 
 export function ScholarshipCard({
+  application,
   className,
   interactive = true,
   scholarship,
 }: ScholarshipCardProps) {
   const navigate = useNavigate()
   const deadline = formatDeadline(scholarship.registrationEnd)
+  const appliedAt = formatAppliedAt(application?.appliedAt)
+  const statusLabel = application
+    ? applicationStatusLabels[application.status]
+    : statusLabels[scholarship.status]
+  const status = application?.status ?? scholarship.status
   const detailsPath = `/bolsas/${scholarship.id}`
   const goToDetails = () => {
     if (interactive) {
@@ -143,12 +180,17 @@ export function ScholarshipCard({
         <div className="atlas-scholarship-card__meta">
           <span
             className="atlas-scholarship-card__status"
-            data-status={scholarship.status}
+            data-status={status}
           >
-            {statusLabels[scholarship.status]}
+            {statusLabel}
           </span>
 
-          {deadline ? (
+          {appliedAt ? (
+            <span className="atlas-scholarship-card__deadline">
+              <CalendarDays aria-hidden="true" size={15} strokeWidth={1.9} />
+              Inscreveu-se em {appliedAt}
+            </span>
+          ) : deadline ? (
             <span className="atlas-scholarship-card__deadline">
               <Clock3 aria-hidden="true" size={15} strokeWidth={1.9} />
               até {deadline}
