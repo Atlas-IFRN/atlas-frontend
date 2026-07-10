@@ -1,4 +1,4 @@
-import type { FeedAuthor, PostComment } from './types'
+import type { FeedAuthor, PostComment } from '../../../types/feed'
 
 let sequence = 0
 

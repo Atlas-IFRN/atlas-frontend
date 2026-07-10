@@ -1,7 +1,7 @@
 import { BookOpen } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { ButtonLink } from '../../atoms/ButtonLink'
-import type { FeedTrackProgress } from '../types'
+import type { FeedTrackProgress } from '../../../types/feed'
 import { SegmentedProgress } from './SegmentedProgress'
 
 interface RailTrackListProps {

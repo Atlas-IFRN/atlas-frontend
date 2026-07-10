@@ -5,14 +5,14 @@ import {
   countComments,
   createComment,
   toggleCommentLike,
-} from '../commentTree'
-import { PostActions } from '../molecules/PostActions'
-import { PostBody } from '../molecules/PostBody'
-import { PostEmbed } from '../molecules/PostEmbed'
-import { PostHeader } from '../molecules/PostHeader'
-import { PostLinkPreview } from '../molecules/PostLinkPreview'
-import { PostMedia } from '../molecules/PostMedia'
-import type { FeedPost, PostComment } from '../types'
+} from './commentTree'
+import { PostActions } from './PostActions'
+import { PostBody } from './PostBody'
+import { PostEmbed } from './PostEmbed'
+import { PostHeader } from './PostHeader'
+import { PostLinkPreview } from './PostLinkPreview'
+import { PostMedia } from './PostMedia'
+import type { FeedPost, PostComment } from '../../../types/feed'
 import { PostComments } from './PostComments'
 
 interface PostCardProps {

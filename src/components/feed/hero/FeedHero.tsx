@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ButtonLink } from '../../atoms/ButtonLink'
 import atlasMark from '../../../assets/brand/atlas-logo.svg'
-import type { FeedHeroSlide } from '../types'
+import type { FeedHeroSlide } from '../../../types/feed'
 
 interface FeedHeroProps {
   slides: FeedHeroSlide[]

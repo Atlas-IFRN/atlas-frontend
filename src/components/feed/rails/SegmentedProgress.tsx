@@ -1,4 +1,4 @@
-interface SegmentedProgressProps {
+export interface SegmentedProgressProps {
   /** Total de módulos (nº de segmentos). */
   modules: number
   /** Módulos totalmente concluídos. */

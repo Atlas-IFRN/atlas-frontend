@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { renderRichText } from '../richText'
+import { renderRichText } from './richText'
 
 interface PostBodyProps {
   content: string

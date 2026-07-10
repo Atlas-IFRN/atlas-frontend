@@ -1,4 +1,4 @@
-import type { FeedFilter } from '../types'
+import type { FeedFilter } from '../../../types/feed'
 
 interface FeedFiltersProps {
   active: FeedFilter

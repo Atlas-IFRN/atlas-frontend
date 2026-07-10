@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { Comment } from '../molecules/Comment'
-import { CommentComposer } from '../molecules/CommentComposer'
-import type { PostComment } from '../types'
+import type { PostComment } from '../../../types/feed'
+import { Comment } from './Comment'
+import { CommentComposer } from './CommentComposer'
 
 interface PostCommentsProps {
   comments: PostComment[]

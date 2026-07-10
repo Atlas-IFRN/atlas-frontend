@@ -8,7 +8,7 @@ import {
 import { Link } from 'react-router-dom'
 import { ButtonLink } from '../../atoms/ButtonLink'
 import { IconTile, type IconTileVariant } from '../../atoms/IconTile'
-import type { ActiveScholarship, ScholarshipPhase } from '../types'
+import type { ActiveScholarship, ScholarshipPhase } from '../../../types/feed'
 
 interface ActiveScholarshipsProps {
   scholarships: ActiveScholarship[]

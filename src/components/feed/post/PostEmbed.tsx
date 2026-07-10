@@ -1,5 +1,5 @@
 import { Play } from 'lucide-react'
-import type { PostEmbed as PostEmbedData } from '../types'
+import type { PostEmbed as PostEmbedData } from '../../../types/feed'
 
 interface PostEmbedProps {
   embed: PostEmbedData

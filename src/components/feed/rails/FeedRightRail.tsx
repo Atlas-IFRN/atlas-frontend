@@ -1,5 +1,5 @@
-import { RailTrackList } from '../molecules/RailTrackList'
-import type { FeedTrackProgress } from '../types'
+import type { FeedTrackProgress } from '../../../types/feed'
+import { RailTrackList } from './RailTrackList'
 
 interface FeedRightRailProps {
   tracks: FeedTrackProgress[]

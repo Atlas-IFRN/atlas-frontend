@@ -17,6 +17,7 @@ import {
   MY_TRACKS,
   SYSTEM_POSTS,
 } from './feedData'
+import '../../components/feed/Feed.css'
 
 export default function FeedPage() {
   const { user } = useAuth()

@@ -1,5 +1,5 @@
 import { ImageIcon } from 'lucide-react'
-import type { PostMedia as PostMediaData } from '../types'
+import type { PostMedia as PostMediaData } from '../../../types/feed'
 
 interface PostMediaProps {
   media: PostMediaData

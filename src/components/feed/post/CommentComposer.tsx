@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Avatar, type AvatarColor } from '../../atoms/Avatar'
 import { Button } from '../../atoms/Button'
 
-interface CommentComposerProps {
+export interface CommentComposerProps {
   currentUserName: string
   currentUserColor?: AvatarColor
   placeholder?: string

@@ -1,6 +1,6 @@
 import { Heart, MessageCircle, Share2 } from 'lucide-react'
 
-interface PostActionsProps {
+export interface PostActionsProps {
   likes: number
   liked: boolean
   commentsCount: number

@@ -1,7 +1,7 @@
 import { MoreHorizontal } from 'lucide-react'
 import { Avatar } from '../../atoms/Avatar'
 import { StatusBadge } from '../../atoms/StatusBadge'
-import type { FeedAuthor } from '../types'
+import type { FeedAuthor } from '../../../types/feed'
 
 interface PostHeaderProps {
   author: FeedAuthor

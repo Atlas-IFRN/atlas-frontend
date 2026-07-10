@@ -1,5 +1,5 @@
-import { ActiveScholarships } from '../molecules/ActiveScholarships'
-import type { ActiveScholarship } from '../types'
+import type { ActiveScholarship } from '../../../types/feed'
+import { ActiveScholarships } from './ActiveScholarships'
 
 interface FeedLeftRailProps {
   scholarships: ActiveScholarship[]

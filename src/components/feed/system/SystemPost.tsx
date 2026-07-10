@@ -1,6 +1,6 @@
 import { Briefcase } from 'lucide-react'
 import { ButtonLink } from '../../atoms/ButtonLink'
-import type { SystemPost as SystemPostData } from '../types'
+import type { SystemPost as SystemPostData } from '../../../types/feed'
 
 interface SystemPostProps {
   post: SystemPostData

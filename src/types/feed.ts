@@ -1,4 +1,4 @@
-import type { AvatarColor } from '../atoms/Avatar'
+import type { AvatarColor } from '../components/atoms/Avatar'
 
 export type FeedFilter = 'for-you' | 'following' | 'community' | 'notices'
 

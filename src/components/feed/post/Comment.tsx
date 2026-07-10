@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Heart } from 'lucide-react'
 import { Avatar } from '../../atoms/Avatar'
 import { StatusBadge } from '../../atoms/StatusBadge'
-import { renderRichText } from '../richText'
-import type { PostComment } from '../types'
+import { renderRichText } from './richText'
+import type { PostComment } from '../../../types/feed'
 import { CommentComposer } from './CommentComposer'
 
 interface CommentProps {

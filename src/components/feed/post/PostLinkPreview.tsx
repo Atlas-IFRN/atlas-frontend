@@ -1,5 +1,5 @@
 import { ExternalLink, Link2 } from 'lucide-react'
-import type { PostLinkPreview as PostLinkPreviewData } from '../types'
+import type { PostLinkPreview as PostLinkPreviewData } from '../../../types/feed'
 
 interface PostLinkPreviewProps {
   preview: PostLinkPreviewData

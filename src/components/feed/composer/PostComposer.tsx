@@ -3,7 +3,7 @@ import { ImagePlus, Link2 } from 'lucide-react'
 import { Avatar, type AvatarColor } from '../../atoms/Avatar'
 import { Button } from '../../atoms/Button'
 
-interface PostComposerProps {
+export interface PostComposerProps {
   currentUserName: string
   currentUserColor?: AvatarColor
   onPublish?: (content: string) => void
