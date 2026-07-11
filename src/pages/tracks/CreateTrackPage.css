@@ -1,9 +1,16 @@
 .create-track-page {
+  --create-track-panel-bg: var(--surface);
+  --create-track-field-bg: var(--card-bg);
+  --create-track-panel-border: color-mix(
+    in srgb,
+    var(--primary) 20%,
+    transparent
+  );
   color: var(--text);
   display: grid;
-  gap: var(--s-3);
+  gap: var(--s-4);
   min-block-size: calc(100vh - 77px);
-  padding: var(--s-3) var(--s-4);
+  padding: var(--s-4);
 }
 
 .create-track-header {
@@ -14,10 +21,14 @@
 
 .create-track-topbar {
   align-items: flex-start;
+  background: var(--create-track-panel-bg);
+  border: 1px solid var(--create-track-panel-border);
+  border-radius: var(--r-panel);
   display: flex;
   gap: var(--s-4);
   justify-content: space-between;
   min-inline-size: 0;
+  padding: var(--s-4) var(--s-5);
 }
 
 .create-track-title-block {
@@ -83,25 +94,17 @@
 }
 
 .create-track-settings {
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--surface) 84%, transparent),
-      color-mix(in srgb, var(--content-bg) 94%, var(--primary-soft))
-    );
-  border: 1px solid var(--border-2);
+  background: var(--create-track-panel-bg);
+  border: 1px solid var(--create-track-panel-border);
   border-radius: var(--r-panel);
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--text) 5%, transparent),
-    0 18px 36px color-mix(in srgb, var(--shell-bg) 34%, transparent);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--shell-bg) 42%, transparent);
   display: grid;
   gap: var(--s-3);
   inline-size: 100%;
   padding: var(--s-4);
 }
 
-.create-track-settings h2,
-.create-track-settings h3 {
+.create-track-settings h2 {
   color: var(--text);
   font-family: var(--font-display);
   margin: 0;
@@ -109,20 +112,13 @@
 
 .create-track-settings h2 {
   font-size: clamp(22px, 1.5vw, 28px);
-  font-weight: 800;
+  font-weight: 350;
   line-height: 1.15;
-}
-
-.create-track-settings h3 {
-  color: var(--text-soft);
-  font-size: clamp(17px, 1.15vw, 22px);
-  font-weight: 800;
-  line-height: 1.2;
 }
 
 .create-track-settings__content {
   display: grid;
-  gap: var(--s-5);
+  gap: clamp(var(--s-5), 2.5vw, var(--s-7));
   grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
   min-inline-size: 0;
 }
@@ -132,6 +128,11 @@
   display: grid;
   gap: var(--s-3);
   min-inline-size: 0;
+}
+
+.create-track-settings__column:first-child {
+  border-inline-end: 1px solid var(--create-track-panel-border);
+  padding-inline-end: clamp(var(--s-5), 2.5vw, var(--s-7));
 }
 
 .create-track-field {
@@ -150,8 +151,8 @@
 .create-track-field input,
 .create-track-field select,
 .create-track-field textarea {
-  background: color-mix(in srgb, var(--content-bg) 90%, var(--surface));
-  border: 1px solid var(--border-strong);
+  background: var(--card-bg);
+  border: 1px solid color-mix(in srgb, var(--primary) 34%, transparent);
   border-radius: var(--r-md);
   color: var(--text);
   font-family: var(--font-sans);
@@ -201,9 +202,17 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.create-track-list-grid .create-track-field textarea {
+  block-size: 108px;
+  max-block-size: 108px;
+  min-block-size: 108px;
+  overflow-y: auto;
+  resize: none;
+}
+
 .create-track-level-options {
-  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
-  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border: 1px solid var(--create-track-panel-border);
   border-radius: var(--r-md);
   display: grid;
   gap: 2px;
@@ -247,26 +256,36 @@
 .create-track-tech-tag {
   align-items: center;
   display: inline-flex;
+  position: relative;
+}
+
+.create-track-tech-tag > .atlas-tech-tag {
+  padding-inline-end: 31px;
 }
 
 .create-track-tech-tag button {
   align-items: center;
-  background: color-mix(in srgb, var(--surface-3) 78%, transparent);
-  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface-3) 64%, transparent);
+  border: 0;
   border-radius: var(--r-pill);
   color: var(--text-muted);
   cursor: pointer;
   display: inline-flex;
+  inset-block-start: 50%;
+  inset-inline-end: 4px;
   justify-content: center;
-  margin-inline-start: -8px;
-  min-block-size: 24px;
-  min-inline-size: 24px;
+  min-block-size: 21px;
+  min-inline-size: 21px;
   padding: 0;
+  position: absolute;
+  transform: translateY(-50%);
+  transition:
+    background var(--t-fast),
+    color var(--t-fast);
 }
 
 .create-track-tech-tag button:hover {
   background: var(--danger-soft);
-  border-color: color-mix(in srgb, var(--danger) 32%, transparent);
   color: var(--danger);
 }
 
@@ -350,8 +369,8 @@
 
 .track-builder-panel,
 .content-editor-panel {
-  background: color-mix(in srgb, var(--content-bg) 86%, var(--surface));
-  border: 1px solid var(--border-2);
+  background: var(--create-track-panel-bg);
+  border: 1px solid var(--create-track-panel-border);
   border-radius: var(--r-panel);
   box-shadow: 0 1px 2px color-mix(in srgb, var(--shell-bg) 58%, transparent);
   min-block-size: 0;
@@ -366,13 +385,13 @@
 
 .track-builder-panel__header {
   align-items: flex-start;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--create-track-panel-border);
   display: flex;
   flex: 0 0 auto;
   gap: var(--s-3);
   justify-content: space-between;
   min-block-size: 66px;
-  padding: var(--s-3) var(--s-4);
+  padding: var(--s-4) var(--s-4) var(--s-3);
 }
 
 .track-builder-panel__header h2,
@@ -405,7 +424,7 @@
 }
 
 .track-builder-panel__footer {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--create-track-panel-border);
   flex: 0 0 auto;
   margin-top: auto;
   padding: var(--s-2) var(--s-3);
@@ -467,6 +486,24 @@
   min-inline-size: 0;
 }
 
+.track-builder-module-header {
+  align-items: flex-end;
+  display: flex;
+  gap: var(--s-2);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.track-builder-module-header .track-builder-module-title-field {
+  flex: 1 1 auto;
+}
+
+.track-builder-module-header .atlas-button {
+  flex: 0 0 auto;
+  min-block-size: 34px;
+  min-inline-size: 34px;
+}
+
 .track-builder-module-title-field span {
   color: var(--text-muted);
   font-size: 11px;
@@ -475,8 +512,8 @@
 }
 
 .track-builder-module-title-field input {
-  background: color-mix(in srgb, var(--content-bg) 88%, var(--surface));
-  border: 1px solid var(--border-strong);
+  background: var(--create-track-field-bg);
+  border: 1px solid color-mix(in srgb, var(--primary) 34%, transparent);
   border-radius: var(--r-md);
   color: var(--text);
   font-family: var(--font-display);
@@ -518,13 +555,13 @@
 }
 
 .track-builder-item:hover {
-  background: color-mix(in srgb, var(--surface-2) 64%, transparent);
-  border-color: var(--border);
+  background: var(--surface-2);
+  border-color: var(--create-track-panel-border);
 }
 
 .track-builder-item.is-selected {
-  background: color-mix(in srgb, var(--primary) 18%, var(--surface-2));
-  border-color: color-mix(in srgb, var(--primary) 54%, transparent);
+  background: color-mix(in srgb, var(--primary) 20%, var(--surface-2));
+  border-color: color-mix(in srgb, var(--primary) 62%, transparent);
   box-shadow: inset 3px 0 0 var(--primary);
 }
 
@@ -559,9 +596,9 @@
 .track-builder-item__copy strong {
   color: var(--text);
   display: block;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: var(--font-size-xs);
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.25;
   min-inline-size: 0;
   overflow: hidden;
@@ -575,6 +612,7 @@
   font-size: 11px;
   font-weight: 600;
   line-height: 1.2;
+  margin-top: 1px;
 }
 
 .track-builder-content-icon {
@@ -619,13 +657,13 @@
 
 .content-editor-panel__header {
   align-items: center;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--create-track-panel-border);
   display: flex;
   flex: 0 0 auto;
   gap: var(--s-4);
   justify-content: space-between;
-  min-block-size: 66px;
-  padding: var(--s-3) var(--s-4);
+  min-block-size: 70px;
+  padding: var(--s-3) var(--s-5);
 }
 
 .content-editor-panel__title {
@@ -654,12 +692,13 @@
 }
 
 .content-editor-form {
-  display: grid;
-  flex: 1 1 auto;
-  gap: var(--s-3);
-  min-block-size: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--s-4);
+  min-height: 0;
   overflow-y: auto;
-  padding: var(--s-4);
+  padding: var(--s-5);
 }
 
 .content-editor-empty {
@@ -670,7 +709,7 @@
 
 .content-editor-grid {
   display: grid;
-  gap: var(--s-3);
+  gap: var(--s-4);
 }
 
 .content-editor-grid--two {
@@ -703,8 +742,8 @@
 .content-editor-field select,
 .content-editor-field textarea,
 .content-editor-criterion input {
-  background: color-mix(in srgb, var(--content-bg) 90%, var(--surface));
-  border: 1px solid var(--border-strong);
+  background: var(--create-track-field-bg);
+  border: 1px solid color-mix(in srgb, var(--primary) 34%, transparent);
   border-radius: var(--r-md);
   color: var(--text);
   font-family: var(--font-sans);
@@ -725,7 +764,7 @@
 }
 
 .content-editor-field textarea {
-  min-block-size: 84px;
+  min-block-size: 90px;
   padding-block: 11px;
   resize: vertical;
 }
@@ -830,16 +869,17 @@
 
 .content-editor-upload {
   align-items: center;
-  background: color-mix(in srgb, var(--surface) 36%, transparent);
-  border: 1px dashed var(--border-strong);
+  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--primary) 38%, transparent);
   border-radius: var(--r-md);
   color: var(--text-muted);
   cursor: pointer;
   display: flex;
   gap: var(--s-3);
   justify-content: flex-start;
-  min-block-size: 66px;
-  padding: var(--s-3);
+  inline-size: 100%;
+  min-block-size: 68px;
+  padding: var(--s-3) var(--s-4);
   text-align: left;
   transition:
     background var(--t-fast),
@@ -857,8 +897,8 @@
 }
 
 .content-editor-upload:disabled:hover {
-  background: color-mix(in srgb, var(--surface) 36%, transparent);
-  border-color: var(--border-strong);
+  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 38%, transparent);
 }
 
 .content-editor-upload span {
@@ -903,6 +943,13 @@
 
   .create-track-settings__content {
     grid-template-columns: 1fr;
+  }
+
+  .create-track-settings__column:first-child {
+    border-inline-end: 0;
+    border-block-end: 1px solid var(--create-track-panel-border);
+    padding-block-end: var(--s-5);
+    padding-inline-end: 0;
   }
 
   .create-track-header__actions {

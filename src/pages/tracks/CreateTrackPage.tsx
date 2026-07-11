@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   ChevronLeft,
   ChevronRight,
-  CircleQuestionMark,
   Code2,
   FileText,
   GitBranch,
   GripVertical,
   Play,
   Plus,
+  Save,
   Trash2,
   Upload,
   X,
@@ -20,12 +21,15 @@ import { Button } from '../../components/atoms/Button'
 import { StatusBadge } from '../../components/atoms/StatusBadge'
 import { TechIcon, TechTag, type TechIconName } from '../../components/atoms/TechTag'
 import { techIcons } from '../../components/atoms/TechTag/TechIcon.colors'
+import { tracksQueryKeys } from '../../hooks/useTracks'
 import {
   createContent,
   createModule,
   createSkill,
   createTrack,
   deleteContent,
+  deleteModule,
+  deleteTrack,
   getSkills,
   getTrackDraftById,
   publishTrack,
@@ -93,11 +97,6 @@ const CONTENT_TYPE_CONFIG: Record<TrailLessonType, ContentTypeConfig> = {
     label: 'Repositório',
     Icon: GitBranch,
     tone: 'yellow',
-  },
-  QUIZ: {
-    label: 'Quiz',
-    Icon: CircleQuestionMark,
-    tone: 'violet',
   },
   CHALLENGE: {
     label: 'Desafio',
@@ -223,7 +222,7 @@ function mapApiContentToDraft(content: ApiContent): DraftContent {
     description: content.description ?? '',
     contentUrl: content.content_url ?? '',
     estimatedDuration: formatDuration(content.duration_minutes),
-    visibility: 'enrolled',
+    visibility: content.visibility ?? 'enrolled',
     instructions: content.instructions ?? '',
     language: content.language ?? 'Python',
     criteria: apiCriteriaToDraft(content.evaluation_criteria),
@@ -298,8 +297,14 @@ function getContentPayload(
     payload.instructions = content.instructions.trim()
     payload.language = content.language.trim() || 'Python'
     payload.evaluation_criteria = criteriaToApi(content.criteria)
-  } else if (content.contentUrl.trim()) {
-    payload.content_url = content.contentUrl.trim()
+  } else {
+    if (content.contentUrl.trim()) {
+      payload.content_url = content.contentUrl.trim()
+    }
+
+    if (content.type === 'VIDEO') {
+      payload.visibility = content.visibility
+    }
   }
 
   return payload
@@ -351,6 +356,7 @@ function getErrorMessage(error: unknown) {
 
 export default function CreateTrackPage() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { trackId: routeTrackId } = useParams()
   const isEditMode = Boolean(routeTrackId)
   const [trackId, setTrackId] = useState<string | null>(routeTrackId ?? null)
@@ -368,6 +374,7 @@ export default function CreateTrackPage() {
   const [selectedModuleId, setSelectedModuleId] = useState('')
   const [selectedContentId, setSelectedContentId] = useState('')
   const [isSaving, setIsSaving] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [isLoadingTrack, setIsLoadingTrack] = useState(isEditMode)
   const [message, setMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
@@ -531,6 +538,7 @@ export default function CreateTrackPage() {
       await persistModulesAndContents()
 
       if (isEditMode && trackStatus === 'PUBLISHED') {
+        await queryClient.invalidateQueries({ queryKey: tracksQueryKeys.all })
         setMessage('Alterações salvas.')
         navigate(`/trilhas/${track.id}`)
         return
@@ -538,8 +546,107 @@ export default function CreateTrackPage() {
 
       const publishedTrack = await publishTrack(track.id)
       setTrackStatus('PUBLISHED')
+      await queryClient.invalidateQueries({ queryKey: tracksQueryKeys.all })
       setMessage('Trilha publicada.')
       navigate(`/trilhas/${publishedTrack.id}`)
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error))
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  async function handleSaveDraft() {
+    setIsSaving(true)
+    setErrorMessage('')
+    setMessage('')
+
+    try {
+      await persistTrack()
+      await persistModulesAndContents()
+      await queryClient.invalidateQueries({ queryKey: tracksQueryKeys.all })
+      setMessage(
+        trackStatus === 'PUBLISHED' ? 'Alterações salvas.' : 'Rascunho salvo.',
+      )
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error))
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  async function handleDeleteTrack() {
+    if (!trackId) {
+      return
+    }
+
+    const confirmed = window.confirm(
+      `Excluir a trilha “${trackTitle.trim() || DEFAULT_TRACK_TITLE}”?\n\n` +
+        'Esta ação também remove seus módulos e conteúdos e não pode ser desfeita. ' +
+        'Trilhas com alunos em andamento não podem ser excluídas.',
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    setIsDeleting(true)
+    setErrorMessage('')
+    setMessage('')
+
+    try {
+      await deleteTrack(trackId)
+      await queryClient.invalidateQueries({ queryKey: tracksQueryKeys.all })
+      navigate('/trilhas', {
+        replace: true,
+        state: { message: 'Trilha excluída.' },
+      })
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error))
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  async function handleDeleteModule() {
+    if (!selectedModule) {
+      return
+    }
+
+    const confirmed = window.confirm(
+      `Excluir o módulo “${selectedModule.title}”?\n\n` +
+        `Os ${selectedModule.contents.length} conteúdo(s) deste módulo também serão excluídos. ` +
+        'Esta ação não pode ser desfeita.',
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    setIsSaving(true)
+    setErrorMessage('')
+    setMessage('')
+
+    try {
+      if (selectedModule.isPersisted) {
+        await deleteModule(selectedModule.id)
+      }
+
+      const deletedIndex = modules.findIndex(
+        (module) => module.id === selectedModule.id,
+      )
+      const remainingModules = modules.filter(
+        (module) => module.id !== selectedModule.id,
+      )
+      const nextModule =
+        remainingModules[deletedIndex] ??
+        remainingModules[Math.max(0, deletedIndex - 1)]
+
+      setModules(remainingModules)
+      setSelectedModuleId(nextModule?.id ?? '')
+      setSelectedContentId(nextModule?.contents[0]?.id ?? '')
+      await queryClient.invalidateQueries({ queryKey: tracksQueryKeys.all })
+      setMessage('Módulo excluído.')
     } catch (error) {
       setErrorMessage(getErrorMessage(error))
     } finally {
@@ -896,10 +1003,23 @@ export default function CreateTrackPage() {
           </div>
 
           <div className="create-track-header__actions">
+            {isEditMode && trackId ? (
+              <Button
+                iconLeft={Trash2}
+                loading={isDeleting}
+                size="md"
+                variant="danger"
+                disabled={isSaving}
+                onClick={handleDeleteTrack}
+              >
+                Excluir trilha
+              </Button>
+            ) : null}
             <Button
               loading={isSaving}
               size="md"
               variant="primary"
+              disabled={isDeleting}
               onClick={handleSaveTrack}
             >
               {isEditMode && trackStatus === 'PUBLISHED'
@@ -917,8 +1037,6 @@ export default function CreateTrackPage() {
 
           <div className="create-track-settings__content">
             <div className="create-track-settings__column">
-              <h3>Informações Gerais</h3>
-
               <label className="create-track-field">
                 <span>Título da Trilha</span>
                 <input
@@ -940,8 +1058,6 @@ export default function CreateTrackPage() {
             </div>
 
             <div className="create-track-settings__column">
-              <h3>Detalhes Técnicos</h3>
-
               <div className="create-track-meta-grid">
                 <div className="create-track-field">
                   <span>Nível</span>
@@ -970,11 +1086,12 @@ export default function CreateTrackPage() {
                 <label className="create-track-field">
                   <span>Duração (semanas)</span>
                   <input
-                    min={1}
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={trackDurationWeeks}
                     onChange={(event) =>
-                      setTrackDurationWeeks(event.target.value)
+                      setTrackDurationWeeks(event.target.value.replace(/\D/g, ''))
                     }
                   />
                 </label>
@@ -1089,16 +1206,26 @@ export default function CreateTrackPage() {
         <aside className="track-builder-panel track-builder-panel--contents">
           <div className="track-builder-panel__header">
             {selectedModule ? (
-              <label className="track-builder-module-title-field">
-                <span>Módulo selecionado</span>
-                <input
-                  value={selectedModule.title}
-                  onBlur={() => void handleModuleTitleBlur(selectedModule)}
-                  onChange={(event) =>
-                    updateSelectedModule({ title: event.target.value })
-                  }
+              <div className="track-builder-module-header">
+                <label className="track-builder-module-title-field">
+                  <span>Módulo selecionado</span>
+                  <input
+                    value={selectedModule.title}
+                    onBlur={() => void handleModuleTitleBlur(selectedModule)}
+                    onChange={(event) =>
+                      updateSelectedModule({ title: event.target.value })
+                    }
+                  />
+                </label>
+                <Button
+                  aria-label="Excluir módulo"
+                  iconLeft={Trash2}
+                  size="sm"
+                  variant="danger"
+                  disabled={isSaving}
+                  onClick={handleDeleteModule}
                 />
-              </label>
+              </div>
             ) : (
               <div>
                 <h2>Conteúdos</h2>
@@ -1110,7 +1237,7 @@ export default function CreateTrackPage() {
           <div className="track-builder-list" role="list">
             {selectedModule && selectedModule.contents.length === 0 ? (
               <div className="track-builder-empty">
-                Adicione um conteúdo para editar vídeo, artigo, quiz ou desafio.
+                Adicione um conteúdo para editar vídeo, artigo, repositório ou desafio.
               </div>
             ) : null}
 
@@ -1216,6 +1343,16 @@ export default function CreateTrackPage() {
                 disabled={!selectedContent || isSaving}
                 onClick={handleDeleteContent}
               />
+              <Button
+                iconLeft={Save}
+                size="sm"
+                variant="primary"
+                loading={isSaving}
+                disabled={!selectedContent}
+                onClick={handleSaveDraft}
+              >
+                Salvar
+              </Button>
             </div>
           </div>
 
@@ -1268,9 +1405,12 @@ export default function CreateTrackPage() {
               {selectedContent.type === 'CHALLENGE' ? (
                 <>
                   <label className="content-editor-field">
-                    <span>Instruções *</span>
+                    <span>
+                      Instruções * <small>enunciado que será exibido ao aluno</small>
+                    </span>
                     <textarea
                       value={selectedContent.instructions}
+                      placeholder="Explique o objetivo do desafio, os requisitos obrigatórios, as regras, o formato de entrega e, se necessário, exemplos de entrada e saída."
                       rows={4}
                       onChange={(event) =>
                         updateSelectedContent({ instructions: event.target.value })
@@ -1280,7 +1420,7 @@ export default function CreateTrackPage() {
 
                   <div className="content-editor-grid content-editor-grid--two">
                     <label className="content-editor-field">
-                      <span>Linguagem</span>
+                      <span>Tecnologia do desafio</span>
                       <select
                         value={selectedContent.language}
                         onChange={(event) =>
@@ -1340,15 +1480,16 @@ export default function CreateTrackPage() {
                           />
                           <input
                             className="content-editor-criterion__percentage"
-                            type="number"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             value={criterion.percentage}
                             aria-label="Porcentagem do critério"
-                            min={0}
-                            max={100}
+                            onFocus={(event) => event.currentTarget.select()}
                             onChange={(event) =>
                               updateCriterion(criterion.id, {
                                 percentage: clampPercentage(
-                                  Number(event.target.value),
+                                  Number(event.target.value.replace(/\D/g, '')),
                                 ),
                               })
                             }
@@ -1381,51 +1522,69 @@ export default function CreateTrackPage() {
                     <span>
                       {selectedContent.type === 'VIDEO'
                         ? 'URL do vídeo *'
-                        : 'Link de referência'}
+                        : selectedContent.type === 'ARTICLE'
+                          ? 'URL do artigo *'
+                          : 'URL do repositório *'}
                     </span>
                     <input
                       type="url"
                       value={selectedContent.contentUrl}
-                      placeholder="https://..."
+                      placeholder={
+                        selectedContent.type === 'VIDEO'
+                          ? 'https://youtube.com/watch?v=...'
+                          : selectedContent.type === 'ARTICLE'
+                            ? 'https://exemplo.com/artigo...'
+                            : 'https://github.com/usuario/repositorio'
+                      }
                       onChange={(event) =>
                         updateSelectedContent({ contentUrl: event.target.value })
                       }
                     />
                   </label>
 
-                  <div className="content-editor-grid content-editor-grid--two">
-                    <label className="content-editor-field">
-                      <span>Duração estimada</span>
-                      <input
-                        type="text"
-                        value={selectedContent.estimatedDuration}
-                        placeholder="Ex: 45 min"
-                        onChange={(event) =>
-                          updateSelectedContent({
-                            estimatedDuration: event.target.value,
-                          })
-                        }
-                      />
-                    </label>
+                  {selectedContent.type !== 'ARTICLE' ? (
+                    <div
+                      className={`content-editor-grid${
+                        selectedContent.type === 'VIDEO'
+                          ? ' content-editor-grid--two'
+                          : ''
+                      }`}
+                    >
+                      <label className="content-editor-field">
+                        <span>Duração estimada</span>
+                        <input
+                          type="text"
+                          value={selectedContent.estimatedDuration}
+                          placeholder="Ex: 45 min"
+                          onChange={(event) =>
+                            updateSelectedContent({
+                              estimatedDuration: event.target.value,
+                            })
+                          }
+                        />
+                      </label>
 
-                    <label className="content-editor-field">
-                      <span>Visibilidade</span>
-                      <select
-                        value={selectedContent.visibility}
-                        onChange={(event) =>
-                          updateSelectedContent({
-                            visibility: event.target.value as Visibility,
-                          })
-                        }
-                      >
-                        {VISIBILITY_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
+                      {selectedContent.type === 'VIDEO' ? (
+                        <label className="content-editor-field">
+                          <span>Visibilidade</span>
+                          <select
+                            value={selectedContent.visibility}
+                            onChange={(event) =>
+                              updateSelectedContent({
+                                visibility: event.target.value as Visibility,
+                              })
+                            }
+                          >
+                            {VISIBILITY_OPTIONS.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </>
               )}
 

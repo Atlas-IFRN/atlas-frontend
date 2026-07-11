@@ -21,21 +21,6 @@ function isTeacherRole(role: string | undefined) {
   return normalizedRole === 'teacher' || normalizedRole === 'professor'
 }
 
-function canManageTracks(role: string | undefined) {
-  if (isTeacherRole(role)) {
-    return true
-  }
-
-  const normalizedRole = role?.trim().toLowerCase()
-  const isStudent = normalizedRole === 'student' || normalizedRole === 'aluno'
-
-  return (
-    import.meta.env.DEV &&
-    import.meta.env.VITE_ALLOW_STUDENT_TRACK_MANAGEMENT !== 'false' &&
-    isStudent
-  )
-}
-
 export default function TracksPage() {
   const { user } = useAuth()
   const [query, setQuery] = useState('')
@@ -46,7 +31,7 @@ export default function TracksPage() {
     isLoading,
     refetch,
   } = useTracks()
-  const canCreateTrack = canManageTracks(user?.role)
+  const isTeacher = isTeacherRole(user?.role)
 
   useEffect(() => {
     document.title = 'ATLAS · Trilhas'
@@ -107,7 +92,7 @@ export default function TracksPage() {
 
   return (
     <main className="trails-page">
-      <TrailsHero canCreate={canCreateTrack} createHref="/trilhas/nova" />
+      <TrailsHero canCreate={isTeacher} createHref="/trilhas/nova" />
       <TrailsToolbar
         filter={filter}
         onFilterChange={setFilter}

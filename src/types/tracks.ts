@@ -15,7 +15,6 @@ export type TrailLessonType =
   | 'VIDEO'
   | 'ARTICLE'
   | 'REPOSITORY'
-  | 'QUIZ'
   | 'CHALLENGE'
 
 export interface TrailsStats {

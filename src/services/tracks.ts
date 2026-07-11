@@ -27,6 +27,7 @@ export interface ApiContent {
   description?: string
   content_type?: TrailLessonType
   content_url?: string | null
+  visibility?: 'enrolled' | 'draft'
   instructions?: string | null
   language?: string | null
   evaluation_criteria?: Record<string, number>
@@ -124,6 +125,7 @@ export interface CreateContentPayload {
   description: string
   content_type: TrailLessonType
   content_url?: string
+  visibility?: 'enrolled' | 'draft'
   instructions?: string
   language?: string
   evaluation_criteria?: Record<string, number>
@@ -386,6 +388,10 @@ export async function updateTrack(
   )
 
   return data
+}
+
+export async function deleteTrack(trackId: string): Promise<void> {
+  await tracksApi.delete(`track/tracks/${trackId}/`)
 }
 
 export async function publishTrack(trackId: string): Promise<ApiTrack> {

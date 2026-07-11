@@ -1613,7 +1613,7 @@ export function ScholarshipFormPage({
                 Continuar editando
               </Button>
               <Button
-                onClick={handleConfirmCancel}
+                onClick={handleConfirmCancel} 
                 variant="danger">
                 {copy.cancelAction}
               </Button>
