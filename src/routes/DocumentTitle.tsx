@@ -19,7 +19,7 @@ const routeTitles = [
   { path: '/bolsas', title: 'Bolsas' },
   { path: '/perfil/editar', title: 'Editar perfil' },
   { path: '/perfis/:userId', title: 'Perfil do usuário' },
-  { path: '/perfil', title: 'Perfil' },
+  { path: '/perfil', title: 'Meu Perfil' },
   { path: '/trilhas/nova', title: 'Nova trilha' },
   { path: '/trilhas/:trackId/editar', title: 'Editar trilha' },
   { path: '/trilhas/:trackId/modulos/novo', title: 'Novo módulo' },
@@ -40,6 +40,7 @@ const routeTitles = [
   { path: '/trilhas/:trackId', title: 'Detalhes da trilha' },
   { path: '/trilhas', title: 'Trilhas' },
   { path: '/banco-talentos/minhas-notas', title: 'Minhas notas' },
+  { path: '/notas', title: 'Minhas notas' },
   { path: '/banco-talentos/:studentId/notas/nova', title: 'Nova nota' },
   { path: '/banco-talentos/:studentId/notas', title: 'Notas do estudante' },
   { path: '/banco-talentos', title: 'Banco de talentos' },
@@ -51,7 +52,11 @@ function getTitle(pathname: string) {
     matchPath({ path, end: true }, pathname),
   )
 
-  return routeTitle ? `${routeTitle.title} | ${APP_NAME}` : APP_NAME
+  return routeTitle?.path === '/perfil'
+    ? `${APP_NAME} · ${routeTitle.title}`
+    : routeTitle
+      ? `${routeTitle.title} | ${APP_NAME}`
+      : APP_NAME
 }
 
 export function DocumentTitle() {
@@ -59,6 +64,20 @@ export function DocumentTitle() {
 
   useEffect(() => {
     document.title = getTitle(pathname)
+
+    const description =
+      pathname === '/perfil'
+        ? 'Acompanhe sua identidade, progresso, conquistas e reputação no ATLAS.'
+        : 'ATLAS — aprendizagem, talentos e oportunidades.'
+    let meta = document.querySelector<HTMLMetaElement>('meta[name="description"]')
+
+    if (!meta) {
+      meta = document.createElement('meta')
+      meta.name = 'description'
+      document.head.appendChild(meta)
+    }
+
+    meta.content = description
   }, [pathname])
 
   return null

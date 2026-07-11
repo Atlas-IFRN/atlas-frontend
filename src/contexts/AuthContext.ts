@@ -31,6 +31,7 @@ export interface AuthContextValue {
   isAuthenticated: boolean
   login: (data: LoginData) => void
   logout: () => void
+  refreshUser: () => Promise<AuthUser | null>
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined)
