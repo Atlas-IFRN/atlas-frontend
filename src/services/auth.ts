@@ -15,6 +15,7 @@ interface SuapUserResponse {
   fullName?: string | null
   email?: string | null
   role?: string | null
+  image?: string | null
   ira?: number | string | null
   period?: number | string | null
   about_me?: string | null
@@ -67,6 +68,7 @@ function toAuthUser(user: SuapUserResponse): AuthUser {
     fullName,
     email: toStringValue(user.email),
     role: toStringValue(user.role),
+    image: toStringValue(user.image),
     ira: toNullableNumber(user.ira),
     period: toNullableNumber(user.period),
     aboutMe: toStringValue(user.about_me ?? user.aboutMe),

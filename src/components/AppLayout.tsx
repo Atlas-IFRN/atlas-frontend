@@ -207,6 +207,7 @@ export function AppLayout() {
               <UserChip
                 name={userName}
                 role={userRole}
+                src={user?.image || undefined}
                 color="blue"
                 size="sm"
               />
@@ -219,6 +220,7 @@ export function AppLayout() {
             user={{
               name: userName,
               role: userRole,
+              src: user?.image || undefined,
               color: 'blue',
             }}
             sidebarToggleLabel={toggleLabel}

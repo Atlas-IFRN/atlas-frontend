@@ -22,6 +22,7 @@ const authBypassUser: AuthUser = {
   fullName: 'Dev Auth Bypass',
   email: 'dev.auth.bypass@atlas.local',
   role: authBypassRole,
+  image: '',
   ira: 10,
   period: 1,
   aboutMe: 'Usuario local para testes de rotas protegidas.',

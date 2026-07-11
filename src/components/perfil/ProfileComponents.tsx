@@ -80,6 +80,7 @@ export function ProfileIdentity({ user }: ProfileIdentityProps) {
         className="profile-identity__avatar"
         color="blue"
         name={name}
+        src={user.image || undefined}
         size="lg"
       />
       <div className="profile-identity__content">
