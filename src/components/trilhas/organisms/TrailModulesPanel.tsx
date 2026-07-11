@@ -63,6 +63,23 @@ function formatDuration(minutes: number | null) {
 }
 
 export function TrailModulesPanel({ modules }: TrailModulesPanelProps) {
+  if (modules.length === 0) {
+    return (
+      <section
+        className="trail-modules-panel trail-modules-panel--empty"
+        aria-labelledby="trail-modules-title"
+      >
+        <span className="trail-modules-panel__empty-icon" aria-hidden="true">
+          <BookOpen size={24} strokeWidth={1.8} />
+        </span>
+        <div>
+          <h2 id="trail-modules-title">Nenhum módulo publicado</h2>
+          <p>O conteúdo desta trilha ainda está sendo preparado.</p>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="trail-modules-panel" aria-labelledby="trail-modules-title">
       <h2 id="trail-modules-title">Conteúdo do módulo ({modules.length})</h2>

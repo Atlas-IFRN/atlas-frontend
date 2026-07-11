@@ -17,19 +17,19 @@ export { Toolbar } from './molecules/Toolbar'
 export { TrailBanner } from './molecules/TrailBanner'
 export { TrailFooterMeta } from './molecules/TrailFooterMeta'
 export { TrailSkillList } from './molecules/TrailSkillList'
-export { TrailCard } from './organisms/TrailCard'
+export { TrailBreadcrumb } from './molecules/TrailBreadcrumb'
 export {
-  TrailBreadcrumb,
-  TrailDetailHero,
-  TrailDetailSidebar,
   TrailDetailTabs,
-  TrailEvaluationCard,
-  TrailModulesPanel,
-  TrailOutcomes,
-  TrailPrerequisites,
-  TrailProfessorBlock,
   type TrailDetailTab,
-} from './organisms/TrailDetailSections'
+} from './molecules/TrailDetailTabs'
+export { TrailCard } from './organisms/TrailCard'
+export { TrailDetailHero } from './organisms/TrailDetailHero'
+export { TrailDetailSidebar } from './organisms/TrailDetailSidebar'
+export { TrailEvaluationCard } from './organisms/TrailEvaluationCard'
+export { TrailModulesPanel } from './organisms/TrailModulesPanel'
+export { TrailOutcomes } from './organisms/TrailOutcomes'
+export { TrailPrerequisites } from './organisms/TrailPrerequisites'
+export { TrailProfessorBlock } from './organisms/TrailProfessorBlock'
 export { TrailsGrid } from './organisms/TrailsGrid'
 export { TrailsHero } from './organisms/TrailsHero'
 export { TrailsStatsGrid } from './organisms/TrailsStatsGrid'

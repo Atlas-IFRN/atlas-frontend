@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
   ChevronLeft,
   ChevronRight,
@@ -8,7 +8,6 @@ import {
   FileText,
   GitBranch,
   GripVertical,
-  Pencil,
   Play,
   Plus,
   Trash2,
@@ -28,6 +27,7 @@ import {
   createTrack,
   deleteContent,
   getSkills,
+  getTrackDraftById,
   publishTrack,
   updateContent,
   updateModule,
@@ -126,6 +126,8 @@ const TRACK_LEVEL_OPTIONS: Array<{ value: TrackLevel; label: string }> = [
 
 const DEFAULT_TRACK_TITLE = 'Nova trilha'
 const DEFAULT_TRACK_DESCRIPTION = 'Trilha em construção.'
+const DEFAULT_MODULE_DESCRIPTION = 'Módulo em construção.'
+const DEFAULT_CONTENT_DESCRIPTION = 'Conteúdo em construção.'
 
 function getContentTypeConfig(type: TrailLessonType) {
   return CONTENT_TYPE_CONFIG[type]
@@ -286,7 +288,7 @@ function getContentPayload(
   const payload: CreateContentPayload = {
     module: moduleId,
     title: content.title.trim() || 'Novo conteúdo',
-    description: content.description.trim(),
+    description: content.description.trim() || DEFAULT_CONTENT_DESCRIPTION,
     content_type: content.type,
     duration_minutes: parseDurationMinutes(content.estimatedDuration),
     display_order: displayOrder,
@@ -303,12 +305,40 @@ function getContentPayload(
   return payload
 }
 
+function formatResponseError(data: unknown) {
+  if (typeof data === 'string') {
+    return 'O serviço de trilhas retornou uma resposta inesperada.'
+  }
+
+  if (!data || typeof data !== 'object') {
+    return null
+  }
+
+  const detail = 'detail' in data ? data.detail : null
+  if (typeof detail === 'string') {
+    return detail
+  }
+
+  const fieldMessages = Object.entries(data)
+    .flatMap(([field, value]) => {
+      const messages = Array.isArray(value) ? value : [value]
+      return messages
+        .filter((message): message is string => typeof message === 'string')
+        .map((message) => `${field}: ${message}`)
+    })
+
+  return fieldMessages.length > 0 ? fieldMessages.join(' ') : null
+}
+
 function getErrorMessage(error: unknown) {
   if (error && typeof error === 'object' && 'response' in error) {
     const response = error.response
 
     if (response && typeof response === 'object' && 'data' in response) {
-      return JSON.stringify(response.data)
+      const responseMessage = formatResponseError(response.data)
+      if (responseMessage) {
+        return responseMessage
+      }
     }
   }
 
@@ -321,8 +351,9 @@ function getErrorMessage(error: unknown) {
 
 export default function CreateTrackPage() {
   const navigate = useNavigate()
-  const titleInputRef = useRef<HTMLInputElement>(null)
-  const [trackId, setTrackId] = useState<string | null>(null)
+  const { trackId: routeTrackId } = useParams()
+  const isEditMode = Boolean(routeTrackId)
+  const [trackId, setTrackId] = useState<string | null>(routeTrackId ?? null)
   const [trackStatus, setTrackStatus] = useState<'DRAFT' | 'PUBLISHED'>('DRAFT')
   const [trackTitle, setTrackTitle] = useState('')
   const [trackDescription, setTrackDescription] = useState('')
@@ -330,7 +361,6 @@ export default function CreateTrackPage() {
   const [trackDurationWeeks, setTrackDurationWeeks] = useState('1')
   const [trackOutcomes, setTrackOutcomes] = useState('')
   const [trackPrerequisites, setTrackPrerequisites] = useState('')
-  const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [skills, setSkills] = useState<ApiSkill[]>([])
   const [selectedSkills, setSelectedSkills] = useState<ApiSkill[]>([])
   const [newSkillName, setNewSkillName] = useState('')
@@ -338,22 +368,69 @@ export default function CreateTrackPage() {
   const [selectedModuleId, setSelectedModuleId] = useState('')
   const [selectedContentId, setSelectedContentId] = useState('')
   const [isSaving, setIsSaving] = useState(false)
+  const [isLoadingTrack, setIsLoadingTrack] = useState(isEditMode)
   const [message, setMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    document.title = 'ATLAS - Criar trilha'
+    document.title = isEditMode ? 'ATLAS - Editar trilha' : 'ATLAS - Criar trilha'
 
     void getSkills()
       .then(setSkills)
       .catch(() => setSkills([]))
-  }, [])
 
-  useEffect(() => {
-    if (isEditingTitle) {
-      titleInputRef.current?.focus()
+    if (!routeTrackId) {
+      return
     }
-  }, [isEditingTitle])
+
+    let isCancelled = false
+
+    void getTrackDraftById(routeTrackId)
+      .then((track) => {
+        if (isCancelled) {
+          return
+        }
+
+        const draftModules = [...(track.modules ?? [])]
+          .sort(
+            (first, second) =>
+              (first.display_order ?? 0) - (second.display_order ?? 0),
+          )
+          .map(mapApiModuleToDraft)
+        const firstModule = draftModules[0]
+
+        setTrackId(track.id)
+        setTrackStatus(track.status === 'PUBLISHED' ? 'PUBLISHED' : 'DRAFT')
+        setTrackTitle(track.title ?? '')
+        setTrackDescription(track.description ?? '')
+        setTrackLevel(
+          TRACK_LEVEL_OPTIONS.some((option) => option.value === track.level)
+            ? (track.level as TrackLevel)
+            : 'BEGINNER',
+        )
+        setTrackDurationWeeks(String(track.duration_weeks ?? 1))
+        setTrackOutcomes((track.outcomes ?? []).join('\n'))
+        setTrackPrerequisites((track.prerequisites ?? []).join('\n'))
+        setSelectedSkills(track.skills ?? [])
+        setModules(draftModules)
+        setSelectedModuleId(firstModule?.id ?? '')
+        setSelectedContentId(firstModule?.contents[0]?.id ?? '')
+      })
+      .catch((error) => {
+        if (!isCancelled) {
+          setErrorMessage(getErrorMessage(error))
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) {
+          setIsLoadingTrack(false)
+        }
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [isEditMode, routeTrackId])
 
   const selectedModule = useMemo(
     () => modules.find((module) => module.id === selectedModuleId) ?? null,
@@ -415,7 +492,7 @@ export default function CreateTrackPage() {
         if (module.isPersisted) {
           await updateModule(module.id, {
             title: module.title.trim() || 'Novo módulo',
-            description: module.description,
+            description: module.description.trim() || DEFAULT_MODULE_DESCRIPTION,
             display_order: module.displayOrder,
           })
         }
@@ -434,10 +511,14 @@ export default function CreateTrackPage() {
     )
   }
 
-  async function handlePublishTrack() {
+  async function handleSaveTrack() {
     if (modules.length === 0) {
       setMessage('')
-      setErrorMessage('Crie pelo menos um módulo antes de publicar a trilha.')
+      setErrorMessage(
+        isEditMode && trackStatus === 'PUBLISHED'
+          ? 'A trilha precisa ter pelo menos um módulo.'
+          : 'Crie pelo menos um módulo antes de publicar a trilha.',
+      )
       return
     }
 
@@ -448,6 +529,13 @@ export default function CreateTrackPage() {
     try {
       const track = await persistTrack()
       await persistModulesAndContents()
+
+      if (isEditMode && trackStatus === 'PUBLISHED') {
+        setMessage('Alterações salvas.')
+        navigate(`/trilhas/${track.id}`)
+        return
+      }
+
       const publishedTrack = await publishTrack(track.id)
       setTrackStatus('PUBLISHED')
       setMessage('Trilha publicada.')
@@ -509,7 +597,7 @@ export default function CreateTrackPage() {
       const createdModule = await createModule({
         track: track.id,
         title: `Novo módulo ${modules.length + 1}`,
-        description: '',
+        description: DEFAULT_MODULE_DESCRIPTION,
         display_order: modules.length + 1,
       })
       const draftModule = mapApiModuleToDraft(createdModule)
@@ -533,7 +621,7 @@ export default function CreateTrackPage() {
     try {
       await updateModule(module.id, {
         title: module.title.trim() || 'Novo módulo',
-        description: module.description,
+        description: module.description.trim() || DEFAULT_MODULE_DESCRIPTION,
         display_order: module.displayOrder,
       })
     } catch (error) {
@@ -567,7 +655,7 @@ export default function CreateTrackPage() {
         id: `content-${Date.now()}`,
         title: `Novo conteúdo ${selectedModule.contents.length + 1}`,
         type: 'VIDEO',
-        description: '',
+        description: DEFAULT_CONTENT_DESCRIPTION,
         contentUrl: '',
         estimatedDuration: '',
         visibility: 'enrolled',
@@ -734,37 +822,23 @@ export default function CreateTrackPage() {
     : 'Conteúdo'
   const statusLabel = trackStatus === 'PUBLISHED' ? 'Publicado' : 'Rascunho'
 
+  if (isLoadingTrack) {
+    return (
+      <main className="create-track-page">
+        <div className="create-track-feedback" role="status">
+          Carregando trilha para edição...
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="create-track-page">
       <header className="create-track-header">
         <div className="create-track-topbar">
           <div className="create-track-title-block">
             <div className="create-track-title-row">
-              {isEditingTitle ? (
-                <input
-                  ref={titleInputRef}
-                  className="create-track-title-input"
-                  value={trackTitle}
-                  placeholder={DEFAULT_TRACK_TITLE}
-                  onBlur={() => setIsEditingTitle(false)}
-                  onChange={(event) => setTrackTitle(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      event.currentTarget.blur()
-                    }
-                  }}
-                />
-              ) : (
-                <h1>{trackTitle.trim() || DEFAULT_TRACK_TITLE}</h1>
-              )}
-              <button
-                className="create-track-icon-button"
-                type="button"
-                aria-label="Editar título da trilha"
-                onClick={() => setIsEditingTitle(true)}
-              >
-                <Pencil aria-hidden="true" size={16} />
-              </button>
+              <h1>{trackTitle.trim() || DEFAULT_TRACK_TITLE}</h1>
               <StatusBadge
                 className="create-track-status"
                 status={trackStatus === 'PUBLISHED' ? 'success' : 'neutral'}
@@ -826,9 +900,11 @@ export default function CreateTrackPage() {
               loading={isSaving}
               size="md"
               variant="primary"
-              onClick={handlePublishTrack}
+              onClick={handleSaveTrack}
             >
-              Publicar trilha
+              {isEditMode && trackStatus === 'PUBLISHED'
+                ? 'Salvar alterações'
+                : 'Publicar trilha'}
             </Button>
           </div>
         </div>

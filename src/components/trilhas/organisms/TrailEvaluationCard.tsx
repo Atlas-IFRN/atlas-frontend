@@ -17,7 +17,7 @@ export function TrailEvaluationCard() {
       <div className="trail-evaluation-card__content">
         <span className="trail-detail-eyebrow">Diferencial ATLAS</span>
         <h2>Avaliação automatizada por IA</h2>
-        <p>
+        <p className="trail-evaluation-card__description">
           A cada desafio, você envia o link do repositório no GitHub. Uma IA
           analisa o código com base nos critérios definidos pelo professor
           orientador, devolve feedback técnico detalhado e gera uma pontuação

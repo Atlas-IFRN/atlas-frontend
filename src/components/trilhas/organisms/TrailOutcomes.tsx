@@ -9,8 +9,8 @@ export function TrailOutcomes({ outcomes }: TrailOutcomesProps) {
   return (
     <TrailDetailSection title="O que você vai aprender">
       <ul className="trail-outcomes-list">
-        {outcomes.map((outcome) => (
-          <OutcomeItem key={outcome}>{outcome}</OutcomeItem>
+        {outcomes.map((outcome, index) => (
+          <OutcomeItem key={`${outcome}-${index}`}>{outcome}</OutcomeItem>
         ))}
       </ul>
     </TrailDetailSection>

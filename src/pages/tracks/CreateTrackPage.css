@@ -47,42 +47,6 @@
   white-space: nowrap;
 }
 
-.create-track-title-input {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  color: var(--text);
-  font-family: var(--font-display);
-  font-size: clamp(20px, 1.45vw, 26px);
-  font-weight: 800;
-  inline-size: min(560px, 56vw);
-  min-block-size: 28px;
-  outline: 0;
-  padding: 0;
-}
-
-.create-track-title-input:focus {
-  box-shadow: inset 0 -2px 0 var(--primary);
-}
-
-.create-track-icon-button {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  color: var(--text-muted);
-  cursor: pointer;
-  display: inline-flex;
-  flex: 0 0 auto;
-  justify-content: center;
-  min-block-size: 28px;
-  min-inline-size: 28px;
-  padding: 0;
-  transition:
-    color var(--t-fast),
-    transform var(--t-fast);
-}
-
-.create-track-icon-button:focus-visible,
 .create-track-tech-tag button:focus-visible,
 .create-track-level-options button:focus-visible,
 .track-builder-add-button:focus-visible,
@@ -91,11 +55,6 @@
 .content-editor-criterion button:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
-}
-
-.create-track-icon-button:hover {
-  color: var(--primary);
-  transform: translateY(-1px);
 }
 
 .create-track-status.atlas-status-badge,
@@ -979,10 +938,6 @@
 
   .create-track-title-row h1 {
     white-space: normal;
-  }
-
-  .create-track-title-input {
-    inline-size: 100%;
   }
 
   .create-track-header__actions,

@@ -8,7 +8,6 @@ import {
   LoadingState,
 } from '../../components/states'
 import {
-  TrailBreadcrumb,
   TrailDetailHero,
   TrailDetailSidebar,
   TrailDetailTabs,
@@ -20,6 +19,7 @@ import {
   type TrailDetailTab,
 } from '../../components/trilhas'
 import { useTrack } from '../../hooks/useTracks'
+import './TrackDetailsPage.css'
 
 function setMetaContent(
   selector: string,
@@ -145,7 +145,6 @@ export default function TrackDetailsPage() {
 
   return (
     <main className="trail-detail-page">
-      <TrailBreadcrumb title={trail.title} />
       <TrailDetailHero trail={trail} />
       <TrailDetailTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
@@ -158,8 +157,8 @@ export default function TrackDetailsPage() {
                 title="Sobre esta trilha"
               >
                 <div className="trail-detail-rich-text">
-                  {trail.longDescription.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
+                  {trail.longDescription.map((paragraph, index) => (
+                    <p key={`${paragraph}-${index}`}>{paragraph}</p>
                   ))}
                 </div>
               </InfoCard>
@@ -167,7 +166,7 @@ export default function TrackDetailsPage() {
               {trail.outcomes.length > 0 ? (
                 <TrailOutcomes outcomes={trail.outcomes} />
               ) : null}
-              <TrailEvaluationCard evaluation={trail.evaluation} />
+              <TrailEvaluationCard />
               {trail.prerequisites.length > 0 ? (
                 <TrailPrerequisites prerequisites={trail.prerequisites} />
               ) : null}

@@ -86,6 +86,15 @@ export interface ApiTrack {
   created_at?: string
 }
 
+export interface ApiUserTrack {
+  id: string
+  user_id: string
+  track: string
+  status: 'IN_PROGRESS' | 'COMPLETED' | 'DROPPED'
+  enrolled_at: string
+  completed_at?: string | null
+}
+
 export interface CreateTrackPayload {
   title: string
   description: string
@@ -297,6 +306,66 @@ export async function getTrackDraftById(trackId: string): Promise<ApiTrack> {
   const { data } = await tracksApi.get<ApiTrack>(`track/tracks/${trackId}/`)
 
   return data
+}
+
+export async function enrollInTrack(trackId: string): Promise<ApiUserTrack> {
+  const { data } = await tracksApi.post<ApiUserTrack>('track/user-tracks/', {
+    track: trackId,
+  })
+
+  return data
+}
+
+export function getTrackRequestErrorMessage(
+  error: unknown,
+  fallback = 'Não foi possível concluir a ação.',
+) {
+  if (!error || typeof error !== 'object' || !('response' in error)) {
+    return error instanceof Error ? error.message : fallback
+  }
+
+  const response = error.response
+  if (!response || typeof response !== 'object' || !('data' in response)) {
+    return fallback
+  }
+
+  const data = response.data
+  if (typeof data === 'string') {
+    return data
+  }
+
+  if (!data || typeof data !== 'object') {
+    return fallback
+  }
+
+  const payload = data as Record<string, unknown>
+
+  const preferredFields = [
+    'detail',
+    'track',
+    'user_id',
+    'status',
+    'non_field_errors',
+  ]
+
+  for (const field of preferredFields) {
+    if (!(field in payload)) {
+      continue
+    }
+
+    const value = payload[field]
+    if (typeof value === 'string') {
+      return value
+    }
+    if (Array.isArray(value)) {
+      const message = value.find((item): item is string => typeof item === 'string')
+      if (message) {
+        return message
+      }
+    }
+  }
+
+  return fallback
 }
 
 export async function createTrack(

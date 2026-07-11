@@ -317,6 +317,29 @@
   flex: 0 0 auto;
 }
 
+.trail-footer-meta__actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--s-2);
+}
+
+.trail-footer-meta__edit {
+  inline-size: 38px;
+  min-inline-size: 38px;
+  padding-inline: 0;
+}
+
+.trail-card__enrollment-error {
+  background: color-mix(in srgb, var(--danger) 10%, var(--surface));
+  border-block-start: 1px solid color-mix(in srgb, var(--danger) 28%, transparent);
+  color: color-mix(in srgb, var(--danger) 72%, var(--text));
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+  padding: 10px var(--trail-card-padding-x) 12px;
+}
+
 .trails-page .atlas-empty-state,
 .trails-page .atlas-error-state,
 .trails-page .atlas-loading-state {
@@ -391,6 +414,18 @@
 
   .trail-footer-meta__cta {
     inline-size: 100%;
+  }
+
+  .trail-footer-meta__actions {
+    inline-size: 100%;
+  }
+
+  .trail-footer-meta__actions .trail-footer-meta__cta {
+    inline-size: auto;
+  }
+
+  .trail-footer-meta__actions .trail-footer-meta__cta:not(.trail-footer-meta__edit) {
+    flex: 1 1 auto;
   }
 }
 

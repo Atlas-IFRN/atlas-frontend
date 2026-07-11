@@ -1,5 +1,8 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ProgressBar } from '../../atoms/ProgressBar'
+import { useAuth } from '../../../contexts/AuthContext'
+import { useEnrollInTrack } from '../../../hooks/useTracks'
+import { getTrackRequestErrorMessage } from '../../../services/tracks'
 import type { Trail } from '../types'
 import { TrailBanner } from '../molecules/TrailBanner'
 import { TrailFooterMeta } from '../molecules/TrailFooterMeta'
@@ -10,6 +13,18 @@ interface TrailCardProps {
 }
 
 export function TrailCard({ trail }: TrailCardProps) {
+  const navigate = useNavigate()
+  const { user } = useAuth()
+  const enrollment = useEnrollInTrack()
+  const normalizedRole = user?.role.trim().toLowerCase()
+  const canEnroll = normalizedRole !== 'teacher' && normalizedRole !== 'professor'
+
+  function handleEnroll() {
+    enrollment.mutate(trail.id, {
+      onSuccess: () => navigate(`/trilhas/${trail.id}`),
+    })
+  }
+
   return (
     <article className="trail-card">
       <Link
@@ -30,7 +45,21 @@ export function TrailCard({ trail }: TrailCardProps) {
         </div>
       </Link>
 
-      <TrailFooterMeta trail={trail} />
+      <TrailFooterMeta
+        canEnroll={canEnroll}
+        isEnrolling={enrollment.isPending}
+        onEnroll={handleEnroll}
+        trail={trail}
+      />
+
+      {enrollment.isError ? (
+        <p className="trail-card__enrollment-error" role="alert">
+          {getTrackRequestErrorMessage(
+            enrollment.error,
+            'Não foi possível realizar a inscrição nesta trilha.',
+          )}
+        </p>
+      ) : null}
     </article>
   )
 }

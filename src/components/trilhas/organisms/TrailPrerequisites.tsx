@@ -9,10 +9,10 @@ export function TrailPrerequisites({
   prerequisites,
 }: TrailPrerequisitesProps) {
   return (
-    <TrailDetailSection title="Pré-requisitos recomendados">
+    <TrailDetailSection title="Pré-requisitos">
       <ul className="trail-prereq-list">
-        {prerequisites.map((prerequisite) => (
-          <PrereqItem key={prerequisite}>{prerequisite}</PrereqItem>
+        {prerequisites.map((prerequisite, index) => (
+          <PrereqItem key={`${prerequisite}-${index}`}>{prerequisite}</PrereqItem>
         ))}
       </ul>
     </TrailDetailSection>

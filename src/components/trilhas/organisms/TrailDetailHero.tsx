@@ -8,6 +8,12 @@ interface TrailDetailHeroProps {
 }
 
 export function TrailDetailHero({ trail }: TrailDetailHeroProps) {
+  const summary =
+    trail.description
+      .split(/\r?\n+/)
+      .map((paragraph) => paragraph.trim())
+      .find(Boolean) ?? trail.description
+
   return (
     <section className={`trail-detail-hero ${trail.theme}`}>
       <div className="trail-detail-hero__content">
@@ -16,12 +22,12 @@ export function TrailDetailHero({ trail }: TrailDetailHeroProps) {
         </TextTag>
 
         <h1>{trail.title}</h1>
-        <p>{trail.description}</p>
+        <p>{summary}</p>
 
         <div className="trail-detail-hero__meta" aria-label="Resumo da trilha">
           <span>
             <CalendarDays aria-hidden="true" size={16} />
-            {trail.modules} módulos
+            {trail.modules} {trail.modules === 1 ? 'módulo' : 'módulos'}
           </span>
           <span>
             <Timer aria-hidden="true" size={16} />

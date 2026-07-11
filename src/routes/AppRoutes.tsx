@@ -83,6 +83,12 @@ const TeacherPanelPage = lazy(
 
 const TEACHER_ROLES = ['teacher', 'professor']
 const STUDENT_ROLES = ['student', 'aluno']
+const ALLOW_STUDENT_TRACK_MANAGEMENT =
+  import.meta.env.DEV &&
+  import.meta.env.VITE_ALLOW_STUDENT_TRACK_MANAGEMENT !== 'false'
+const TRACK_AUTHOR_ROLES = ALLOW_STUDENT_TRACK_MANAGEMENT
+  ? [...TEACHER_ROLES, ...STUDENT_ROLES]
+  : TEACHER_ROLES
 
 export function AppRoutes() {
   return (
@@ -151,6 +157,17 @@ export function AppRoutes() {
                 path="/bolsas/:scholarshipId/candidaturas"
                 element={<ScholarshipApplicationsPage />}
               />
+              <Route
+                path="/banco-talentos/:studentId/notas"
+                element={<NotesPage />}
+              />
+              <Route
+                path="/banco-talentos/:studentId/notas/nova"
+                element={<CreateNotePage />}
+              />
+            </Route>
+
+            <Route element={<RoleRoute allowedRoles={TRACK_AUTHOR_ROLES} />}>
               <Route path="/trilhas/nova" element={<CreateTrackPage />} />
               <Route path="/trilhas/:trackId/editar" element={<EditTrackPage />} />
               <Route
@@ -168,14 +185,6 @@ export function AppRoutes() {
               <Route
                 path="/trilhas/:trackId/modulos/:moduleId/conteudos/:contentId/editar"
                 element={<EditContentPage />}
-              />
-              <Route
-                path="/banco-talentos/:studentId/notas"
-                element={<NotesPage />}
-              />
-              <Route
-                path="/banco-talentos/:studentId/notas/nova"
-                element={<CreateNotePage />}
               />
             </Route>
           </Route>

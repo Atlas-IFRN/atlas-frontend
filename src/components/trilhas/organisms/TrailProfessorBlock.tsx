@@ -9,12 +9,14 @@ interface TrailProfessorBlockProps {
 export function TrailProfessorBlock({ teacher }: TrailProfessorBlockProps) {
   return (
     <TrailDetailSection className="trail-professor-section">
-      <Avatar color="blue" name={teacher.name} size="lg" />
+      <Avatar color="blue" name={teacher.name} size="md" />
       <div>
         <span className="trail-detail-eyebrow">Professor orientador</span>
         <h2>{teacher.name}</h2>
-        <p className="trail-professor-section__area">{teacher.area}</p>
-        <p>{teacher.bio}</p>
+        {teacher.area ? (
+          <p className="trail-professor-section__area">{teacher.area}</p>
+        ) : null}
+        {teacher.bio ? <p>{teacher.bio}</p> : null}
       </div>
     </TrailDetailSection>
   )

@@ -1,8 +1,11 @@
-import { ArrowRight, Star } from 'lucide-react'
+import { ArrowRight, Info, Star } from 'lucide-react'
 import { Button } from '../../atoms/Button'
 import { ButtonLink } from '../../atoms/ButtonLink'
 import { ProgressBar } from '../../atoms/ProgressBar'
 import { StatusBadge } from '../../atoms/StatusBadge'
+import { useAuth } from '../../../contexts/AuthContext'
+import { useEnrollInTrack } from '../../../hooks/useTracks'
+import { getTrackRequestErrorMessage } from '../../../services/tracks'
 import type { Trail } from '../types'
 
 interface TrailDetailSidebarProps {
@@ -11,20 +14,80 @@ interface TrailDetailSidebarProps {
 
 export function TrailDetailSidebar({ trail }: TrailDetailSidebarProps) {
   const progress = trail.progress ?? 0
+  const firstModuleId = trail.modulesList[0]?.id
+  const workload = trail.hours > 0 ? `~${trail.hours}h` : 'A definir'
+  const { user } = useAuth()
+  const enrollment = useEnrollInTrack()
+  const normalizedRole = user?.role.trim().toLowerCase()
+  const canEnroll = normalizedRole !== 'teacher' && normalizedRole !== 'professor'
+
+  function handleEnroll() {
+    enrollment.mutate(trail.id)
+  }
 
   return (
     <aside className="trail-detail-sidebar" aria-label="Progresso da trilha">
       <section className="trail-detail-side-card">
-        <ProgressBar label="Seu progresso" value={progress} />
+        {trail.enrolled ? (
+          <ProgressBar label="Seu progresso" value={progress} />
+        ) : null}
 
-        <ButtonLink
-          className="trail-detail-sidebar__cta"
-          size="md"
-          to={`/trilhas/${trail.id}/modulos/${trail.modulesList[0]?.id ?? 'inicio'}`}
-          variant="primary"
-        >
-          Continuar trilha
-        </ButtonLink>
+        {trail.enrolled && firstModuleId ? (
+          <ButtonLink
+            className="trail-detail-sidebar__cta"
+            size="md"
+            to={`/trilhas/${trail.id}/modulos/${firstModuleId}`}
+            variant="primary"
+          >
+            Continuar trilha
+          </ButtonLink>
+        ) : trail.enrolled ? (
+          <Button
+            className="trail-detail-sidebar__cta"
+            disabled
+            size="md"
+            variant="primary"
+          >
+            Trilha sem módulos
+          </Button>
+        ) : canEnroll ? (
+          <Button
+            className="trail-detail-sidebar__cta"
+            loading={enrollment.isPending}
+            onClick={handleEnroll}
+            size="md"
+            variant="primary"
+          >
+            Inscrever-se
+          </Button>
+        ) : firstModuleId ? (
+          <ButtonLink
+            className="trail-detail-sidebar__cta"
+            size="md"
+            to={`/trilhas/${trail.id}/modulos/${firstModuleId}`}
+            variant="outline"
+          >
+            Ver primeiro módulo
+          </ButtonLink>
+        ) : (
+          <Button
+            className="trail-detail-sidebar__cta"
+            disabled
+            size="md"
+            variant="outline"
+          >
+            Trilha sem módulos
+          </Button>
+        )}
+
+        {enrollment.isError ? (
+          <p className="trail-detail-sidebar__error" role="alert">
+            {getTrackRequestErrorMessage(
+              enrollment.error,
+              'Não foi possível realizar a inscrição nesta trilha.',
+            )}
+          </p>
+        ) : null}
 
         <div className="trail-detail-sidebar__stats">
           <span>
@@ -32,7 +95,8 @@ export function TrailDetailSidebar({ trail }: TrailDetailSidebarProps) {
             {trail.modules}
           </span>
           <span>
-            <strong>Carga</strong>~{trail.hours}h
+            <strong>Carga</strong>
+            {workload}
           </span>
         </div>
       </section>
@@ -78,8 +142,8 @@ export function TrailDetailSidebar({ trail }: TrailDetailSidebarProps) {
           </dl>
 
           <ul className="trail-ai-score-card__checks">
-            {trail.evaluation.checks.map((check) => (
-              <li data-status={check.status} key={check.label}>
+            {trail.evaluation.checks.map((check, index) => (
+              <li data-status={check.status} key={`${check.label}-${index}`}>
                 <span aria-hidden="true" />
                 {check.label}
               </li>
@@ -91,6 +155,17 @@ export function TrailDetailSidebar({ trail }: TrailDetailSidebarProps) {
           </Button>
         </section>
       ) : null}
+
+      <section className="trail-detail-ai-note">
+        <Info aria-hidden="true" size={18} strokeWidth={2} />
+        <div>
+          <strong>Avaliação automática</strong>
+          <p>
+            Os desafios são validados por IA com base nos critérios definidos
+            pelo professor orientador.
+          </p>
+        </div>
+      </section>
     </aside>
   )
 }
