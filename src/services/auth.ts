@@ -81,6 +81,18 @@ function toAuthUser(user: SuapUserResponse): AuthUser {
   }
 }
 
+export async function getCurrentUserProfile(
+  accessToken?: string,
+): Promise<AuthUser> {
+  const { data } = await api.get<SuapUserResponse>('auth/users/me/', {
+    headers: accessToken
+      ? { Authorization: `Bearer ${accessToken}` }
+      : undefined,
+  })
+
+  return toAuthUser(data)
+}
+
 export async function getSuapLoginUrl(): Promise<string> {
   const { data } = await api.get<SuapLoginResponse>('auth/suap/login/')
 
@@ -99,9 +111,16 @@ export async function exchangeSuapCodeForSession(
     throw new Error('Invalid SUAP callback response')
   }
 
+  const profile = await getCurrentUserProfile(data.access)
+  const isNewUser = data.user.is_new_user ?? data.user.isNewUser
+
   return {
     accessToken: data.access,
     refreshToken: data.refresh,
-    user: toAuthUser(data.user),
+    user: {
+      ...profile,
+      isNewUser:
+        isNewUser === undefined ? profile.isNewUser : Boolean(isNewUser),
+    },
   }
 }

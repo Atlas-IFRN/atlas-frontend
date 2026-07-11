@@ -1,4 +1,9 @@
-export type TrailFilter = 'all' | 'enrolled' | 'new'
+export type TrailFilter =
+  | 'all'
+  | 'enrolled'
+  | 'in-progress'
+  | 'completed'
+  | 'new'
 
 export type TrailTheme = 'backend' | 'frontend' | 'ai' | 'cicd' | 'devops'
 
