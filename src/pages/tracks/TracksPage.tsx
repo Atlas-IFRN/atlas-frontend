@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { SearchX } from 'lucide-react'
+import { useAuth } from '../../contexts/AuthContext'
 import {
   EmptyState,
   ErrorState,
@@ -8,13 +9,35 @@ import {
 import {
   TrailsGrid,
   TrailsHero,
-  TrailsStatsGrid,
   TrailsToolbar,
-  type TrailFilter,
 } from '../../components/trilhas'
 import { useTracks } from '../../hooks/useTracks'
+import type { TrailFilter } from '../../types/tracks'
+import '../../components/trilhas/TrailsCatalog.css'
+
+function isTeacherRole(role: string | undefined) {
+  const normalizedRole = role?.trim().toLowerCase()
+
+  return normalizedRole === 'teacher' || normalizedRole === 'professor'
+}
+
+function canManageTracks(role: string | undefined) {
+  if (isTeacherRole(role)) {
+    return true
+  }
+
+  const normalizedRole = role?.trim().toLowerCase()
+  const isStudent = normalizedRole === 'student' || normalizedRole === 'aluno'
+
+  return (
+    import.meta.env.DEV &&
+    import.meta.env.VITE_ALLOW_STUDENT_TRACK_MANAGEMENT !== 'false' &&
+    isStudent
+  )
+}
 
 export default function TracksPage() {
+  const { user } = useAuth()
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<TrailFilter>('all')
   const {
@@ -23,6 +46,7 @@ export default function TracksPage() {
     isLoading,
     refetch,
   } = useTracks()
+  const canCreateTrack = canManageTracks(user?.role)
 
   useEffect(() => {
     document.title = 'ATLAS · Trilhas'
@@ -72,15 +96,6 @@ export default function TracksPage() {
     })
   }, [filter, query, trails])
 
-  const stats = useMemo(
-    () => ({
-      activeTrails: trails.length,
-      certificates: 4,
-      scholarships: 8,
-    }),
-    [trails.length],
-  )
-
   function handleClearSearch() {
     setQuery('')
     setFilter('all')
@@ -92,8 +107,7 @@ export default function TracksPage() {
 
   return (
     <main className="trails-page">
-      <TrailsHero createHref="/trilhas/nova" />
-      <TrailsStatsGrid stats={stats} />
+      <TrailsHero canCreate={canCreateTrack} createHref="/trilhas/nova" />
       <TrailsToolbar
         filter={filter}
         onFilterChange={setFilter}

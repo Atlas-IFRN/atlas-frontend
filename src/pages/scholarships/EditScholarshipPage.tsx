@@ -2,9 +2,10 @@ import { useQuery } from '@tanstack/react-query'
 import { ArrowLeft } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../../components/atoms/Button'
+import { ScholarshipFormPage } from '../../components/scholarships'
 import { ErrorState, LoadingState } from '../../components/states'
 import { getScholarship } from '../../services/scholarships'
-import { ScholarshipFormPage } from './CreateScholarshipPage'
+import '../../components/scholarships/form/ScholarshipFormPage.css'
 
 export default function EditScholarshipPage() {
   const { scholarshipId } = useParams()
