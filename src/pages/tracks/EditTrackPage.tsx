@@ -1,5 +1,5 @@
-import { RoutePage } from '../RoutePage'
+import CreateTrackPage from './CreateTrackPage'
 
 export default function EditTrackPage() {
-  return <RoutePage title="Editar trilha" />
+  return <CreateTrackPage />
 }
