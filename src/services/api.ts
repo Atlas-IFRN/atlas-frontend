@@ -39,7 +39,7 @@ function applyApiInterceptors(client: AxiosInstance) {
     const token = authHandlers.getAccessToken()
     const csrfToken = getCookieValue('csrftoken')
 
-    if (token) {
+    if (token && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${token}`
     }
 

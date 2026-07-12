@@ -1,13 +1,22 @@
 import { Link } from 'react-router-dom'
-import { Clock, Layers } from 'lucide-react'
+import { Clock, Layers, Pencil } from 'lucide-react'
+import { Button } from '../../atoms/Button'
 import { ButtonLink } from '../../atoms/ButtonLink'
 import type { Trail } from '../../../types/tracks'
 
 interface TrailFooterMetaProps {
+  canEnroll: boolean
+  isEnrolling?: boolean
+  onEnroll: () => void
   trail: Trail
 }
 
-export function TrailFooterMeta({ trail }: TrailFooterMetaProps) {
+export function TrailFooterMeta({
+  canEnroll,
+  isEnrolling = false,
+  onEnroll,
+  trail,
+}: TrailFooterMetaProps) {
   const ctaLabel = trail.enrolled ? 'Continuar' : 'Inscrever-se'
 
   return (
@@ -27,14 +36,39 @@ export function TrailFooterMeta({ trail }: TrailFooterMetaProps) {
         </span>
       </Link>
 
-      <ButtonLink
-        className="trail-footer-meta__cta"
-        size="md"
-        to={`/trilhas/${trail.id}`}
-        variant={trail.enrolled ? 'primary' : 'soft'}
-      >
-        {ctaLabel}
-      </ButtonLink>
+      <div className="trail-footer-meta__actions">
+        <ButtonLink
+          aria-label={`Editar trilha ${trail.title}`}
+          className="trail-footer-meta__cta trail-footer-meta__edit"
+          size="md"
+          title="Editar trilha"
+          to={`/trilhas/${trail.id}/editar`}
+          variant="outline"
+        >
+          <Pencil aria-hidden="true" className="atlas-button__icon" size={15} />
+        </ButtonLink>
+
+        {trail.enrolled || !canEnroll ? (
+          <ButtonLink
+            className="trail-footer-meta__cta"
+            size="md"
+            to={`/trilhas/${trail.id}`}
+            variant={trail.enrolled ? 'primary' : 'soft'}
+          >
+            {trail.enrolled ? ctaLabel : 'Ver detalhes'}
+          </ButtonLink>
+        ) : (
+          <Button
+            className="trail-footer-meta__cta"
+            loading={isEnrolling}
+            onClick={onEnroll}
+            size="md"
+            variant="soft"
+          >
+            {ctaLabel}
+          </Button>
+        )}
+      </div>
     </footer>
   )
 }

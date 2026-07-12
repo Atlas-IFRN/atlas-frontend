@@ -5,30 +5,26 @@ interface TrailDetailTabsProps {
   onTabChange: (tab: TrailDetailTab) => void
 }
 
-export function TrailDetailTabs({
-  activeTab,
-  onTabChange,
-}: TrailDetailTabsProps) {
+const tabs = [
+  { value: 'overview', label: 'Visão geral' },
+  { value: 'modules', label: 'Módulos' },
+] satisfies Array<{ value: TrailDetailTab; label: string }>
+
+export function TrailDetailTabs({ activeTab, onTabChange }: TrailDetailTabsProps) {
   return (
-    <div className="trail-detail-tabs" role="tablist" aria-label="Detalhes">
-      <button
-        type="button"
-        role="tab"
-        aria-selected={activeTab === 'overview'}
-        className={activeTab === 'overview' ? 'active' : undefined}
-        onClick={() => onTabChange('overview')}
-      >
-        Visão geral
-      </button>
-      <button
-        type="button"
-        role="tab"
-        aria-selected={activeTab === 'modules'}
-        className={activeTab === 'modules' ? 'active' : undefined}
-        onClick={() => onTabChange('modules')}
-      >
-        Módulos
-      </button>
+    <div className="trail-detail-tabs" role="tablist" aria-label="Detalhes da trilha">
+      {tabs.map((tab) => (
+        <button
+          aria-selected={activeTab === tab.value}
+          className="trail-detail-tabs__button"
+          key={tab.value}
+          onClick={() => onTabChange(tab.value)}
+          role="tab"
+          type="button"
+        >
+          {tab.label}
+        </button>
+      ))}
     </div>
   )
 }

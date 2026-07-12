@@ -52,7 +52,7 @@ export function AppLayout() {
   const [collapsed, setCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const userName = user?.fullName || user?.firstName || 'Atlas'
+  const userName = user?.firstName || 'Atlas'
   const userRole = getRoleLabel(user?.role)
   const menu = useMemo<NavItem[]>(
     () => [
@@ -207,6 +207,7 @@ export function AppLayout() {
               <UserChip
                 name={userName}
                 role={userRole}
+                src={user?.image || undefined}
                 color="blue"
                 size="sm"
               />
@@ -219,6 +220,7 @@ export function AppLayout() {
             user={{
               name: userName,
               role: userRole,
+              src: user?.image || undefined,
               color: 'blue',
             }}
             sidebarToggleLabel={toggleLabel}

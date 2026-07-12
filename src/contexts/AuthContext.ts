@@ -7,6 +7,7 @@ export interface AuthUser {
   fullName: string
   email: string
   role: string
+  image: string
   ira: number | null
   period: number | null
   aboutMe: string
@@ -31,6 +32,7 @@ export interface AuthContextValue {
   isAuthenticated: boolean
   login: (data: LoginData) => void
   logout: () => void
+  refreshUser: () => Promise<AuthUser | null>
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined)

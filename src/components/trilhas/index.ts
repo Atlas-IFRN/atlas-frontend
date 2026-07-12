@@ -9,6 +9,7 @@ export type {
   TrailModule,
   TrailTeacher,
   TrailTheme,
+  TrailsStats,
 } from '../../types/tracks'
 export { TrailsGrid } from './catalog/TrailsGrid'
 export { TrailsHero } from './catalog/TrailsHero'

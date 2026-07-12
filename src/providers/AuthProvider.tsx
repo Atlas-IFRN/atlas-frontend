@@ -5,6 +5,7 @@ import {
   type AuthUser,
   type LoginData,
 } from '../contexts/AuthContext'
+import { getCurrentUserProfile } from '../services/auth'
 import { setApiAuthHandlers } from '../services/api'
 
 const AUTH_ACCESS_TOKEN_KEY = 'atlas.auth.access'
@@ -21,6 +22,7 @@ const authBypassUser: AuthUser = {
   fullName: 'Dev Auth Bypass',
   email: 'dev.auth.bypass@atlas.local',
   role: authBypassRole,
+  image: '',
   ira: 10,
   period: 1,
   aboutMe: 'Usuario local para testes de rotas protegidas.',
@@ -104,6 +106,30 @@ export function AuthProvider({ children }: PropsWithChildren) {
     clearStoredSession()
   }, [])
 
+  const refreshUser = useCallback(async () => {
+    if (!accessToken) {
+      return null
+    }
+
+    if (authBypassEnabled) {
+      return authBypassUser
+    }
+
+    const refreshedUser = await getCurrentUserProfile(accessToken)
+
+    setSession((currentSession) => {
+      if (!currentSession || currentSession.accessToken !== accessToken) {
+        return currentSession
+      }
+
+      const refreshedSession = { ...currentSession, user: refreshedUser }
+      writeStoredSession(refreshedSession)
+      return refreshedSession
+    })
+
+    return refreshedUser
+  }, [accessToken])
+
   useEffect(() => {
     return setApiAuthHandlers({
       getAccessToken: () => accessToken,
@@ -115,8 +141,24 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, [accessToken, logout, navigate])
 
   const value = useMemo(
-    () => ({ user, accessToken, refreshToken, isAuthenticated, login, logout }),
-    [user, accessToken, refreshToken, isAuthenticated, login, logout],
+    () => ({
+      user,
+      accessToken,
+      refreshToken,
+      isAuthenticated,
+      login,
+      logout,
+      refreshUser,
+    }),
+    [
+      user,
+      accessToken,
+      refreshToken,
+      isAuthenticated,
+      login,
+      logout,
+      refreshUser,
+    ],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

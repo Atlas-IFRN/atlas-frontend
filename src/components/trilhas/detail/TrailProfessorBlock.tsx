@@ -1,4 +1,4 @@
-import { UserRound } from 'lucide-react'
+import { Avatar } from '../../atoms/Avatar'
 import type { TrailTeacher } from '../../../types/tracks'
 
 interface TrailProfessorBlockProps {
@@ -7,14 +7,15 @@ interface TrailProfessorBlockProps {
 
 export function TrailProfessorBlock({ teacher }: TrailProfessorBlockProps) {
   return (
-    <section className="trail-detail-section trail-professor-block">
-      <span className="trail-professor-block__avatar" aria-hidden="true">
-        {teacher.initials || <UserRound size={18} />}
-      </span>
+    <section className="trail-detail-section trail-professor-section">
+      <Avatar color="blue" name={teacher.name} size="md" />
       <div>
+        <span className="trail-detail-eyebrow">Professor orientador</span>
         <h2>{teacher.name}</h2>
-        <p>{teacher.area}</p>
-        <p>{teacher.bio}</p>
+        {teacher.area ? (
+          <p className="trail-professor-section__area">{teacher.area}</p>
+        ) : null}
+        {teacher.bio ? <p>{teacher.bio}</p> : null}
       </div>
     </section>
   )

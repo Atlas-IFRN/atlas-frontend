@@ -15,6 +15,7 @@ interface SuapUserResponse {
   fullName?: string | null
   email?: string | null
   role?: string | null
+  image?: string | null
   ira?: number | string | null
   period?: number | string | null
   about_me?: string | null
@@ -67,6 +68,7 @@ function toAuthUser(user: SuapUserResponse): AuthUser {
     fullName,
     email: toStringValue(user.email),
     role: toStringValue(user.role),
+    image: toStringValue(user.image),
     ira: toNullableNumber(user.ira),
     period: toNullableNumber(user.period),
     aboutMe: toStringValue(user.about_me ?? user.aboutMe),
@@ -79,6 +81,24 @@ function toAuthUser(user: SuapUserResponse): AuthUser {
     ),
     isNewUser: isNewUser === undefined ? undefined : Boolean(isNewUser),
   }
+}
+
+export async function getCurrentUserProfile(
+  accessToken?: string,
+): Promise<AuthUser> {
+  const { data } = await api.get<SuapUserResponse>('auth/users/me/', {
+    headers: accessToken
+      ? { Authorization: `Bearer ${accessToken}` }
+      : undefined,
+  })
+
+  return toAuthUser(data)
+}
+
+export async function getUserProfileById(userId: string): Promise<AuthUser> {
+  const { data } = await api.get<SuapUserResponse>(`auth/users/${userId}/`)
+
+  return toAuthUser(data)
 }
 
 export async function getSuapLoginUrl(): Promise<string> {
@@ -99,9 +119,16 @@ export async function exchangeSuapCodeForSession(
     throw new Error('Invalid SUAP callback response')
   }
 
+  const profile = await getCurrentUserProfile(data.access)
+  const isNewUser = data.user.is_new_user ?? data.user.isNewUser
+
   return {
     accessToken: data.access,
     refreshToken: data.refresh,
-    user: toAuthUser(data.user),
+    user: {
+      ...profile,
+      isNewUser:
+        isNewUser === undefined ? profile.isNewUser : Boolean(isNewUser),
+    },
   }
 }

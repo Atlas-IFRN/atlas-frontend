@@ -6,7 +6,7 @@ import {
   PackageOpen,
   Plus,
 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../../contexts/AuthContext'
 import { listScholarships } from '../../../services/scholarships'
 import { Button } from '../../atoms/Button'
@@ -20,6 +20,7 @@ type ScholarshipFilter =
   | 'all'
   | 'open'
   | 'closing'
+  | 'applied'
   | 'closed'
 
 interface FilterOption {
@@ -35,8 +36,27 @@ const filters: FilterOption[] = [
   { id: 'all', label: 'Todas' },
   { id: 'open', label: 'Abertas' },
   { id: 'closing', label: 'Encerrando' },
+  { id: 'applied', label: 'Minhas candidaturas' },
   { id: 'closed', label: 'Encerradas' },
 ]
+
+const scholarshipFilterQuery: Partial<Record<string, ScholarshipFilter>> = {
+  abertas: 'open',
+  encerrando: 'closing',
+  'minhas-candidaturas': 'applied',
+  encerradas: 'closed',
+}
+
+const scholarshipFilterUrl: Exclude<
+  Record<ScholarshipFilter, string>,
+  never
+> = {
+  all: 'todas',
+  open: 'abertas',
+  closing: 'encerrando',
+  applied: 'minhas-candidaturas',
+  closed: 'encerradas',
+}
 
 const emptyScholarships: Scholarship[] = []
 
@@ -84,6 +104,10 @@ function matchesFilter(
     return scholarship.status === 'RegistrationClosed'
   }
 
+  if (filter === 'applied') {
+    return scholarship.userApplication?.applied === true
+  }
+
   if (filter === 'open') {
     return scholarship.status === 'Open'
   }
@@ -129,9 +153,17 @@ function getErrorMessage(error: unknown) {
 export function ScholarshipsCatalog() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [search, setSearch] = useState('')
-  const [selectedFilter, setSelectedFilter] = useState<ScholarshipFilter>('all')
   const isTeacher = isTeacherRole(user?.role)
+  const queryFilter =
+    scholarshipFilterQuery[searchParams.get('filtro') ?? ''] ?? 'all'
+  const selectedFilter = isTeacher && queryFilter === 'applied'
+    ? 'all'
+    : queryFilter
+  const visibleFilters = isTeacher
+    ? filters.filter((filter) => filter.id !== 'applied')
+    : filters
 
   const scholarshipsQuery = useQuery({
     queryKey: ['scholarships', 'list'],
@@ -181,6 +213,18 @@ export function ScholarshipsCatalog() {
     selectedFilter,
   ])
 
+  function handleFilterChange(filter: ScholarshipFilter) {
+    if (filter === 'all') {
+      setSearchParams({}, { replace: true })
+      return
+    }
+
+    setSearchParams(
+      { filtro: scholarshipFilterUrl[filter] },
+      { replace: true },
+    )
+  }
+
   return (
     <section className="scholarships-page">
       <header className="scholarships-page__header">
@@ -217,13 +261,13 @@ export function ScholarshipsCatalog() {
         />
 
         <div className="scholarships-page__filters" aria-label="Filtros">
-          {filters.map((filter) => (
+          {visibleFilters.map((filter) => (
             <FilterTag
               active={selectedFilter === filter.id}
               iconLeft={selectedFilter === filter.id ? Circle : undefined}
               key={filter.id}
               label={filter.label}
-              onClick={() => setSelectedFilter(filter.id)}
+              onClick={() => handleFilterChange(filter.id)}
             />
           ))}
         </div>

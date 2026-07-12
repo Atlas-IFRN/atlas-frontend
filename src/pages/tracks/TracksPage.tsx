@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { SearchX } from 'lucide-react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   EmptyState,
@@ -21,10 +22,27 @@ function isTeacherRole(role: string | undefined) {
   return normalizedRole === 'teacher' || normalizedRole === 'professor'
 }
 
+const FILTER_QUERY_VALUES: Record<string, TrailFilter> = {
+  todas: 'all',
+  inscritas: 'enrolled',
+  'em-andamento': 'in-progress',
+  concluidas: 'completed',
+  novas: 'new',
+}
+
+const FILTER_URL_VALUES: Record<TrailFilter, string> = {
+  all: 'todas',
+  enrolled: 'inscritas',
+  'in-progress': 'em-andamento',
+  completed: 'concluidas',
+  new: 'novas',
+}
+
 export default function TracksPage() {
   const { user } = useAuth()
   const [query, setQuery] = useState('')
-  const [filter, setFilter] = useState<TrailFilter>('all')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const filter = FILTER_QUERY_VALUES[searchParams.get('filtro') ?? ''] ?? 'all'
   const {
     data: trails = [],
     isError,
@@ -58,6 +76,12 @@ export default function TracksPage() {
       const matchesFilter =
         filter === 'all' ||
         (filter === 'enrolled' && trail.enrolled) ||
+        (filter === 'in-progress' &&
+          trail.enrolled &&
+          trail.progress !== 100) ||
+        (filter === 'completed' &&
+          trail.enrolled &&
+          trail.progress === 100) ||
         (filter === 'new' && trail.isNew)
 
       if (!matchesFilter) {
@@ -83,7 +107,19 @@ export default function TracksPage() {
 
   function handleClearSearch() {
     setQuery('')
-    setFilter('all')
+    setSearchParams({}, { replace: true })
+  }
+
+  function handleFilterChange(nextFilter: TrailFilter) {
+    if (nextFilter === 'all') {
+      setSearchParams({}, { replace: true })
+      return
+    }
+
+    setSearchParams(
+      { filtro: FILTER_URL_VALUES[nextFilter] },
+      { replace: true },
+    )
   }
 
   function handleRetry() {
@@ -95,7 +131,7 @@ export default function TracksPage() {
       <TrailsHero canCreate={isTeacher} createHref="/trilhas/nova" />
       <TrailsToolbar
         filter={filter}
-        onFilterChange={setFilter}
+        onFilterChange={handleFilterChange}
         onQueryChange={setQuery}
         query={query}
       />

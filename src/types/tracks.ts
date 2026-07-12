@@ -1,15 +1,11 @@
-export type TrailFilter = 'all' | 'enrolled' | 'new'
+export type TrailFilter =
+  | 'all'
+  | 'enrolled'
+  | 'in-progress'
+  | 'completed'
+  | 'new'
 
 export type TrailTheme = 'backend' | 'frontend' | 'ai' | 'cicd' | 'devops'
-
-export type TrailLessonType =
-  | 'VIDEO'
-  | 'ARTICLE'
-  | 'REPOSITORY'
-  | 'QUIZ'
-  | 'CHALLENGE'
-
-export type TrackLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED'
 
 export type TrailAreaLabel =
   | 'Backend'
@@ -17,6 +13,20 @@ export type TrailAreaLabel =
   | 'Inteligência Artificial'
   | 'CI/CD'
   | 'DevOps'
+
+export type TrackLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED'
+
+export type TrailLessonType =
+  | 'VIDEO'
+  | 'ARTICLE'
+  | 'REPOSITORY'
+  | 'CHALLENGE'
+
+export interface TrailsStats {
+  activeTrails: number
+  certificates: number
+  scholarships: number
+}
 
 export interface TrailLesson {
   id: string
@@ -42,6 +52,11 @@ export interface TrailTeacher {
   bio: string
 }
 
+export interface TrailEvaluationCheck {
+  label: string
+  status: 'success' | 'danger'
+}
+
 export interface TrailEvaluation {
   score: number
   status: string
@@ -50,10 +65,7 @@ export interface TrailEvaluation {
   attended: number
   pending: number
   criteria: number
-  checks: Array<{
-    label: string
-    status: 'success' | 'danger'
-  }>
+  checks: TrailEvaluationCheck[]
 }
 
 export interface Trail {
