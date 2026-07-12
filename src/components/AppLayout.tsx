@@ -52,7 +52,7 @@ export function AppLayout() {
   const [collapsed, setCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const userName = user?.firstName || 'Atlas'
+  const userName = user?.firstName || 'Usuário ATLAS'
   const userRole = getRoleLabel(user?.role)
   const menu = useMemo<NavItem[]>(
     () => [
@@ -217,11 +217,12 @@ export function AppLayout() {
               role: userRole,
               src: user?.image || undefined,
               color: 'blue',
+              registration: user?.matricula,
             }}
             sidebarToggleLabel={toggleLabel}
             sidebarExpanded={isMobile ? mobileOpen : !collapsed}
             onToggleSidebar={toggleSidebar}
-            onOpenNotifications={() => undefined}
+            onLogout={handleLogout}
           />
 
           <div className="content-scroll">
