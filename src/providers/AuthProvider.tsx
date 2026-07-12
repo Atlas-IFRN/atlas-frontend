@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import {
   AuthContext,
   type AuthUser,
+  type EditableProfileFields,
   type LoginData,
 } from '../contexts/AuthContext'
-import { getCurrentUserProfile } from '../services/auth'
+import { getCurrentUserProfile, updateCurrentUserProfile } from '../services/auth'
 import { setApiAuthHandlers } from '../services/api'
 
 const AUTH_ACCESS_TOKEN_KEY = 'atlas.auth.access'
@@ -130,6 +131,24 @@ export function AuthProvider({ children }: PropsWithChildren) {
     return refreshedUser
   }, [accessToken])
 
+  const updateProfile = useCallback(async (fields: EditableProfileFields) => {
+    const updatedUser = authBypassEnabled
+      ? { ...authBypassUser, ...fields }
+      : await updateCurrentUserProfile(fields)
+
+    setSession((currentSession) => {
+      if (!currentSession) {
+        return currentSession
+      }
+
+      const updatedSession = { ...currentSession, user: updatedUser }
+      writeStoredSession(updatedSession)
+      return updatedSession
+    })
+
+    return updatedUser
+  }, [])
+
   useEffect(() => {
     return setApiAuthHandlers({
       getAccessToken: () => accessToken,
@@ -149,6 +168,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       login,
       logout,
       refreshUser,
+      updateProfile,
     }),
     [
       user,
@@ -158,6 +178,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       login,
       logout,
       refreshUser,
+      updateProfile,
     ],
   )
 

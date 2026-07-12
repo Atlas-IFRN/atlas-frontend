@@ -15,6 +15,7 @@ import { StatusBadge, type StatusBadgeStatus } from '../atoms/StatusBadge'
 import { RailTrackList } from '../feed/rails/RailTrackList'
 import { InfoCard } from '../molecules/InfoCard'
 import { EmptyState } from '../states/EmptyState'
+import { ProfileAchievementsCard } from './ProfileAchievementsCard'
 import { PROFILE_STATS, PROFILE_TRACKS } from './profileData'
 
 function roleLabel(role: string) {
@@ -223,30 +224,36 @@ export function NotasPreviewSection({
   )
 }
 
-export function ProfileSidebar() {
+interface ProfileSidebarProps {
+  user: AuthUser
+  onEdit: () => void
+}
+
+export function ProfileSidebar({ user, onEdit }: ProfileSidebarProps) {
   return (
     <aside className="profile-detail-side">
+      <ProfileLinksCard user={user} onEdit={onEdit} />
       <RailTrackList tracks={PROFILE_TRACKS} />
-      <ProfileLinksCard />
+      <ProfileAchievementsCard />
     </aside>
   )
 }
 
-export function ProfileLinksCard() {
+export function ProfileLinksCard({ user, onEdit }: ProfileSidebarProps) {
   return (
     <InfoCard
       className="profile-links"
       title="Links"
       action={(
-        <ButtonLink size="sm" to="/perfil/editar" variant="soft">
+        <Button onClick={onEdit} size="sm" variant="soft">
           Editar
-        </ButtonLink>
+        </Button>
       )}
     >
       <div className="profile-links__list">
         <a
           className="profile-social-link"
-          href="https://github.com/"
+          href={user.github || 'https://github.com/'}
           rel="noreferrer"
           target="_blank"
         >
@@ -259,12 +266,12 @@ export function ProfileLinksCard() {
           </svg>
           <span>
             <strong>GitHub</strong>
-            <small>github.com</small>
+            <small>{user.github ? user.github.replace(/^https?:\/\//, '') : 'Adicionar ao perfil'}</small>
           </span>
         </a>
         <a
           className="profile-social-link"
-          href="https://www.linkedin.com/"
+          href={user.linkedin || 'https://www.linkedin.com/'}
           rel="noreferrer"
           target="_blank"
         >
@@ -273,7 +280,7 @@ export function ProfileLinksCard() {
           </span>
           <span>
             <strong>LinkedIn</strong>
-            <small>linkedin.com</small>
+            <small>{user.linkedin ? user.linkedin.replace(/^https?:\/\//, '') : 'Adicionar ao perfil'}</small>
           </span>
         </a>
       </div>

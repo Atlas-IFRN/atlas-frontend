@@ -11,6 +11,7 @@
   border-radius: 999px;
   box-sizing: border-box;
   color: var(--status-badge-color);
+  border: 1px solid var(--status-badge-color);
   display: inline-flex;
   font-family: var(--font-sans);
   font-size: 12px;

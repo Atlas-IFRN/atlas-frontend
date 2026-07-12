@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react'
 import { ButtonLink } from '../../atoms/ButtonLink'
+import { PageHeroCopy } from '../../molecules/PageHeroCopy'
 
 export interface TrailsHeroProps {
   canCreate: boolean
@@ -9,14 +10,13 @@ export interface TrailsHeroProps {
 export function TrailsHero({ canCreate, createHref }: TrailsHeroProps) {
   return (
     <section className="trails-hero" aria-labelledby="trails-page-title">
-      <div className="trails-hero__copy">
-        <span className="trails-hero__eyebrow">Aprendizado estruturado</span>
-        <h1 id="trails-page-title">Trilhas de Conhecimento</h1>
-        <p>
-          Percursos organizados por área tecnológica. Cada trilha combina
-          teoria, prática e desafios orientados.
-        </p>
-      </div>
+      <PageHeroCopy
+        className="trails-hero__copy"
+        description="Percursos organizados por área tecnológica. Cada trilha combina teoria, prática e desafios orientados."
+        eyebrow="Aprendizado estruturado"
+        title="Trilhas de Conhecimento"
+        titleId="trails-page-title"
+      />
 
       {canCreate ? (
         <ButtonLink

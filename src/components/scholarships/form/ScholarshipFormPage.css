@@ -2,7 +2,7 @@
 .scholarship-create-page {
   color: var(--text);
   min-block-size: 100%;
-  padding: 28px clamp(18px, 3vw, 40px) 42px;
+  padding: 28px var(--page-gutter-inline) 42px;
 }
 
 .scholarship-create,
@@ -24,42 +24,9 @@
 }
 
 .scholarship-create__header > div:first-child {
-  display: grid;
-  gap: 8px;
   max-inline-size: 780px;
-  min-inline-size: 0;
 }
 
-.scholarship-create__eyebrow {
-  align-items: center;
-  color: color-mix(in srgb, var(--primary) 84%, #ffffff);
-  display: inline-flex;
-  font-size: 0.72rem;
-  font-weight: 900;
-  letter-spacing: 0.13em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.scholarship-create__eyebrow::before {
-  background: currentColor;
-  content: '';
-  block-size: 2px;
-  inline-size: 18px;
-  margin-inline-end: 9px;
-}
-
-.scholarship-create h1 {
-  color: var(--text);
-  font-family: var(--font-display);
-  font-size: clamp(1.85rem, 1.55rem + 1vw, 2.6rem);
-  font-weight: 900;
-  letter-spacing: 0;
-  line-height: 1.04;
-  margin: 0;
-}
-
-.scholarship-create__header p,
 .scholarship-create-panel__hint {
   color: var(--text-muted);
   font-size: 0.9rem;
@@ -714,7 +681,7 @@
 
 @media (max-width: 640px) {
   .scholarship-create-page {
-    padding: 24px 14px 34px;
+    padding: 24px var(--page-gutter-inline) 34px;
   }
 
   .scholarship-create-submit {

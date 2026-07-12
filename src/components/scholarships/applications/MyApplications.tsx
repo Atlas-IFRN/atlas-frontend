@@ -5,6 +5,7 @@ import { Circle, ClipboardList } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { FilterTag } from '../../atoms/FilterTag'
 import { SearchInput } from '../../atoms/SearchInput'
+import { PageHeroCopy } from '../../molecules/PageHeroCopy'
 import { ScholarshipCard } from '../../molecules/ScholarshipCard'
 import {
   EmptyState,
@@ -161,16 +162,12 @@ export function MyApplications() {
   return (
     <section className="scholarships-page my-applications-page">
       <header className="scholarships-page__header">
-        <div className="scholarships-page__intro">
-          <span className="scholarships-page__eyebrow">
-            Acompanhamento do aluno
-          </span>
-          <h1>Minhas candidaturas</h1>
-          <p>
-            Consulte as bolsas em que você se inscreveu e acompanhe o andamento
-            de cada processo seletivo.
-          </p>
-        </div>
+        <PageHeroCopy
+          className="scholarships-page__intro"
+          description="Consulte as bolsas em que você se inscreveu e acompanhe o andamento de cada processo seletivo."
+          eyebrow="Acompanhamento do aluno"
+          title="Minhas candidaturas"
+        />
       </header>
 
       <div className="scholarships-page__toolbar">
