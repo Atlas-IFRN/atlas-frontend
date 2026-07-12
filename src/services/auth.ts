@@ -15,6 +15,7 @@ interface SuapUserResponse {
   fullName?: string | null
   email?: string | null
   role?: string | null
+  image?: string | null
   ira?: number | string | null
   period?: number | string | null
   about_me?: string | null
@@ -67,6 +68,7 @@ function toAuthUser(user: SuapUserResponse): AuthUser {
     fullName,
     email: toStringValue(user.email),
     role: toStringValue(user.role),
+    image: toStringValue(user.image),
     ira: toNullableNumber(user.ira),
     period: toNullableNumber(user.period),
     aboutMe: toStringValue(user.about_me ?? user.aboutMe),
@@ -89,6 +91,12 @@ export async function getCurrentUserProfile(
       ? { Authorization: `Bearer ${accessToken}` }
       : undefined,
   })
+
+  return toAuthUser(data)
+}
+
+export async function getUserProfileById(userId: string): Promise<AuthUser> {
+  const { data } = await api.get<SuapUserResponse>(`auth/users/${userId}/`)
 
   return toAuthUser(data)
 }

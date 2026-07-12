@@ -36,7 +36,10 @@ import {
   listScholarshipApplications,
   rejectScholarshipApplication,
   type ScholarshipApplication,
+  type ScholarshipApplicationStudent,
 } from '../../../services/scholarships'
+import { getUserProfileById } from '../../../services/auth'
+import type { AuthUser } from '../../../contexts/AuthContext'
 import type {
   ScholarshipApplicationStatus,
 } from '../../../types/scholarships'
@@ -300,6 +303,61 @@ function stopCardNavigation(event: MouseEvent<HTMLElement>) {
   event.stopPropagation()
 }
 
+function profileToApplicationStudent(
+  profile: AuthUser,
+): ScholarshipApplicationStudent {
+  return {
+    id: profile.id,
+    matricula: profile.matricula,
+    firstName: profile.firstName,
+    fullName: profile.fullName,
+    email: profile.email,
+    role: profile.role,
+    ira: profile.ira,
+    period: profile.period,
+    courseName: profile.courseName,
+    institutionName: profile.institutionName,
+  }
+}
+
+// O serviço de bolsas persiste apenas o student_id da candidatura; os dados do
+// aluno (nome, matrícula, IRA, período) vivem no serviço de autenticação. Após
+// o refactor grpc -> HTTP, a bolsa não enriquece mais a candidatura, então
+// buscamos cada perfil pelo endpoint /auth/users/<id>/ e anexamos ao resultado.
+async function attachStudents(
+  applications: ScholarshipApplication[],
+): Promise<ScholarshipApplication[]> {
+  const uniqueStudentIds = [
+    ...new Set(
+      applications
+        .filter((application) => !application.student)
+        .map((application) => application.studentId)
+        .filter(Boolean),
+    ),
+  ]
+
+  const studentEntries = await Promise.all(
+    uniqueStudentIds.map(async (studentId) => {
+      try {
+        const profile = await getUserProfileById(studentId)
+        return [studentId, profileToApplicationStudent(profile)] as const
+      } catch {
+        return [studentId, null] as const
+      }
+    }),
+  )
+
+  const studentsById = new Map<string, ScholarshipApplicationStudent | null>(
+    studentEntries,
+  )
+
+  return applications.map((application) => ({
+    ...application,
+    student:
+      application.student ?? studentsById.get(application.studentId) ?? null,
+  }))
+}
+
 async function listApplicationsByScholarship(scholarshipId: string) {
   const result = await listScholarshipApplications({
     ordering: '-applied_at',
@@ -307,9 +365,11 @@ async function listApplicationsByScholarship(scholarshipId: string) {
     scholarship: scholarshipId,
   })
 
-  return result.items.filter(
+  const applications = result.items.filter(
     (application) => application.scholarship === scholarshipId,
   )
+
+  return attachStudents(applications)
 }
 
 export function ScholarshipApplications() {

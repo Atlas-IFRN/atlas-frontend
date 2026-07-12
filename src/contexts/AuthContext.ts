@@ -7,6 +7,7 @@ export interface AuthUser {
   fullName: string
   email: string
   role: string
+  image: string
   ira: number | null
   period: number | null
   aboutMe: string
