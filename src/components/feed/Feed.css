@@ -9,7 +9,7 @@
   container: feed / inline-size;
   display: grid;
   gap: var(--s-6);
-  padding: clamp(var(--s-4), 3vw, var(--s-8));
+  padding: var(--page-gutter-inline);
   text-align: start;
 }
 

@@ -25,6 +25,12 @@ export interface LoginData {
   refreshToken: string
 }
 
+export interface EditableProfileFields {
+  aboutMe: string
+  linkedin: string
+  github: string
+}
+
 export interface AuthContextValue {
   user: AuthUser | null
   accessToken: string | null
@@ -33,6 +39,7 @@ export interface AuthContextValue {
   login: (data: LoginData) => void
   logout: () => void
   refreshUser: () => Promise<AuthUser | null>
+  updateProfile: (fields: EditableProfileFields) => Promise<AuthUser>
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined)

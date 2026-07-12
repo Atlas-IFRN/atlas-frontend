@@ -1,0 +1,52 @@
+.atlas-page-hero-copy {
+  display: grid;
+  gap: var(--s-2);
+  max-inline-size: 680px;
+  min-inline-size: 0;
+}
+
+.atlas-page-hero-copy__eyebrow {
+  align-items: center;
+  color: color-mix(in srgb, var(--primary) 84%, var(--text));
+  display: inline-flex;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  line-height: var(--line-height-xs);
+  text-transform: uppercase;
+}
+
+.atlas-page-hero-copy__eyebrow::before {
+  background: currentColor;
+  block-size: 2px;
+  border-radius: var(--r-pill);
+  content: '';
+  inline-size: 18px;
+  margin-inline-end: var(--s-2);
+}
+
+.atlas-page-hero-copy__title {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 1.58rem + 0.8vw, 2.35rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  margin: 0;
+}
+
+.atlas-page-hero-copy--lg .atlas-page-hero-copy__title {
+  font-size: clamp(1.85rem, 1.55rem + 1vw, 2.6rem);
+  font-weight: 900;
+  line-height: 1.04;
+}
+
+.atlas-page-hero-copy__description {
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-base);
+  margin: 0;
+  max-inline-size: 760px;
+}

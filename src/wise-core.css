@@ -13,6 +13,7 @@
   --s-6: 24px;
   --s-7: 28px;
   --s-8: 32px;
+  --page-gutter-inline: clamp(var(--s-5), 3vw, var(--s-8));
   --r-sm: 8px;
   --r-md: 12px;
   --r-pill: 999px;
@@ -33,6 +34,12 @@
   --sidebar-active-border: rgba(255, 255, 255, .12);
   --sidebar-active-marker: #fff;
   --backdrop-bg: rgba(0, 0, 0, .5);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --page-gutter-inline: var(--s-4);
+  }
 }
 
 #root:has(.shell-pad) {
@@ -275,42 +282,27 @@
 }
 
 .sidebar-foot {
+  border-top: 1px solid var(--sidebar-divider);
   margin-top: auto;
-  padding-top: var(--s-5);
+  padding-top: var(--s-4);
 }
 
-.sidebar-user {
-  width: 100%;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  padding: var(--s-3);
-  border: 0;
-  border-radius: var(--r-md);
-  color: inherit;
+.sidebar-logout {
+  appearance: none;
   background: transparent;
-  cursor: pointer;
+  border: 0;
   text-align: left;
-  transition: background var(--t-fast);
+  width: 100%;
 }
 
-.sidebar-user:hover,
-.sidebar-user:focus-visible {
-  background: var(--sidebar-subtle-bg);
+.sidebar-logout:hover {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: color-mix(in srgb, var(--danger) 72%, var(--text-on-dark));
 }
 
-.sidebar-user:focus-visible {
-  outline: 1px solid var(--border-strong);
+.sidebar-logout:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--danger) 58%, transparent);
   outline-offset: 2px;
-}
-
-.app.collapsed .sidebar-user {
-  justify-content: center;
-  padding: var(--s-3) 0;
-}
-
-.app.collapsed .sidebar-user [data-user-chip-content] {
-  display: none;
 }
 
 .content {

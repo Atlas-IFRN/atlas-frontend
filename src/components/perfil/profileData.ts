@@ -12,6 +12,12 @@ export interface ProfileStat {
   icon: LucideIcon
 }
 
+export interface ProfileAchievement {
+  id: string
+  label: string
+  href: string
+}
+
 export const PROFILE_STATS: ProfileStat[] = [
   {
     label: 'Trilhas ativas',
@@ -67,5 +73,28 @@ export const PROFILE_TRACKS: FeedTrackProgress[] = [
     modules: 5,
     completedModules: 1,
     currentModuleProgress: 90,
+  },
+]
+
+export const PROFILE_ACHIEVEMENTS: ProfileAchievement[] = [
+  {
+    id: 'python-fundamentals',
+    label: 'Fundamentos de Python',
+    href: '/trilhas/python-fundamentals',
+  },
+  {
+    id: 'git-github',
+    label: 'Git e GitHub',
+    href: '/trilhas/git-github',
+  },
+  {
+    id: 'web-fundamentals',
+    label: 'Fundamentos da Web',
+    href: '/trilhas/web-fundamentals',
+  },
+  {
+    id: 'logic',
+    label: 'Lógica de Programação',
+    href: '/trilhas/logic',
   },
 ]

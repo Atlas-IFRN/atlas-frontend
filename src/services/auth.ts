@@ -1,5 +1,9 @@
 import api from './api'
-import type { AuthUser, LoginData } from '../contexts/AuthContext'
+import type {
+  AuthUser,
+  EditableProfileFields,
+  LoginData,
+} from '../contexts/AuthContext'
 
 interface SuapLoginResponse {
   login_url: string
@@ -90,6 +94,18 @@ export async function getCurrentUserProfile(
     headers: accessToken
       ? { Authorization: `Bearer ${accessToken}` }
       : undefined,
+  })
+
+  return toAuthUser(data)
+}
+
+export async function updateCurrentUserProfile(
+  fields: EditableProfileFields,
+): Promise<AuthUser> {
+  const { data } = await api.patch<SuapUserResponse>('auth/users/me/', {
+    about_me: fields.aboutMe,
+    linkedin: fields.linkedin,
+    github: fields.github,
   })
 
   return toAuthUser(data)

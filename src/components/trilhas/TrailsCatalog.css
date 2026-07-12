@@ -2,7 +2,7 @@
   color: var(--text);
   display: grid;
   gap: var(--s-7);
-  padding: clamp(var(--s-5), 3vw, var(--s-8));
+  padding: var(--page-gutter-inline);
 }
 
 .trails-hero {
@@ -11,53 +11,6 @@
   gap: var(--s-6);
   justify-content: space-between;
   min-inline-size: 0;
-}
-
-.trails-hero__copy {
-  display: grid;
-  gap: var(--s-3);
-  max-inline-size: 680px;
-}
-
-.trails-hero__eyebrow {
-  align-items: center;
-  color: color-mix(in srgb, var(--primary) 84%, var(--text));
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  display: inline-flex;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 600;
-  line-height: var(--line-height-xs);
-}
-
-.trails-hero__eyebrow::before {
-  background: currentColor;
-  border-radius: var(--r-pill);
-  content: '';
-  display: block;
-  block-size: 3px;
-  inline-size: 18px;
-  margin-inline-end: var(--s-2);
-}
-
-.trails-hero h1 {
-  font-family: var(--font-display);
-  letter-spacing: -0.02em;
-  color: var(--text);
-  margin-bottom: var(--s-3);
-  font-size: 32px;
-  font-weight:700;
-  line-height: var(--line-height-3xl);
-  margin: 0;
-}
-
-.trails-hero p {
-  color: var(--text-muted);
-  font-family: var(--font-sans);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-base);
-  max-inline-size: 600px;
 }
 
 .trails-toolbar {
@@ -390,7 +343,7 @@
 @media (max-width: 640px) {
   .trails-page {
     gap: var(--s-5);
-    padding: var(--s-4);
+    padding: var(--page-gutter-inline);
   }
 
   .trails-toolbar,
@@ -435,7 +388,7 @@
   color: var(--text);
   display: grid;
   gap: var(--s-5);
-  padding: clamp(var(--s-4), 3vw, var(--s-7));
+  padding: var(--page-gutter-inline);
 }
 
 .trail-breadcrumb {

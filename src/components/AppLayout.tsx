@@ -9,12 +9,12 @@ import {
   BookOpen,
   Briefcase,
   Home,
+  LogOut,
   User,
   Users,
 } from 'lucide-react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { UserChip } from './molecules/UserChip'
 import { TopBar } from './molecules/TopBar'
 import logoIcon from '../assets/brand/atlas-logo.svg'
 import logoFull from '../assets/brand/atlas-logo-full.svg'
@@ -126,7 +126,7 @@ export function AppLayout() {
     setCollapsed((isCollapsed) => !isCollapsed)
   }
 
-  function handleUserChipClick() {
+  function handleLogout() {
     logout()
     setMobileOpen(false)
     navigate('/entrar', { replace: true })
@@ -200,17 +200,12 @@ export function AppLayout() {
           <div className="sidebar-foot">
             <button
               type="button"
-              className="sidebar-user"
-              aria-label="Sair e ir para login"
-              onClick={handleUserChipClick}
+              className="nav-item sidebar-logout"
+              data-label="Sair"
+              onClick={handleLogout}
             >
-              <UserChip
-                name={userName}
-                role={userRole}
-                src={user?.image || undefined}
-                color="blue"
-                size="sm"
-              />
+              <LogOut className="nav-icon" size={20} strokeWidth={2} />
+              <span>Sair</span>
             </button>
           </div>
         </aside>
