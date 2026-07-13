@@ -1210,6 +1210,81 @@
   margin: 0;
 }
 
+/* ---------- Lightbox de imagem do post ---------- */
+
+.post-media__zoom {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  display: block;
+  padding: 0;
+  width: 100%;
+}
+
+.post-media__zoom img {
+  display: block;
+  width: 100%;
+}
+
+.image-lightbox {
+  align-items: center;
+  background: rgba(3, 7, 18, 0.86);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  inset: 0;
+  justify-content: center;
+  padding: clamp(16px, 4vw, 48px);
+  position: fixed;
+  z-index: 1000;
+  animation: image-lightbox-in 120ms ease-out;
+}
+
+@keyframes image-lightbox-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.image-lightbox__img {
+  border-radius: var(--r-sm);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  cursor: default;
+  max-block-size: 90vh;
+  max-inline-size: 100%;
+  object-fit: contain;
+}
+
+.image-lightbox__caption {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: var(--font-size-sm);
+  max-inline-size: 720px;
+  text-align: center;
+}
+
+.image-lightbox__close {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  inset-block-start: clamp(12px, 3vw, 24px);
+  inset-inline-end: clamp(12px, 3vw, 24px);
+  justify-content: center;
+  padding: 8px;
+  position: fixed;
+  transition: background var(--t-fast);
+}
+
+.image-lightbox__close:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
 /* ---------- Post fixado por docente ---------- */
 
 .post--fixed {
