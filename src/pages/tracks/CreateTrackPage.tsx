@@ -6,7 +6,6 @@ import {
   ChevronRight,
   Code2,
   FileText,
-  GitBranch,
   GripVertical,
   Play,
   Plus,
@@ -19,13 +18,17 @@ import {
 } from 'lucide-react'
 import { Button } from '../../components/atoms/Button'
 import { StatusBadge } from '../../components/atoms/StatusBadge'
-import { TechIcon, TechTag, type TechIconName } from '../../components/atoms/TechTag'
+import {
+  TechIcon,
+  TechTag,
+  techIconColors,
+  type TechIconName,
+} from '../../components/atoms/TechTag'
 import { techIcons } from '../../components/atoms/TechTag/TechIcon.colors'
 import { tracksQueryKeys } from '../../hooks/useTracks'
 import {
   createContent,
   createModule,
-  createSkill,
   createTrack,
   deleteContent,
   deleteModule,
@@ -58,10 +61,12 @@ interface DraftContent {
   title: string
   type: TrailLessonType
   description: string
+  articleContent: string
   contentUrl: string
   estimatedDuration: string
   visibility: Visibility
   instructions: string
+  technicalRequirements: string
   language: string
   criteria: EvaluationCriterion[]
   isPersisted: boolean
@@ -74,6 +79,13 @@ interface DraftModule {
   displayOrder: number
   contents: DraftContent[]
   isPersisted: boolean
+}
+
+interface PublicationValidationError {
+  field: string
+  message: string
+  moduleId?: string
+  contentId?: string
 }
 
 interface ContentTypeConfig {
@@ -92,11 +104,6 @@ const CONTENT_TYPE_CONFIG: Record<TrailLessonType, ContentTypeConfig> = {
     label: 'Artigo',
     Icon: FileText,
     tone: 'green',
-  },
-  REPOSITORY: {
-    label: 'Repositório',
-    Icon: GitBranch,
-    tone: 'yellow',
   },
   CHALLENGE: {
     label: 'Desafio',
@@ -127,6 +134,8 @@ const DEFAULT_TRACK_TITLE = 'Nova trilha'
 const DEFAULT_TRACK_DESCRIPTION = 'Trilha em construção.'
 const DEFAULT_MODULE_DESCRIPTION = 'Módulo em construção.'
 const DEFAULT_CONTENT_DESCRIPTION = 'Conteúdo em construção.'
+const MINIMUM_MODULES_TO_PUBLISH = 2
+const MINIMUM_CONTENTS_PER_MODULE = 2
 
 function getContentTypeConfig(type: TrailLessonType) {
   return CONTENT_TYPE_CONFIG[type]
@@ -146,7 +155,7 @@ function normalizeText(value: string) {
 }
 
 function parseDurationMinutes(value: string) {
-  const match = value.match(/\d+/)
+  const match = value.trim().match(/^(\d+)/)
 
   if (!match) {
     return null
@@ -154,7 +163,7 @@ function parseDurationMinutes(value: string) {
 
   const minutes = Number(match[0])
 
-  return Number.isFinite(minutes) ? minutes : null
+  return Number.isFinite(minutes) && minutes > 0 ? minutes : null
 }
 
 function parseDurationWeeks(value: string) {
@@ -165,6 +174,201 @@ function parseDurationWeeks(value: string) {
 
 function formatDuration(minutes?: number | null) {
   return minutes ? `${minutes} min` : ''
+}
+
+function isValidHttpUrl(value: string) {
+  try {
+    const url = new URL(value)
+    return url.protocol === 'http:' || url.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+function isValidYouTubeUrl(value: string) {
+  if (!isValidHttpUrl(value)) {
+    return false
+  }
+
+  const url = new URL(value)
+  const hostname = url.hostname.replace(/^www\./, '').toLowerCase()
+
+  if (hostname === 'youtu.be') {
+    return Boolean(url.pathname.split('/').filter(Boolean)[0])
+  }
+
+  if (
+    hostname !== 'youtube.com' &&
+    hostname !== 'm.youtube.com' &&
+    hostname !== 'youtube-nocookie.com'
+  ) {
+    return false
+  }
+
+  if (url.pathname === '/watch') {
+    return Boolean(url.searchParams.get('v'))
+  }
+
+  const [route, videoId] = url.pathname.split('/').filter(Boolean)
+  return ['embed', 'shorts', 'live'].includes(route ?? '') && Boolean(videoId)
+}
+
+function isGeneratedTitle(value: string, prefix: string) {
+  return normalizeText(value.trim()).startsWith(normalizeText(prefix))
+}
+
+function validateTrackForPublication({
+  description,
+  durationWeeks,
+  modules,
+  selectedSkills,
+  title,
+}: {
+  description: string
+  durationWeeks: string
+  modules: DraftModule[]
+  selectedSkills: ApiSkill[]
+  title: string
+}): PublicationValidationError[] {
+  const errors: PublicationValidationError[] = []
+
+  if (!title.trim() || title.trim() === DEFAULT_TRACK_TITLE) {
+    errors.push({ field: 'track-title', message: 'Informe o título da trilha.' })
+  }
+
+  if (!description.trim() || description.trim() === DEFAULT_TRACK_DESCRIPTION) {
+    errors.push({
+      field: 'track-description',
+      message: 'Informe a descrição da trilha.',
+    })
+  }
+
+  if (selectedSkills.length === 0) {
+    errors.push({
+      field: 'track-skills',
+      message: 'Selecione pelo menos uma tecnologia.',
+    })
+  }
+
+  if (!parseDurationWeeks(durationWeeks)) {
+    errors.push({
+      field: 'track-duration',
+      message: 'A duração da trilha deve ser maior que zero.',
+    })
+  }
+
+  if (modules.length < MINIMUM_MODULES_TO_PUBLISH) {
+    errors.push({
+      field: 'track-modules',
+      message: `Crie pelo menos ${MINIMUM_MODULES_TO_PUBLISH} módulos.`,
+    })
+  }
+
+  modules.forEach((module, moduleIndex) => {
+    const moduleLabel = `Módulo ${moduleIndex + 1}`
+
+    if (!module.title.trim() || isGeneratedTitle(module.title, 'Novo módulo')) {
+      errors.push({
+        field: 'module-title',
+        message: `${moduleLabel}: informe um título próprio.`,
+        moduleId: module.id,
+      })
+    }
+
+    if (module.contents.length < MINIMUM_CONTENTS_PER_MODULE) {
+      errors.push({
+        field: 'module-contents',
+        message: `${moduleLabel}: adicione pelo menos ${MINIMUM_CONTENTS_PER_MODULE} conteúdos.`,
+        moduleId: module.id,
+      })
+    }
+
+    module.contents.forEach((content, contentIndex) => {
+      const contentLabel = `${moduleLabel}, conteúdo ${contentIndex + 1}`
+      const validationContext = {
+        moduleId: module.id,
+        contentId: content.id,
+      }
+
+      if (!content.title.trim() || isGeneratedTitle(content.title, 'Novo conteúdo')) {
+        errors.push({
+          ...validationContext,
+          field: 'content-title',
+          message: `${contentLabel}: informe um título próprio.`,
+        })
+      }
+
+      const requiredDescription =
+        content.type === 'ARTICLE' ? content.articleContent : content.description
+      if (
+        !requiredDescription.trim() ||
+        requiredDescription.trim() === DEFAULT_CONTENT_DESCRIPTION
+      ) {
+        errors.push({
+          ...validationContext,
+          field:
+            content.type === 'ARTICLE'
+              ? 'content-markdown'
+              : 'content-description',
+          message:
+            content.type === 'ARTICLE'
+              ? `${contentLabel}: escreva o conteúdo do artigo.`
+              : `${contentLabel}: informe uma descrição.`,
+        })
+      }
+
+      if (!parseDurationMinutes(content.estimatedDuration)) {
+        errors.push({
+          ...validationContext,
+          field: 'content-duration',
+          message: `${contentLabel}: informe uma duração estimada maior que zero.`,
+        })
+      }
+
+      if (content.type === 'VIDEO' && !isValidYouTubeUrl(content.contentUrl.trim())) {
+        errors.push({
+          ...validationContext,
+          field: 'content-url',
+          message: `${contentLabel}: informe uma URL válida do YouTube.`,
+        })
+      }
+
+      if (content.type === 'CHALLENGE') {
+        if (!content.instructions.trim()) {
+          errors.push({
+            ...validationContext,
+            field: 'content-instructions',
+            message: `${contentLabel}: escreva o enunciado do desafio.`,
+          })
+        }
+
+        if (!content.technicalRequirements.trim()) {
+          errors.push({
+            ...validationContext,
+            field: 'content-requirements',
+            message: `${contentLabel}: informe pelo menos um requisito técnico.`,
+          })
+        }
+
+        const hasUnnamedCriterion = content.criteria.some(
+          (criterion) => !criterion.label.trim(),
+        )
+        const criteriaTotal = content.criteria.reduce(
+          (total, criterion) => total + Number(criterion.percentage),
+          0,
+        )
+        if (hasUnnamedCriterion || criteriaTotal !== 100) {
+          errors.push({
+            ...validationContext,
+            field: 'content-criteria',
+            message: `${contentLabel}: nomeie os critérios e distribua exatamente 100%.`,
+          })
+        }
+      }
+    })
+  })
+
+  return errors
 }
 
 function normalizeMultilineList(value: string) {
@@ -220,10 +424,12 @@ function mapApiContentToDraft(content: ApiContent): DraftContent {
     title: content.title,
     type: content.content_type ?? 'VIDEO',
     description: content.description ?? '',
+    articleContent: content.content ?? content.description ?? '',
     contentUrl: content.content_url ?? '',
     estimatedDuration: formatDuration(content.duration_minutes),
     visibility: content.visibility ?? 'enrolled',
     instructions: content.instructions ?? '',
+    technicalRequirements: (content.technical_requirements ?? []).join('\n'),
     language: content.language ?? 'Python',
     criteria: apiCriteriaToDraft(content.evaluation_criteria),
     isPersisted: true,
@@ -287,7 +493,10 @@ function getContentPayload(
   const payload: CreateContentPayload = {
     module: moduleId,
     title: content.title.trim() || 'Novo conteúdo',
-    description: content.description.trim() || DEFAULT_CONTENT_DESCRIPTION,
+    description:
+      content.type === 'ARTICLE'
+        ? content.articleContent.trim() || DEFAULT_CONTENT_DESCRIPTION
+        : content.description.trim() || DEFAULT_CONTENT_DESCRIPTION,
     content_type: content.type,
     duration_minutes: parseDurationMinutes(content.estimatedDuration),
     display_order: displayOrder,
@@ -295,16 +504,20 @@ function getContentPayload(
 
   if (content.type === 'CHALLENGE') {
     payload.instructions = content.instructions.trim()
+    payload.technical_requirements = content.technicalRequirements
+      .split(/\r?\n/)
+      .map((requirement) => requirement.trim())
+      .filter(Boolean)
     payload.language = content.language.trim() || 'Python'
     payload.evaluation_criteria = criteriaToApi(content.criteria)
-  } else {
+  } else if (content.type === 'ARTICLE') {
+    payload.content = content.articleContent.trim()
+  } else if (content.type === 'VIDEO') {
     if (content.contentUrl.trim()) {
       payload.content_url = content.contentUrl.trim()
     }
 
-    if (content.type === 'VIDEO') {
-      payload.visibility = content.visibility
-    }
+    payload.visibility = content.visibility
   }
 
   return payload
@@ -369,7 +582,7 @@ export default function CreateTrackPage() {
   const [trackPrerequisites, setTrackPrerequisites] = useState('')
   const [skills, setSkills] = useState<ApiSkill[]>([])
   const [selectedSkills, setSelectedSkills] = useState<ApiSkill[]>([])
-  const [newSkillName, setNewSkillName] = useState('')
+  const [skillToAddId, setSkillToAddId] = useState('')
   const [modules, setModules] = useState<DraftModule[]>([])
   const [selectedModuleId, setSelectedModuleId] = useState('')
   const [selectedContentId, setSelectedContentId] = useState('')
@@ -378,6 +591,7 @@ export default function CreateTrackPage() {
   const [isLoadingTrack, setIsLoadingTrack] = useState(isEditMode)
   const [message, setMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const [showPublicationErrors, setShowPublicationErrors] = useState(false)
 
   useEffect(() => {
     document.title = isEditMode ? 'ATLAS - Editar trilha' : 'ATLAS - Criar trilha'
@@ -463,13 +677,57 @@ export default function CreateTrackPage() {
   const isFirstContent = selectedContentIndex <= 0
   const isLastContent =
     selectedContentIndex === -1 || selectedContentIndex === allContentIds.length - 1
+  const publicationErrors = useMemo(
+    () =>
+      showPublicationErrors
+        ? validateTrackForPublication({
+            description: trackDescription,
+            durationWeeks: trackDurationWeeks,
+            modules,
+            selectedSkills,
+            title: trackTitle,
+          })
+        : [],
+    [
+      modules,
+      selectedSkills,
+      showPublicationErrors,
+      trackDescription,
+      trackDurationWeeks,
+      trackTitle,
+    ],
+  )
+
+  function hasPublicationError(
+    field: string,
+    moduleId?: string,
+    contentId?: string,
+  ) {
+    return publicationErrors.some(
+      (error) =>
+        error.field === field &&
+        (!moduleId || error.moduleId === moduleId) &&
+        (!contentId || error.contentId === contentId),
+    )
+  }
+
+  function revealPublicationError(error: PublicationValidationError) {
+    if (error.moduleId) {
+      setSelectedModuleId(error.moduleId)
+    }
+    if (error.contentId) {
+      setSelectedContentId(error.contentId)
+    }
+
+    window.requestAnimationFrame(() => {
+      document
+        .querySelector<HTMLElement>(`[data-validation-field="${error.field}"]`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    })
+  }
 
   async function persistTrack() {
-    const durationWeeks = parseDurationWeeks(trackDurationWeeks)
-
-    if (!durationWeeks) {
-      throw new Error('Informe uma duração em semanas válida.')
-    }
+    const durationWeeks = parseDurationWeeks(trackDurationWeeks) ?? 1
 
     const payload: CreateTrackPayload = {
       title: trackTitle.trim() || DEFAULT_TRACK_TITLE,
@@ -519,17 +777,24 @@ export default function CreateTrackPage() {
   }
 
   async function handleSaveTrack() {
-    if (modules.length === 0) {
+    const validationErrors = validateTrackForPublication({
+      description: trackDescription,
+      durationWeeks: trackDurationWeeks,
+      modules,
+      selectedSkills,
+      title: trackTitle,
+    })
+
+    if (validationErrors.length > 0) {
+      setShowPublicationErrors(true)
       setMessage('')
-      setErrorMessage(
-        isEditMode && trackStatus === 'PUBLISHED'
-          ? 'A trilha precisa ter pelo menos um módulo.'
-          : 'Crie pelo menos um módulo antes de publicar a trilha.',
-      )
+      setErrorMessage('')
+      revealPublicationError(validationErrors[0])
       return
     }
 
     setIsSaving(true)
+    setShowPublicationErrors(false)
     setErrorMessage('')
     setMessage('')
 
@@ -558,6 +823,7 @@ export default function CreateTrackPage() {
 
   async function handleSaveDraft() {
     setIsSaving(true)
+    setShowPublicationErrors(false)
     setErrorMessage('')
     setMessage('')
 
@@ -608,14 +874,14 @@ export default function CreateTrackPage() {
     }
   }
 
-  async function handleDeleteModule() {
-    if (!selectedModule) {
+  async function handleDeleteModule(moduleToDelete: DraftModule | null = selectedModule) {
+    if (!moduleToDelete) {
       return
     }
 
     const confirmed = window.confirm(
-      `Excluir o módulo “${selectedModule.title}”?\n\n` +
-        `Os ${selectedModule.contents.length} conteúdo(s) deste módulo também serão excluídos. ` +
+      `Excluir o módulo “${moduleToDelete.title}”?\n\n` +
+        `Os ${moduleToDelete.contents.length} conteúdo(s) deste módulo também serão excluídos. ` +
         'Esta ação não pode ser desfeita.',
     )
 
@@ -628,23 +894,26 @@ export default function CreateTrackPage() {
     setMessage('')
 
     try {
-      if (selectedModule.isPersisted) {
-        await deleteModule(selectedModule.id)
+      if (moduleToDelete.isPersisted) {
+        await deleteModule(moduleToDelete.id)
       }
 
       const deletedIndex = modules.findIndex(
-        (module) => module.id === selectedModule.id,
+        (module) => module.id === moduleToDelete.id,
       )
       const remainingModules = modules.filter(
-        (module) => module.id !== selectedModule.id,
+        (module) => module.id !== moduleToDelete.id,
       )
       const nextModule =
         remainingModules[deletedIndex] ??
         remainingModules[Math.max(0, deletedIndex - 1)]
+      const deletedSelectedModule = moduleToDelete.id === selectedModule?.id
 
       setModules(remainingModules)
-      setSelectedModuleId(nextModule?.id ?? '')
-      setSelectedContentId(nextModule?.contents[0]?.id ?? '')
+      if (deletedSelectedModule) {
+        setSelectedModuleId(nextModule?.id ?? '')
+        setSelectedContentId(nextModule?.contents[0]?.id ?? '')
+      }
       await queryClient.invalidateQueries({ queryKey: tracksQueryKeys.all })
       setMessage('Módulo excluído.')
     } catch (error) {
@@ -654,38 +923,20 @@ export default function CreateTrackPage() {
     }
   }
 
-  async function handleAddSkill() {
-    const name = newSkillName.trim()
+  function handleSkillSelect(event: ChangeEvent<HTMLSelectElement>) {
+    const skillId = event.target.value
+    const skill = skills.find((currentSkill) => currentSkill.id === skillId)
 
-    if (!name) {
+    if (!skill) {
       return
     }
 
-    setIsSaving(true)
-    setErrorMessage('')
-
-    try {
-      const existingSkill = skills.find(
-        (skill) => normalizeText(skill.name) === normalizeText(name),
-      )
-      const skill = existingSkill ?? (await createSkill(name))
-
-      setSkills((currentSkills) =>
-        currentSkills.some((currentSkill) => currentSkill.id === skill.id)
-          ? currentSkills
-          : [...currentSkills, skill],
-      )
-      setSelectedSkills((currentSkills) =>
-        currentSkills.some((currentSkill) => currentSkill.id === skill.id)
-          ? currentSkills
-          : [...currentSkills, skill],
-      )
-      setNewSkillName('')
-    } catch (error) {
-      setErrorMessage(getErrorMessage(error))
-    } finally {
-      setIsSaving(false)
-    }
+    setSelectedSkills((currentSkills) =>
+      currentSkills.some((currentSkill) => currentSkill.id === skill.id)
+        ? currentSkills
+        : [...currentSkills, skill],
+    )
+    setSkillToAddId('')
   }
 
   function removeSkill(skillId: string) {
@@ -736,18 +987,6 @@ export default function CreateTrackPage() {
     }
   }
 
-  function updateSelectedModule(updates: Partial<DraftModule>) {
-    if (!selectedModule) {
-      return
-    }
-
-    setModules((currentModules) =>
-      currentModules.map((module) =>
-        module.id === selectedModule.id ? { ...module, ...updates } : module,
-      ),
-    )
-  }
-
   async function handleAddContent() {
     if (!selectedModule) {
       return
@@ -763,10 +1002,12 @@ export default function CreateTrackPage() {
         title: `Novo conteúdo ${selectedModule.contents.length + 1}`,
         type: 'VIDEO',
         description: DEFAULT_CONTENT_DESCRIPTION,
+        articleContent: '',
         contentUrl: '',
         estimatedDuration: '',
         visibility: 'enrolled',
         instructions: '',
+        technicalRequirements: '',
         language: 'Python',
         criteria: getDefaultCriteria(),
         isPersisted: false,
@@ -847,6 +1088,14 @@ export default function CreateTrackPage() {
 
     updateSelectedContent({
       type: nextType,
+      articleContent:
+        nextType === 'ARTICLE' && !selectedContent?.articleContent.trim()
+          ? selectedContent?.description === DEFAULT_CONTENT_DESCRIPTION
+            ? ''
+            : selectedContent?.description ?? ''
+          : selectedContent?.articleContent ?? '',
+      contentUrl:
+        nextType === 'VIDEO' ? selectedContent?.contentUrl ?? '' : '',
       criteria:
         nextType === 'CHALLENGE'
           ? selectedContent?.criteria.length
@@ -956,12 +1205,16 @@ export default function CreateTrackPage() {
             </div>
 
             <div className="create-track-tags" aria-label="Tecnologias da trilha">
+              <span className="create-track-tags__label">Tecnologias *</span>
               {selectedSkills.map((skill) => {
                 const iconName = getSkillIconName(skill)
 
                 return (
                   <span className="create-track-tech-tag" key={skill.id}>
                     <TechTag
+                      accentColor={
+                        iconName ? techIconColors[iconName] : undefined
+                      }
                       category={getSkillCategory(skill)}
                       icon={iconName ? <TechIcon name={iconName} /> : undefined}
                       variant="tinted"
@@ -981,24 +1234,28 @@ export default function CreateTrackPage() {
 
               <label className="create-track-add-tag">
                 <Plus aria-hidden="true" size={13} />
-                <input
-                  list="track-skills"
-                  value={newSkillName}
-                  placeholder="Tecnologia"
-                  onChange={(event) => setNewSkillName(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      event.preventDefault()
-                      void handleAddSkill()
-                    }
-                  }}
-                />
+                <select
+                  aria-label="Adicionar tecnologia da trilha"
+                  aria-invalid={hasPublicationError('track-skills')}
+                  data-validation-field="track-skills"
+                  value={skillToAddId}
+                  onChange={handleSkillSelect}
+                >
+                  <option value="">Tecnologia</option>
+                  {skills
+                    .filter(
+                      (skill) =>
+                        !selectedSkills.some(
+                          (selectedSkill) => selectedSkill.id === skill.id,
+                        ),
+                    )
+                    .map((skill) => (
+                      <option key={skill.id} value={skill.id}>
+                        {skill.name}
+                      </option>
+                    ))}
+                </select>
               </label>
-              <datalist id="track-skills">
-                {skills.map((skill) => (
-                  <option key={skill.id} value={skill.name} />
-                ))}
-              </datalist>
             </div>
           </div>
 
@@ -1013,6 +1270,18 @@ export default function CreateTrackPage() {
                 onClick={handleDeleteTrack}
               >
                 Excluir trilha
+              </Button>
+            ) : null}
+            {trackStatus === 'DRAFT' ? (
+              <Button
+                iconLeft={Save}
+                loading={isSaving}
+                size="md"
+                variant="outline"
+                disabled={isDeleting}
+                onClick={handleSaveDraft}
+              >
+                Salvar rascunho
               </Button>
             ) : null}
             <Button
@@ -1038,8 +1307,10 @@ export default function CreateTrackPage() {
           <div className="create-track-settings__content">
             <div className="create-track-settings__column">
               <label className="create-track-field">
-                <span>Título da Trilha</span>
+                <span>Título da Trilha *</span>
                 <input
+                  aria-invalid={hasPublicationError('track-title')}
+                  data-validation-field="track-title"
                   value={trackTitle}
                   placeholder={DEFAULT_TRACK_TITLE}
                   onChange={(event) => setTrackTitle(event.target.value)}
@@ -1047,8 +1318,10 @@ export default function CreateTrackPage() {
               </label>
 
               <label className="create-track-field">
-                <span>Descrição Curta</span>
+                <span>Descrição Curta *</span>
                 <textarea
+                  aria-invalid={hasPublicationError('track-description')}
+                  data-validation-field="track-description"
                   rows={4}
                   value={trackDescription}
                   placeholder="Escreva uma breve descrição para o catálogo..."
@@ -1084,8 +1357,10 @@ export default function CreateTrackPage() {
                 </div>
 
                 <label className="create-track-field">
-                  <span>Duração (semanas)</span>
+                  <span>Duração (semanas) *</span>
                   <input
+                    aria-invalid={hasPublicationError('track-duration')}
+                    data-validation-field="track-duration"
                     type="text"
                     inputMode="numeric"
                     pattern="[0-9]*"
@@ -1125,6 +1400,26 @@ export default function CreateTrackPage() {
         </section>
       </header>
 
+      {publicationErrors.length > 0 ? (
+        <section className="create-track-validation" role="alert">
+          <div>
+            <strong>A trilha ainda não pode ser publicada</strong>
+            <p>
+              Corrija os campos abaixo ou use “Salvar rascunho” para continuar depois.
+            </p>
+          </div>
+          <ul>
+            {publicationErrors.map((error, index) => (
+              <li key={`${error.field}-${error.moduleId ?? 'track'}-${error.contentId ?? index}`}>
+                <button type="button" onClick={() => revealPublicationError(error)}>
+                  {error.message}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       {message || errorMessage ? (
         <div
           className={`create-track-feedback${
@@ -1138,18 +1433,27 @@ export default function CreateTrackPage() {
 
       <section className="track-builder" aria-label="Construtor de trilha">
         <aside className="track-builder-panel track-builder-panel--modules">
-          <div className="track-builder-panel__header">
+          <div
+            className={`track-builder-panel__header${
+              hasPublicationError('track-modules') ? ' has-validation-error' : ''
+            }`}
+            data-validation-field="track-modules"
+          >
             <div>
               <h2>Módulos</h2>
               <p>{modules.length} módulos</p>
             </div>
-            <StatusBadge
-              className="track-builder-panel__status"
-              status="neutral"
+            <Button
+              aria-label="Criar novo módulo"
+              className="track-builder-header-add"
+              iconLeft={Plus}
               size="sm"
+              variant="outline"
+              disabled={isSaving}
+              onClick={handleCreateModule}
             >
-              {statusLabel}
-            </StatusBadge>
+              Novo
+            </Button>
           </div>
 
           <div className="track-builder-list" role="list">
@@ -1163,81 +1467,107 @@ export default function CreateTrackPage() {
               const isSelected = module.id === selectedModule?.id
 
               return (
-                <button
-                  className={`track-builder-item track-builder-item--module${
+                <div
+                  className={`track-builder-item track-builder-item--module-card${
                     isSelected ? ' is-selected' : ''
                   }`}
                   key={module.id}
-                  type="button"
-                  aria-pressed={isSelected}
-                  onClick={() => {
-                    setSelectedModuleId(module.id)
-                    setSelectedContentId(module.contents[0]?.id ?? '')
-                  }}
                 >
-                  <GripVertical
-                    className="track-builder-item__drag"
-                    aria-hidden="true"
-                    size={16}
-                  />
+                  <button
+                    className="track-builder-module-select"
+                    type="button"
+                    aria-label={`Selecionar módulo ${module.title}`}
+                    aria-pressed={isSelected}
+                    onClick={() => {
+                      setSelectedModuleId(module.id)
+                      setSelectedContentId(module.contents[0]?.id ?? '')
+                    }}
+                  >
+                    <GripVertical
+                      className="track-builder-item__drag"
+                      aria-hidden="true"
+                      size={16}
+                    />
+                  </button>
                   <span className="track-builder-item__number">{index + 1}</span>
                   <span className="track-builder-item__copy">
-                    <strong>{module.title}</strong>
+                    <input
+                      aria-label={`Título do módulo ${index + 1}`}
+                      aria-invalid={hasPublicationError(
+                        'module-title',
+                        module.id,
+                      )}
+                      data-validation-field={
+                        isSelected ? 'module-title' : undefined
+                      }
+                      value={module.title}
+                      onFocus={() => {
+                        setSelectedModuleId(module.id)
+                        setSelectedContentId(module.contents[0]?.id ?? '')
+                      }}
+                      onBlur={() => void handleModuleTitleBlur(module)}
+                      onChange={(event) =>
+                        setModules((currentModules) =>
+                          currentModules.map((currentModule) =>
+                            currentModule.id === module.id
+                              ? { ...currentModule, title: event.target.value }
+                              : currentModule,
+                          ),
+                        )
+                      }
+                    />
                     <small>{module.contents.length} conteúdos</small>
                   </span>
-                </button>
+                  <button
+                    className="track-builder-module-delete"
+                    type="button"
+                    aria-label={`Excluir módulo ${module.title}`}
+                    disabled={isSaving}
+                    onClick={() => void handleDeleteModule(module)}
+                  >
+                    <Trash2 aria-hidden="true" size={14} />
+                  </button>
+                </div>
               )
             })}
-          </div>
-
-          <div className="track-builder-panel__footer">
-            <button
-              className="track-builder-add-button"
-              type="button"
-              disabled={isSaving}
-              onClick={handleCreateModule}
-            >
-              <Plus aria-hidden="true" size={16} />
-              Criar novo módulo
-            </button>
           </div>
         </aside>
 
         <aside className="track-builder-panel track-builder-panel--contents">
-          <div className="track-builder-panel__header">
-            {selectedModule ? (
-              <div className="track-builder-module-header">
-                <label className="track-builder-module-title-field">
-                  <span>Módulo selecionado</span>
-                  <input
-                    value={selectedModule.title}
-                    onBlur={() => void handleModuleTitleBlur(selectedModule)}
-                    onChange={(event) =>
-                      updateSelectedModule({ title: event.target.value })
-                    }
-                  />
-                </label>
-                <Button
-                  aria-label="Excluir módulo"
-                  iconLeft={Trash2}
-                  size="sm"
-                  variant="danger"
-                  disabled={isSaving}
-                  onClick={handleDeleteModule}
-                />
-              </div>
-            ) : (
-              <div>
-                <h2>Conteúdos</h2>
-                <p>Nenhum módulo selecionado</p>
-              </div>
-            )}
+          <div
+            className={`track-builder-panel__header${
+              selectedModule &&
+              hasPublicationError('module-contents', selectedModule.id)
+                ? ' has-validation-error'
+                : ''
+            }`}
+            data-validation-field="module-contents"
+          >
+            <div>
+              <h2>Conteúdos</h2>
+              <p>
+                {selectedModule
+                  ? `${selectedModule.contents.length} conteúdos · ${selectedModule.title}`
+                  : 'Nenhum módulo selecionado'}
+              </p>
+            </div>
+            <Button
+              aria-label="Adicionar conteúdo"
+              className="track-builder-header-add"
+              iconLeft={Plus}
+              size="sm"
+              variant="outline"
+              disabled={!selectedModule || isSaving}
+              onClick={handleAddContent}
+            >
+              Novo
+            </Button>
           </div>
 
           <div className="track-builder-list" role="list">
             {selectedModule && selectedModule.contents.length === 0 ? (
               <div className="track-builder-empty">
-                Adicione um conteúdo para editar vídeo, artigo, repositório ou desafio.
+                Adicione um conteúdo para editar vídeo, artigo ou desafio.
               </div>
             ) : null}
 
@@ -1275,17 +1605,6 @@ export default function CreateTrackPage() {
             })}
           </div>
 
-          <div className="track-builder-panel__footer">
-            <button
-              className="track-builder-add-button"
-              type="button"
-              disabled={!selectedModule || isSaving}
-              onClick={handleAddContent}
-            >
-              <Plus aria-hidden="true" size={16} />
-              Adicionar conteúdo
-            </button>
-          </div>
         </aside>
 
         <section className="content-editor-panel">
@@ -1365,6 +1684,12 @@ export default function CreateTrackPage() {
                 <label className="content-editor-field">
                   <span>Título *</span>
                   <input
+                    aria-invalid={hasPublicationError(
+                      'content-title',
+                      selectedModule?.id,
+                      selectedContent.id,
+                    )}
+                    data-validation-field="content-title"
                     type="text"
                     value={selectedContent.title}
                     onChange={(event) =>
@@ -1388,32 +1713,99 @@ export default function CreateTrackPage() {
                 </label>
               </div>
 
-              <label className="content-editor-field">
-                <span>
-                  Descrição <small>resumo para o aluno</small>
-                </span>
-                <textarea
-                  value={selectedContent.description}
-                  placeholder="Descreva o que o aluno vai aprender neste conteúdo..."
-                  rows={4}
-                  onChange={(event) =>
-                    updateSelectedContent({ description: event.target.value })
-                  }
-                />
-              </label>
+              {selectedContent.type === 'ARTICLE' ? (
+                <label className="content-editor-field content-editor-field--markdown">
+                  <span>
+                    Conteúdo do artigo * <small>Markdown</small>
+                  </span>
+                  <textarea
+                    aria-invalid={hasPublicationError(
+                      'content-markdown',
+                      selectedModule?.id,
+                      selectedContent.id,
+                    )}
+                    data-validation-field="content-markdown"
+                    value={selectedContent.articleContent}
+                    placeholder={'# Título da seção\n\nEscreva o artigo usando **Markdown**.'}
+                    rows={16}
+                    onChange={(event) =>
+                      updateSelectedContent({ articleContent: event.target.value })
+                    }
+                  />
+                  <small className="content-editor-markdown-hint">
+                    Use títulos, listas, links, citações e blocos de código para organizar a leitura.
+                  </small>
+                </label>
+              ) : (
+                <label className="content-editor-field">
+                  <span>
+                    Descrição * <small>resumo para o aluno</small>
+                  </span>
+                  <textarea
+                    aria-invalid={hasPublicationError(
+                      'content-description',
+                      selectedModule?.id,
+                      selectedContent.id,
+                    )}
+                    data-validation-field="content-description"
+                    value={selectedContent.description}
+                    placeholder="Descreva o que o aluno vai aprender neste conteúdo..."
+                    rows={4}
+                    onChange={(event) =>
+                      updateSelectedContent({ description: event.target.value })
+                    }
+                  />
+                </label>
+              )}
 
               {selectedContent.type === 'CHALLENGE' ? (
                 <>
-                  <label className="content-editor-field">
+                  <label className="content-editor-field content-editor-field--statement">
                     <span>
-                      Instruções * <small>enunciado que será exibido ao aluno</small>
+                      Enunciado do desafio * <small>texto único apresentado ao aluno</small>
                     </span>
                     <textarea
+                      aria-invalid={hasPublicationError(
+                        'content-instructions',
+                        selectedModule?.id,
+                        selectedContent.id,
+                      )}
+                      data-validation-field="content-instructions"
                       value={selectedContent.instructions}
-                      placeholder="Explique o objetivo do desafio, os requisitos obrigatórios, as regras, o formato de entrega e, se necessário, exemplos de entrada e saída."
-                      rows={4}
+                      placeholder="Escreva o enunciado completo do desafio em texto corrido. Explique o contexto, o que deve ser desenvolvido, as regras importantes e o que o aluno deverá entregar."
+                      rows={9}
                       onChange={(event) =>
                         updateSelectedContent({ instructions: event.target.value })
+                      }
+                    />
+                  </label>
+
+                  <div className="content-editor-helptext" aria-live="polite">
+                    <strong>Como escrever um bom enunciado</strong>
+                    <p>
+                      Apresente o contexto, o problema e o resultado esperado em texto corrido. As tecnologias,
+                      bibliotecas e regras obrigatórias devem ser informadas separadamente nos requisitos técnicos.
+                    </p>
+                  </div>
+
+                  <label className="content-editor-field content-editor-field--requirements">
+                    <span>
+                      Requisitos técnicos * <small>um requisito por linha</small>
+                    </span>
+                    <textarea
+                      aria-invalid={hasPublicationError(
+                        'content-requirements',
+                        selectedModule?.id,
+                        selectedContent.id,
+                      )}
+                      data-validation-field="content-requirements"
+                      value={selectedContent.technicalRequirements}
+                      placeholder={'Utilizar Python.\nUtilizar Django REST Framework.\nValidar os dados com serializers.\nIncluir um arquivo README.'}
+                      rows={6}
+                      onChange={(event) =>
+                        updateSelectedContent({
+                          technicalRequirements: event.target.value,
+                        })
                       }
                     />
                   </label>
@@ -1435,8 +1827,14 @@ export default function CreateTrackPage() {
                     </label>
 
                     <label className="content-editor-field">
-                      <span>Duração estimada</span>
+                      <span>Duração estimada *</span>
                       <input
+                        aria-invalid={hasPublicationError(
+                          'content-duration',
+                          selectedModule?.id,
+                          selectedContent.id,
+                        )}
+                        data-validation-field="content-duration"
                         type="text"
                         value={selectedContent.estimatedDuration}
                         placeholder="Ex: 45 min"
@@ -1449,7 +1847,18 @@ export default function CreateTrackPage() {
                     </label>
                   </div>
 
-                  <div className="content-editor-criteria">
+                  <div
+                    className={`content-editor-criteria${
+                      hasPublicationError(
+                        'content-criteria',
+                        selectedModule?.id,
+                        selectedContent.id,
+                      )
+                        ? ' has-validation-error'
+                        : ''
+                    }`}
+                    data-validation-field="content-criteria"
+                  >
                     <div className="content-editor-criteria__header">
                       <span>Critérios de avaliação</span>
                       <strong>
@@ -1516,95 +1925,110 @@ export default function CreateTrackPage() {
                     </button>
                   </div>
                 </>
+              ) : selectedContent.type === 'ARTICLE' ? (
+                <label className="content-editor-field content-editor-field--compact">
+                  <span>Duração estimada *</span>
+                  <input
+                    aria-invalid={hasPublicationError(
+                      'content-duration',
+                      selectedModule?.id,
+                      selectedContent.id,
+                    )}
+                    data-validation-field="content-duration"
+                    type="text"
+                    value={selectedContent.estimatedDuration}
+                    placeholder="Ex: 10 min"
+                    onChange={(event) =>
+                      updateSelectedContent({
+                        estimatedDuration: event.target.value,
+                      })
+                    }
+                  />
+                </label>
               ) : (
                 <>
                   <label className="content-editor-field">
-                    <span>
-                      {selectedContent.type === 'VIDEO'
-                        ? 'URL do vídeo *'
-                        : selectedContent.type === 'ARTICLE'
-                          ? 'URL do artigo *'
-                          : 'URL do repositório *'}
-                    </span>
+                    <span>URL do vídeo *</span>
                     <input
+                      aria-invalid={hasPublicationError(
+                        'content-url',
+                        selectedModule?.id,
+                        selectedContent.id,
+                      )}
+                      data-validation-field="content-url"
                       type="url"
                       value={selectedContent.contentUrl}
-                      placeholder={
-                        selectedContent.type === 'VIDEO'
-                          ? 'https://youtube.com/watch?v=...'
-                          : selectedContent.type === 'ARTICLE'
-                            ? 'https://exemplo.com/artigo...'
-                            : 'https://github.com/usuario/repositorio'
-                      }
+                      placeholder="https://youtube.com/watch?v=..."
                       onChange={(event) =>
                         updateSelectedContent({ contentUrl: event.target.value })
                       }
                     />
                   </label>
 
-                  {selectedContent.type !== 'ARTICLE' ? (
-                    <div
-                      className={`content-editor-grid${
-                        selectedContent.type === 'VIDEO'
-                          ? ' content-editor-grid--two'
-                          : ''
-                      }`}
-                    >
-                      <label className="content-editor-field">
-                        <span>Duração estimada</span>
-                        <input
-                          type="text"
-                          value={selectedContent.estimatedDuration}
-                          placeholder="Ex: 45 min"
-                          onChange={(event) =>
-                            updateSelectedContent({
-                              estimatedDuration: event.target.value,
-                            })
-                          }
-                        />
-                      </label>
+                  <div
+                    className="content-editor-grid content-editor-grid--two"
+                  >
+                    <label className="content-editor-field">
+                      <span>Duração estimada *</span>
+                      <input
+                        aria-invalid={hasPublicationError(
+                          'content-duration',
+                          selectedModule?.id,
+                          selectedContent.id,
+                        )}
+                        data-validation-field="content-duration"
+                        type="text"
+                        value={selectedContent.estimatedDuration}
+                        placeholder="Ex: 45 min"
+                        onChange={(event) =>
+                          updateSelectedContent({
+                            estimatedDuration: event.target.value,
+                          })
+                        }
+                      />
+                    </label>
 
-                      {selectedContent.type === 'VIDEO' ? (
-                        <label className="content-editor-field">
-                          <span>Visibilidade</span>
-                          <select
-                            value={selectedContent.visibility}
-                            onChange={(event) =>
-                              updateSelectedContent({
-                                visibility: event.target.value as Visibility,
-                              })
-                            }
-                          >
-                            {VISIBILITY_OPTIONS.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                      ) : null}
-                    </div>
-                  ) : null}
+                    <label className="content-editor-field">
+                      <span>Visibilidade</span>
+                      <select
+                        value={selectedContent.visibility}
+                        onChange={(event) =>
+                          updateSelectedContent({
+                            visibility: event.target.value as Visibility,
+                          })
+                        }
+                      >
+                        {VISIBILITY_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
                 </>
               )}
 
-              <label className="content-editor-field">
-                <span>
-                  Materiais de apoio <small>opcional</small>
-                </span>
-                <button
-                  className="content-editor-upload"
-                  type="button"
-                  disabled
-                  title="Upload de materiais será conectado em uma próxima etapa"
-                >
-                  <Upload aria-hidden="true" size={22} />
+              {selectedContent.type === 'ARTICLE' ? (
+                <div className="content-editor-field">
                   <span>
-                    <strong>Clique ou arraste arquivos</strong>
-                    <small>PDF, slides, código - até 20 MB</small>
+                    Materiais complementares <small>opcional</small>
                   </span>
-                </button>
-              </label>
+                  {/* TODO(backend): conectar upload, persistência e listagem dos materiais do artigo. */}
+                  <button
+                    className="content-editor-upload"
+                    disabled
+                    title="Materiais complementares serão conectados ao backend em uma próxima etapa"
+                    type="button"
+                  >
+                    <Upload aria-hidden="true" size={22} />
+                    <span>
+                      <strong>Upload de materiais em breve</strong>
+                      <small>PDF, slides, documentos ou código - até 20 MB</small>
+                    </span>
+                  </button>
+                </div>
+              ) : null}
 
               <div className="content-editor-code-hint" aria-hidden="true">
                 <Code2 size={16} />

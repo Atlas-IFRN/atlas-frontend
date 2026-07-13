@@ -27,8 +27,10 @@ export interface ApiContent {
   description?: string
   content_type?: TrailLessonType
   content_url?: string | null
+  content?: string
   visibility?: 'enrolled' | 'draft'
   instructions?: string | null
+  technical_requirements?: string[]
   language?: string | null
   evaluation_criteria?: Record<string, number>
   duration_minutes?: number | null
@@ -125,8 +127,10 @@ export interface CreateContentPayload {
   description: string
   content_type: TrailLessonType
   content_url?: string
+  content?: string
   visibility?: 'enrolled' | 'draft'
   instructions?: string
+  technical_requirements?: string[]
   language?: string
   evaluation_criteria?: Record<string, number>
   duration_minutes?: number | null
