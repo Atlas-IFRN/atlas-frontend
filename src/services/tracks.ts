@@ -50,7 +50,21 @@ export interface ApiModule {
 interface ApiUserProgress {
   enrolled?: boolean
   completed_modules?: number
+  completed_content_ids?: string[]
   percentage?: number
+}
+
+export interface CompleteContentResult {
+  content_id: string
+  content_completed: boolean
+  module_completed: boolean
+  track_completed: boolean
+  percentage: number
+  next_content: {
+    id: string
+    module_id: string
+    title: string
+  } | null
 }
 
 interface ApiEvaluation {
@@ -308,8 +322,46 @@ export async function getTrackById(trackId: string): Promise<Trail> {
   return mapTrackToTrail(data)
 }
 
-export async function getTrackDraftById(trackId: string): Promise<ApiTrack> {
+export async function getTrackApiById(trackId: string): Promise<ApiTrack> {
   const { data } = await tracksApi.get<ApiTrack>(`track/tracks/${trackId}/`)
+
+  return data
+}
+
+export async function getTrackDraftById(trackId: string): Promise<ApiTrack> {
+  return getTrackApiById(trackId)
+}
+
+export async function getModuleById(moduleId: string): Promise<ApiModule> {
+  const { data } = await tracksApi.get<ApiModule>(`track/modules/${moduleId}/`)
+
+  return data
+}
+
+export async function getContentById(contentId: string): Promise<ApiContent> {
+  const { data } = await tracksApi.get<ApiContent>(
+    `track/contents/${contentId}/`,
+  )
+
+  return data
+}
+
+export async function completeContent(
+  contentId: string,
+): Promise<CompleteContentResult> {
+  const { data } = await tracksApi.post<CompleteContentResult>(
+    `track/contents/${contentId}/complete/`,
+  )
+
+  return data
+}
+
+export async function uncompleteContent(
+  contentId: string,
+): Promise<CompleteContentResult> {
+  const { data } = await tracksApi.post<CompleteContentResult>(
+    `track/contents/${contentId}/uncomplete/`,
+  )
 
   return data
 }
