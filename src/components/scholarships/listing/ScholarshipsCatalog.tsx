@@ -12,6 +12,7 @@ import { listScholarships } from '../../../services/scholarships'
 import { Button } from '../../atoms/Button'
 import { FilterTag } from '../../atoms/FilterTag'
 import { SearchInput } from '../../atoms/SearchInput'
+import { PageHeroCopy } from '../../molecules/PageHeroCopy'
 import { ScholarshipCard } from '../../molecules/ScholarshipCard'
 import { EmptyState, ErrorState, LoadingState } from '../../states'
 import type { Scholarship, ScholarshipStatus } from '../../../types/scholarships'
@@ -228,16 +229,12 @@ export function ScholarshipsCatalog() {
   return (
     <section className="scholarships-page">
       <header className="scholarships-page__header">
-        <div className="scholarships-page__intro">
-          <span className="scholarships-page__eyebrow">
-            Pesquisa, Inovação e Extensão
-          </span>
-          <h1>Bolsas de P&D</h1>
-          <p>
-            Editais ativos do IFRN. Acompanhe prazos, requisitos e candidate-se
-            direto na plataforma.
-          </p>
-        </div>
+        <PageHeroCopy
+          className="scholarships-page__intro"
+          description="Editais ativos do IFRN. Acompanhe prazos, requisitos e candidate-se direto na plataforma."
+          eyebrow="Pesquisa, Inovação e Extensão"
+          title="Bolsas de P&D"
+        />
 
         {isTeacher ? (
           <Button

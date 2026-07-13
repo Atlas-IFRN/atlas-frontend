@@ -1,6 +1,15 @@
+import { useParams } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
+import ProfilePage from './ProfilePage'
 import { RoutePage } from '../RoutePage'
 
 export default function UserProfilePage() {
-  // visão do aluno - para visualizar o próprio perfil
-  return <RoutePage title="Meu perfil" />
+  const { matricula } = useParams<{ matricula: string }>()
+  const { user } = useAuth()
+
+  if (matricula === user?.matricula) {
+    return <ProfilePage />
+  }
+
+  return <RoutePage title="Perfil do usuário" />
 }

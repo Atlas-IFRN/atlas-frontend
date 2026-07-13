@@ -11,7 +11,7 @@
   display: grid;
   gap: 20px;
   inline-size: 100%;
-  padding: clamp(12px, 1.8vw, 24px);
+  padding: var(--page-gutter-inline);
   text-align: start;
 }
 
@@ -959,7 +959,7 @@
 @media (max-width: 700px) {
   .trail-detail-page {
     gap: 14px;
-    padding: 12px;
+    padding: var(--page-gutter-inline);
   }
 
   .trail-detail-page .trail-detail-hero {

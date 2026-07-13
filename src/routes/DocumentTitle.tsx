@@ -18,7 +18,7 @@ const routeTitles = [
   { path: '/bolsas/:scholarshipId', title: 'Detalhes da bolsa' },
   { path: '/bolsas', title: 'Bolsas' },
   { path: '/perfil/editar', title: 'Editar perfil' },
-  { path: '/perfis/:userId', title: 'Perfil do usuário' },
+  { path: '/perfil/:matricula', title: 'Perfil do usuário' },
   { path: '/perfil', title: 'Meu Perfil' },
   { path: '/trilhas/nova', title: 'Nova trilha' },
   { path: '/trilhas/:trackId/editar', title: 'Editar trilha' },
@@ -52,11 +52,7 @@ function getTitle(pathname: string) {
     matchPath({ path, end: true }, pathname),
   )
 
-  return routeTitle?.path === '/perfil'
-    ? `${APP_NAME} · ${routeTitle.title}`
-    : routeTitle
-      ? `${routeTitle.title} | ${APP_NAME}`
-      : APP_NAME
+  return routeTitle ? `${routeTitle.title} | ${APP_NAME}` : APP_NAME
 }
 
 export function DocumentTitle() {
@@ -66,7 +62,8 @@ export function DocumentTitle() {
     document.title = getTitle(pathname)
 
     const description =
-      pathname === '/perfil'
+      pathname === '/perfil' ||
+      Boolean(matchPath({ path: '/perfil/:matricula', end: true }, pathname))
         ? 'Acompanhe sua identidade, progresso, conquistas e reputação no ATLAS.'
         : 'ATLAS — aprendizagem, talentos e oportunidades.'
     let meta = document.querySelector<HTMLMetaElement>('meta[name="description"]')

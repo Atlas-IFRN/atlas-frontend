@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { BookOpen, Briefcase, Code2, Trophy } from 'lucide-react'
+import { BookOpen, Briefcase, MessageSquareText, Trophy } from 'lucide-react'
 import type { FeedTrackProgress } from '../../types/feed'
 
 export interface ProfileStat {
@@ -10,6 +10,12 @@ export interface ProfileStat {
   actionAriaLabel: string
   tone: 'primary' | 'teal' | 'purple' | 'amber'
   icon: LucideIcon
+}
+
+export interface ProfileAchievement {
+  id: string
+  label: string
+  href: string
 }
 
 export const PROFILE_STATS: ProfileStat[] = [
@@ -47,7 +53,7 @@ export const PROFILE_STATS: ProfileStat[] = [
     actionHref: '/notas',
     actionAriaLabel: 'Ver feedbacks recebidos',
     tone: 'purple',
-    icon: Code2,
+    icon: MessageSquareText,
   },
 ]
 
@@ -67,5 +73,28 @@ export const PROFILE_TRACKS: FeedTrackProgress[] = [
     modules: 5,
     completedModules: 1,
     currentModuleProgress: 90,
+  },
+]
+
+export const PROFILE_ACHIEVEMENTS: ProfileAchievement[] = [
+  {
+    id: 'python-fundamentals',
+    label: 'Fundamentos de Python',
+    href: '/trilhas/python-fundamentals',
+  },
+  {
+    id: 'git-github',
+    label: 'Git e GitHub',
+    href: '/trilhas/git-github',
+  },
+  {
+    id: 'web-fundamentals',
+    label: 'Fundamentos da Web',
+    href: '/trilhas/web-fundamentals',
+  },
+  {
+    id: 'logic',
+    label: 'Lógica de Programação',
+    href: '/trilhas/logic',
   },
 ]

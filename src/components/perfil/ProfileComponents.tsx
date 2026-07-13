@@ -4,17 +4,17 @@ import type { AuthUser } from '../../contexts/AuthContext'
 import {
   MINHAS_NOTAS,
   tagLabel,
-  type NoteTag,
   type ProfileNote,
 } from '../../lib/notas-mock'
 import { Avatar } from '../atoms/Avatar'
 import { Button } from '../atoms/Button'
 import { ButtonLink } from '../atoms/ButtonLink'
 import { StatCard } from '../atoms/StatCard'
-import { StatusBadge, type StatusBadgeStatus } from '../atoms/StatusBadge'
+import { TextTag } from '../atoms/TextTag'
 import { RailTrackList } from '../feed/rails/RailTrackList'
 import { InfoCard } from '../molecules/InfoCard'
 import { EmptyState } from '../states/EmptyState'
+import { ProfileAchievementsCard } from './ProfileAchievementsCard'
 import { PROFILE_STATS, PROFILE_TRACKS } from './profileData'
 
 function roleLabel(role: string) {
@@ -53,12 +53,6 @@ function formatIra(ira: number) {
     maximumFractionDigits: 2,
     minimumFractionDigits: 1,
   })
-}
-
-const noteTagStatus: Record<NoteTag, StatusBadgeStatus> = {
-  'ponto-forte': 'completed',
-  'soft-skill': 'primary',
-  atencao: 'warning',
 }
 
 interface ProfileIdentityProps {
@@ -172,20 +166,26 @@ export function AboutCard({ bio }: { bio: string }) {
 
 export function NotePreviewCard({ note }: { note: ProfileNote }) {
   return (
-    <Link className="profile-note" to="/notas" aria-label={`Ver nota de ${note.professor}`}>
-      <Avatar name={note.professor} color="blue" size="sm" />
+    <Link
+      className="profile-note"
+      to="/notas"
+      aria-label={`Ver nota de ${note.professor.name}`}
+    >
+      <Avatar
+        name={note.professor.name}
+        color="blue"
+        size="sm"
+        src={note.professor.avatarSrc}
+      />
       <div className="profile-note__content">
         <div className="profile-note__heading">
-          <strong>Prof. {note.professor}</strong>
-          <span>{note.context}</span>
+          <strong>Prof. {note.professor.name}</strong>
         </div>
-        <p>“{note.excerpt}”</p>
+        <p>“{note.content}”</p>
         <div className="profile-note__tags">
-          {note.tags.map((tag) => (
-            <StatusBadge key={tag} size="sm" status={noteTagStatus[tag]}>
-              {tagLabel(tag)}
-            </StatusBadge>
-          ))}
+          <TextTag size="sm" variant={note.tag} withDot>
+            {tagLabel(note.tag)}
+          </TextTag>
         </div>
       </div>
     </Link>
@@ -223,30 +223,36 @@ export function NotasPreviewSection({
   )
 }
 
-export function ProfileSidebar() {
+interface ProfileSidebarProps {
+  user: AuthUser
+  onEdit: () => void
+}
+
+export function ProfileSidebar({ user, onEdit }: ProfileSidebarProps) {
   return (
     <aside className="profile-detail-side">
+      <ProfileLinksCard user={user} onEdit={onEdit} />
       <RailTrackList tracks={PROFILE_TRACKS} />
-      <ProfileLinksCard />
+      <ProfileAchievementsCard />
     </aside>
   )
 }
 
-export function ProfileLinksCard() {
+export function ProfileLinksCard({ user, onEdit }: ProfileSidebarProps) {
   return (
     <InfoCard
       className="profile-links"
       title="Links"
       action={(
-        <ButtonLink size="sm" to="/perfil/editar" variant="soft">
+        <Button onClick={onEdit} size="sm" variant="soft">
           Editar
-        </ButtonLink>
+        </Button>
       )}
     >
       <div className="profile-links__list">
         <a
           className="profile-social-link"
-          href="https://github.com/"
+          href={user.github || 'https://github.com/'}
           rel="noreferrer"
           target="_blank"
         >
@@ -259,12 +265,12 @@ export function ProfileLinksCard() {
           </svg>
           <span>
             <strong>GitHub</strong>
-            <small>github.com</small>
+            <small>{user.github ? user.github.replace(/^https?:\/\//, '') : 'Adicionar ao perfil'}</small>
           </span>
         </a>
         <a
           className="profile-social-link"
-          href="https://www.linkedin.com/"
+          href={user.linkedin || 'https://www.linkedin.com/'}
           rel="noreferrer"
           target="_blank"
         >
@@ -273,7 +279,7 @@ export function ProfileLinksCard() {
           </span>
           <span>
             <strong>LinkedIn</strong>
-            <small>linkedin.com</small>
+            <small>{user.linkedin ? user.linkedin.replace(/^https?:\/\//, '') : 'Adicionar ao perfil'}</small>
           </span>
         </a>
       </div>

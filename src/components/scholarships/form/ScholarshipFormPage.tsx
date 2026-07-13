@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../../atoms/Button'
+import { PageHeroCopy } from '../../molecules/PageHeroCopy'
 import {
   TechIcon,
   TechTag,
@@ -1042,11 +1043,12 @@ export function ScholarshipFormPage({
         onSubmit={handleSubmit}
       >
         <header className="scholarship-create__header">
-          <div>
-            <span className="scholarship-create__eyebrow">{copy.eyebrow}</span>
-            <h1>{copy.title}</h1>
-            <p>{copy.description}</p>
-          </div>
+          <PageHeroCopy
+            description={copy.description}
+            eyebrow={copy.eyebrow}
+            size="lg"
+            title={copy.title}
+          />
         </header>
 
         <nav className="scholarship-create-steps" aria-label="Etapas do formulário">

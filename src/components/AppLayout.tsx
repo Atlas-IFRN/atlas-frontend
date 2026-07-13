@@ -9,12 +9,12 @@ import {
   BookOpen,
   Briefcase,
   Home,
+  LogOut,
   User,
   Users,
 } from 'lucide-react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { UserChip } from './molecules/UserChip'
 import { TopBar } from './molecules/TopBar'
 import logoIcon from '../assets/brand/atlas-logo.svg'
 import logoFull from '../assets/brand/atlas-logo-full.svg'
@@ -52,8 +52,11 @@ export function AppLayout() {
   const [collapsed, setCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const userName = user?.firstName || 'Atlas'
+  const userName = user?.firstName || 'Usuário ATLAS'
   const userRole = getRoleLabel(user?.role)
+  const profilePath = user?.matricula
+    ? `/perfil/${encodeURIComponent(user.matricula)}`
+    : '/perfil'
   const menu = useMemo<NavItem[]>(
     () => [
       { to: '/inicio', label: 'Início', Icon: Home },
@@ -65,9 +68,9 @@ export function AppLayout() {
         Icon: Users,
         activePrefix: '/banco-talentos',
       },
-      { to: '/perfil', label: 'Meu Perfil', Icon: User },
+      { to: profilePath, label: 'Meu Perfil', Icon: User },
     ],
-    [],
+    [profilePath],
   )
 
   useEffect(() => {
@@ -126,7 +129,7 @@ export function AppLayout() {
     setCollapsed((isCollapsed) => !isCollapsed)
   }
 
-  function handleUserChipClick() {
+  function handleLogout() {
     logout()
     setMobileOpen(false)
     navigate('/entrar', { replace: true })
@@ -200,17 +203,12 @@ export function AppLayout() {
           <div className="sidebar-foot">
             <button
               type="button"
-              className="sidebar-user"
-              aria-label="Sair e ir para login"
-              onClick={handleUserChipClick}
+              className="nav-item sidebar-logout"
+              data-label="Sair"
+              onClick={handleLogout}
             >
-              <UserChip
-                name={userName}
-                role={userRole}
-                src={user?.image || undefined}
-                color="blue"
-                size="sm"
-              />
+              <LogOut className="nav-icon" size={20} strokeWidth={2} />
+              <span>Sair</span>
             </button>
           </div>
         </aside>
@@ -222,11 +220,12 @@ export function AppLayout() {
               role: userRole,
               src: user?.image || undefined,
               color: 'blue',
+              registration: user?.matricula,
             }}
             sidebarToggleLabel={toggleLabel}
             sidebarExpanded={isMobile ? mobileOpen : !collapsed}
             onToggleSidebar={toggleSidebar}
-            onOpenNotifications={() => undefined}
+            onLogout={handleLogout}
           />
 
           <div className="content-scroll">

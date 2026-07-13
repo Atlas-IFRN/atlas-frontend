@@ -16,6 +16,7 @@ import { Avatar } from '../../atoms/Avatar'
 import { Button } from '../../atoms/Button'
 import { FilterTag } from '../../atoms/FilterTag'
 import { SearchInput } from '../../atoms/SearchInput'
+import { PageHeroCopy } from '../../molecules/PageHeroCopy'
 import { StatCard } from '../../atoms/StatCard'
 import { StatusBadge } from '../../atoms/StatusBadge'
 import {
@@ -243,7 +244,9 @@ function getCandidateAcademicSummary(application: ScholarshipApplication) {
 }
 
 function getCandidateProfilePath(application: ScholarshipApplication) {
-  return `/perfis/${application.student?.id || application.studentId}`
+  const matricula = application.student?.matricula || application.studentId
+
+  return `/perfil/${encodeURIComponent(matricula)}`
 }
 
 function getCandidateSearchText(application: ScholarshipApplication) {
@@ -573,13 +576,13 @@ export function ScholarshipApplications() {
           </span>
         </div>
 
-        <div className="scholarship-applications-hero__content">
-          <span className="scholarships-page__eyebrow">
-            Gestão de candidaturas
-          </span>
-          <h1>{scholarship.title}</h1>
-          <p>{getFirstSentence(scholarship.description)}</p>
-        </div>
+        <PageHeroCopy
+          className="scholarship-applications-hero__content"
+          description={getFirstSentence(scholarship.description)}
+          eyebrow="Gestão de candidaturas"
+          size="lg"
+          title={scholarship.title}
+        />
 
         <div className="scholarship-applications-hero__footer">
           <div className="scholarship-applications-progress">

@@ -8,8 +8,7 @@
   flex-direction: column;
   gap: 24px;
   min-block-size: 100%;
-  padding: 24px clamp(20px, 3vw, 40px) 40px;
-  padding-top: 40px;
+  padding: var(--page-gutter-inline);
 }
 
 .scholarship-detail-panel {
@@ -907,7 +906,7 @@
 @media (max-width: 720px) {
   .scholarship-detail-page {
     gap: 22px;
-    padding: 26px 16px 34px;
+    padding: var(--page-gutter-inline);
   }
 
   .scholarship-detail-hero__body,
