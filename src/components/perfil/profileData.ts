@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { BookOpen, Briefcase, Code2, Trophy } from 'lucide-react'
+import { BookOpen, Briefcase, MessageSquareText, Trophy } from 'lucide-react'
 import type { FeedTrackProgress } from '../../types/feed'
 
 export interface ProfileStat {
@@ -53,7 +53,7 @@ export const PROFILE_STATS: ProfileStat[] = [
     actionHref: '/notas',
     actionAriaLabel: 'Ver feedbacks recebidos',
     tone: 'purple',
-    icon: Code2,
+    icon: MessageSquareText,
   },
 ]
 

@@ -104,7 +104,13 @@ const textTags = [
   'Banco de dados',
   'Metricas',
 ] as const
-const textTagVariants = ['default', 'outline', 'subtle'] as const
+const textTagVariants = [
+  'default',
+  'outline',
+  'subtle',
+  'hard-skill',
+  'soft-skill',
+] as const
 
 type TechTagDemoItem = {
   accentColor?: string
@@ -744,7 +750,11 @@ export default function ComponentsDemoPage() {
 
         <div className="components-demo-row">
           {textTagVariants.map((variant) => (
-            <TextTag key={variant} variant={variant}>
+            <TextTag
+              key={variant}
+              variant={variant}
+              withDot={variant === 'hard-skill' || variant === 'soft-skill'}
+            >
               {variant}
             </TextTag>
           ))}

@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: var(--s-6);
   min-block-size: 100%;
-  padding: 46px var(--page-gutter-inline) 56px;
+  padding: var(--page-gutter-inline);
 }
 
 .talent-bank-page__header {
@@ -104,10 +104,6 @@
 }
 
 @media (max-width: 820px) {
-  .talent-bank-page {
-    padding-block: var(--s-6) var(--s-8);
-  }
-
   .talent-bank-page__grid {
     grid-template-columns: 1fr;
   }

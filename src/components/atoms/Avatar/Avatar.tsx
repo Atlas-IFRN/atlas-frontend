@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import styles from './Avatar.module.css'
 import type { AvatarProps } from './Avatar.types'
 
@@ -29,13 +29,8 @@ export function Avatar({
 }: AvatarProps) {
   // Se a imagem falhar ao carregar (URL do SUAP indisponível/protegida),
   // cai para as iniciais em vez de exibir um ícone de imagem quebrada.
-  const [hasImageError, setHasImageError] = useState(false)
-
-  useEffect(() => {
-    setHasImageError(false)
-  }, [src])
-
-  const showImage = Boolean(src) && !hasImageError
+  const [failedSrc, setFailedSrc] = useState<string>()
+  const showImage = Boolean(src) && failedSrc !== src
 
   const classNames = [
     styles.avatar,
@@ -53,7 +48,7 @@ export function Avatar({
           className={styles.image}
           src={src}
           alt=""
-          onError={() => setHasImageError(true)}
+          onError={() => setFailedSrc(src)}
         />
       ) : (
         getInitials(name)
