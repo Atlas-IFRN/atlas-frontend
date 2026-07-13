@@ -478,7 +478,7 @@ export default function ComponentsDemoPage() {
     'backend',
     'frontend',
   ])
-  const [feedFilter, setFeedFilter] = useState<FeedFilter>('for-you')
+  const [feedFilter, setFeedFilter] = useState<FeedFilter>('principal')
 
   return (
     <main className="components-demo-page">

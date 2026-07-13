@@ -1042,3 +1042,207 @@
     display: none;
   }
 }
+
+/* ---------- Integração com backend: composer, menu, permalink ---------- */
+
+.composer__standalone {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-base);
+  min-block-size: 120px;
+  outline: none;
+  padding: var(--s-3);
+  resize: vertical;
+  width: 100%;
+}
+
+.composer__link-input {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  outline: none;
+  padding: var(--s-2) var(--s-3);
+}
+
+.composer__link-input:focus {
+  border-color: var(--primary);
+}
+
+.composer__image-preview {
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  position: relative;
+  max-inline-size: 100%;
+}
+
+.composer__image-preview img {
+  display: block;
+  max-block-size: 320px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.composer__image-remove {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.6);
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  inset-block-start: var(--s-2);
+  inset-inline-end: var(--s-2);
+  justify-content: center;
+  padding: 6px;
+  position: absolute;
+}
+
+/* Autor clicável no cabeçalho do post */
+.post-head__author-link {
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 0;
+}
+
+.post-head__author-link:hover {
+  text-decoration: underline;
+}
+
+/* Menu de opções do post (compartilhar / editar / excluir) */
+.post-menu {
+  position: relative;
+}
+
+.post-menu__list {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 2px;
+  inset-block-start: calc(100% + 4px);
+  inset-inline-end: 0;
+  min-inline-size: 168px;
+  padding: var(--s-1, 4px);
+  position: absolute;
+  z-index: 20;
+}
+
+.post-menu__item {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--r-sm);
+  color: var(--text-soft);
+  cursor: pointer;
+  display: flex;
+  font-size: var(--font-size-sm);
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  text-align: start;
+  width: 100%;
+}
+
+.post-menu__item:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.post-menu__item--danger {
+  color: var(--danger);
+}
+
+.post-menu__item--danger:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+/* Botão "carregar mais" */
+.feed-load-more {
+  display: flex;
+  justify-content: center;
+  padding-block: var(--s-2);
+}
+
+/* Página de post individual (permalink) e páginas de criação/edição */
+.feed-page--single {
+  padding-block: var(--s-5, 24px);
+}
+
+.post-permalink {
+  display: grid;
+  gap: var(--s-4);
+  margin-inline: auto;
+  max-inline-size: 640px;
+  width: 100%;
+}
+
+.post-permalink__back {
+  align-items: center;
+  color: var(--text-muted);
+  display: inline-flex;
+  font-size: var(--font-size-sm);
+  gap: var(--s-2);
+  text-decoration: none;
+  width: fit-content;
+}
+
+.post-permalink__back:hover {
+  color: var(--text);
+}
+
+.post-permalink__title {
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* ---------- Post fixado por docente ---------- */
+
+.post--fixed {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
+.post-fixed-flag {
+  align-items: center;
+  color: var(--primary);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 600;
+  gap: 6px;
+  letter-spacing: 0.01em;
+}
+
+/* ---------- Autor de comentário clicável (→ perfil) ---------- */
+
+.comment__author-link {
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  cursor: pointer;
+  font-size: inherit;
+  font-weight: 700;
+  padding: 0;
+}
+
+.comment__author-link:hover {
+  text-decoration: underline;
+}
+
+.comment__avatar--link {
+  cursor: pointer;
+}

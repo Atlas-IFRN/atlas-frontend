@@ -14,6 +14,7 @@ const ComponentsDemoPage = lazy(
 const FeedPage = lazy(() => import('../pages/feed/FeedPage'))
 const CreatePostPage = lazy(() => import('../pages/feed/CreatePostPage'))
 const EditPostPage = lazy(() => import('../pages/feed/EditPostPage'))
+const PostPermalinkPage = lazy(() => import('../pages/feed/PostPermalinkPage'))
 
 const ScholarshipsPage = lazy(
   () => import('../pages/scholarships/ScholarshipsPage'),
@@ -110,6 +111,7 @@ export function AppRoutes() {
           <Route element={<AppLayout />}>
             <Route path="/inicio" element={<FeedPage />} />
             <Route path="/inicio/novo" element={<CreatePostPage />} />
+            <Route path="/inicio/post/:postId" element={<PostPermalinkPage />} />
             <Route path="/inicio/:postId/editar" element={<EditPostPage />} />
 
             <Route path="/bolsas" element={<ScholarshipsPage />} />
