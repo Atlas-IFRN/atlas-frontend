@@ -387,6 +387,39 @@
   font-size: var(--font-size-sm);
 }
 
+.create-track-validation__header {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--s-3);
+  justify-content: space-between;
+}
+
+.create-track-validation__close {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  min-block-size: 32px;
+  min-inline-size: 32px;
+  padding: 0;
+}
+
+.create-track-validation__close:hover {
+  background: color-mix(in srgb, var(--danger) 13%, transparent);
+  border-color: color-mix(in srgb, var(--danger) 28%, transparent);
+  color: var(--text);
+}
+
+.create-track-validation__close:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
 .create-track-validation p {
   color: var(--text-muted);
   font-size: var(--font-size-xs);
@@ -403,7 +436,7 @@
   padding: 0;
 }
 
-.create-track-validation button {
+.create-track-validation__error {
   background: transparent;
   border: 0;
   color: var(--text-soft);
@@ -415,13 +448,13 @@
   text-align: start;
 }
 
-.create-track-validation button::before {
+.create-track-validation__error::before {
   color: var(--danger);
   content: '•';
   margin-inline-end: 8px;
 }
 
-.create-track-validation button:hover {
+.create-track-validation__error:hover {
   color: var(--text);
   text-decoration: underline;
 }

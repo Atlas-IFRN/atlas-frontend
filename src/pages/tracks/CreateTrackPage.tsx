@@ -592,6 +592,8 @@ export default function CreateTrackPage() {
   const [message, setMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [showPublicationErrors, setShowPublicationErrors] = useState(false)
+  const [showPublicationValidationSummary, setShowPublicationValidationSummary] =
+    useState(true)
 
   useEffect(() => {
     document.title = isEditMode ? 'ATLAS - Editar trilha' : 'ATLAS - Criar trilha'
@@ -787,6 +789,7 @@ export default function CreateTrackPage() {
 
     if (validationErrors.length > 0) {
       setShowPublicationErrors(true)
+      setShowPublicationValidationSummary(true)
       setMessage('')
       setErrorMessage('')
       revealPublicationError(validationErrors[0])
@@ -1400,18 +1403,33 @@ export default function CreateTrackPage() {
         </section>
       </header>
 
-      {publicationErrors.length > 0 ? (
+      {publicationErrors.length > 0 && showPublicationValidationSummary ? (
         <section className="create-track-validation" role="alert">
-          <div>
-            <strong>A trilha ainda não pode ser publicada</strong>
-            <p>
-              Corrija os campos abaixo ou use “Salvar rascunho” para continuar depois.
-            </p>
+          <div className="create-track-validation__header">
+            <div>
+              <strong>A trilha ainda não pode ser publicada</strong>
+              <p>
+                Corrija os campos abaixo ou use “Salvar rascunho” para continuar depois.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="create-track-validation__close"
+              aria-label="Fechar resumo das pendências"
+              title="Fechar"
+              onClick={() => setShowPublicationValidationSummary(false)}
+            >
+              <X aria-hidden="true" size={18} strokeWidth={2} />
+            </button>
           </div>
           <ul>
             {publicationErrors.map((error, index) => (
               <li key={`${error.field}-${error.moduleId ?? 'track'}-${error.contentId ?? index}`}>
-                <button type="button" onClick={() => revealPublicationError(error)}>
+                <button
+                  type="button"
+                  className="create-track-validation__error"
+                  onClick={() => revealPublicationError(error)}
+                >
                   {error.message}
                 </button>
               </li>
