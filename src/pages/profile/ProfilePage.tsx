@@ -96,7 +96,7 @@ export default function ProfilePage() {
     }
 
     const profileUrl = new URL(
-      `/perfis/${encodeURIComponent(user.id)}`,
+      `/perfil/${encodeURIComponent(user.matricula)}`,
       window.location.origin,
     ).toString()
     const shareData = {

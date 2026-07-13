@@ -90,6 +90,10 @@ export function TopBar({
     onLogout()
   }
 
+  const profilePath = user.registration
+    ? `/perfil/${encodeURIComponent(user.registration)}`
+    : '/perfil'
+
   const userChip = (
     <UserChip
       name={user.name}
@@ -194,7 +198,7 @@ export function TopBar({
                 className="profile-menu__navigation"
                 aria-label="Atalhos do perfil"
               >
-                <Link to="/perfil" onClick={closeProfileMenu}>
+                <Link to={profilePath} onClick={closeProfileMenu}>
                   <UserRound aria-hidden="true" />
                   <span>Minha conta</span>
                 </Link>

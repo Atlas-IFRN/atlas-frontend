@@ -244,7 +244,9 @@ function getCandidateAcademicSummary(application: ScholarshipApplication) {
 }
 
 function getCandidateProfilePath(application: ScholarshipApplication) {
-  return `/perfis/${application.student?.id || application.studentId}`
+  const matricula = application.student?.matricula || application.studentId
+
+  return `/perfil/${encodeURIComponent(matricula)}`
 }
 
 function getCandidateSearchText(application: ScholarshipApplication) {
