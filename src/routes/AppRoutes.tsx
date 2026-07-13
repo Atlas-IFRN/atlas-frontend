@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppLayout } from '../components/AppLayout'
+import { useAuth } from '../contexts/AuthContext'
 import { ProtectedRoute } from './ProtectedRoute'
 import { RoleRoute } from './RoleRoute'
 
@@ -36,7 +37,6 @@ const ScholarshipApplicationsPage = lazy(
     ),
 )
 
-const ProfilePage = lazy(() => import('../pages/profile/ProfilePage'))
 const UserProfilePage = lazy(() => import('../pages/profile/UserProfilePage'))
 const EditProfilePage = lazy(() => import('../pages/profile/EditProfilePage'))
 
@@ -84,6 +84,19 @@ const TeacherPanelPage = lazy(
 const TEACHER_ROLES = ['teacher', 'professor']
 const STUDENT_ROLES = ['student', 'aluno']
 
+function MyProfileRedirect() {
+  const { user } = useAuth()
+
+  return (
+    <Navigate
+      to={user?.matricula
+        ? `/perfil/${encodeURIComponent(user.matricula)}`
+        : '/inicio'}
+      replace
+    />
+  )
+}
+
 export function AppRoutes() {
   return (
     <Suspense>
@@ -105,9 +118,9 @@ export function AppRoutes() {
               element={<ScholarshipDetailsPage />}
             />
 
-            <Route path="/perfil" element={<ProfilePage />} />
+            <Route path="/perfil" element={<MyProfileRedirect />} />
             <Route path="/perfil/editar" element={<EditProfilePage />} />
-            <Route path="/perfis/:userId" element={<UserProfilePage />} />
+            <Route path="/perfil/:matricula" element={<UserProfilePage />} />
 
             <Route path="/trilhas" element={<TracksPage />} />
             <Route path="/trilhas/:trackId" element={<TrackDetailsPage />} />

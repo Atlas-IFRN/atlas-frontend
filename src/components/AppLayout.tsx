@@ -54,6 +54,9 @@ export function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const userName = user?.firstName || 'Usuário ATLAS'
   const userRole = getRoleLabel(user?.role)
+  const profilePath = user?.matricula
+    ? `/perfil/${encodeURIComponent(user.matricula)}`
+    : '/perfil'
   const menu = useMemo<NavItem[]>(
     () => [
       { to: '/inicio', label: 'Início', Icon: Home },
@@ -65,9 +68,9 @@ export function AppLayout() {
         Icon: Users,
         activePrefix: '/banco-talentos',
       },
-      { to: '/perfil', label: 'Meu Perfil', Icon: User },
+      { to: profilePath, label: 'Meu Perfil', Icon: User },
     ],
-    [],
+    [profilePath],
   )
 
   useEffect(() => {
