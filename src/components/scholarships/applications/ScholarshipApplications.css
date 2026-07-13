@@ -5,7 +5,7 @@
   flex-direction: column;
   gap: 22px;
   min-block-size: 100%;
-  padding: 24px var(--page-gutter-inline) 40px;
+  padding: var(--page-gutter-inline);
 }
 
 .scholarship-applications-hero {
@@ -461,7 +461,7 @@
 @media (max-width: 760px) {
   .scholarship-applications-page {
     gap: 18px;
-    padding: 22px var(--page-gutter-inline) 34px;
+    padding: var(--page-gutter-inline);
   }
 
   .scholarship-applications-hero {

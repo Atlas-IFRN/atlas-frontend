@@ -2,7 +2,7 @@
 .scholarship-create-page {
   color: var(--text);
   min-block-size: 100%;
-  padding: 28px var(--page-gutter-inline) 42px;
+  padding: var(--page-gutter-inline);
 }
 
 .scholarship-create,
@@ -681,7 +681,7 @@
 
 @media (max-width: 640px) {
   .scholarship-create-page {
-    padding: 24px var(--page-gutter-inline) 34px;
+    padding: var(--page-gutter-inline);
   }
 
   .scholarship-create-submit {

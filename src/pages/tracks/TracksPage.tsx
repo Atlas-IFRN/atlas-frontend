@@ -52,7 +52,7 @@ export default function TracksPage() {
   const isTeacher = isTeacherRole(user?.role)
 
   useEffect(() => {
-    document.title = 'ATLAS · Trilhas'
+    document.title = 'Trilhas | ATLAS'
 
     const description =
       'Catálogo de trilhas do ATLAS com percursos por área tecnológica, progresso, busca e filtros.'

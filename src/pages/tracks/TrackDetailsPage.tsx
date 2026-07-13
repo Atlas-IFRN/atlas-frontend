@@ -87,11 +87,11 @@ export default function TrackDetailsPage() {
 
   useEffect(() => {
     if (!trail) {
-      document.title = 'ATLAS · Trilha não encontrada'
+      document.title = 'Trilha não encontrada | ATLAS'
       return
     }
 
-    document.title = `ATLAS · ${trail.title}`
+    document.title = `${trail.title} | ATLAS`
     setMetaContent(
       'meta[name="description"]',
       'name',
@@ -102,7 +102,7 @@ export default function TrackDetailsPage() {
       'meta[property="og:title"]',
       'property',
       'og:title',
-      `ATLAS · ${trail.title}`,
+      `${trail.title} | ATLAS`,
     )
     setMetaContent(
       'meta[property="og:description"]',

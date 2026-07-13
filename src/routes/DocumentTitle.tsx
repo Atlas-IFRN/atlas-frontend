@@ -52,11 +52,7 @@ function getTitle(pathname: string) {
     matchPath({ path, end: true }, pathname),
   )
 
-  return routeTitle?.path === '/perfil'
-    ? `${APP_NAME} · ${routeTitle.title}`
-    : routeTitle
-      ? `${routeTitle.title} | ${APP_NAME}`
-      : APP_NAME
+  return routeTitle ? `${routeTitle.title} | ${APP_NAME}` : APP_NAME
 }
 
 export function DocumentTitle() {

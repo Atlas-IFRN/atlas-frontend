@@ -380,7 +380,7 @@ export default function CreateTrackPage() {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    document.title = isEditMode ? 'ATLAS - Editar trilha' : 'ATLAS - Criar trilha'
+    document.title = isEditMode ? 'Editar trilha | ATLAS' : 'Criar trilha | ATLAS'
 
     void getSkills()
       .then(setSkills)

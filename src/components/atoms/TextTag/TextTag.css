@@ -41,6 +41,25 @@
   --text-tag-color: var(--text-muted);
 }
 
+.atlas-text-tag--hard-skill,
+.atlas-text-tag--soft-skill {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.atlas-text-tag--hard-skill {
+  --text-tag-bg: var(--primary-soft);
+  --text-tag-border: var(--border-2);
+  --text-tag-color: color-mix(in srgb, var(--primary) 86%, var(--text));
+}
+
+.atlas-text-tag--soft-skill {
+  --text-tag-bg: var(--purple-soft);
+  --text-tag-border: color-mix(in srgb, var(--purple) 25%, transparent);
+  --text-tag-color: color-mix(in srgb, var(--purple) 78%, var(--text));
+}
+
 .atlas-text-tag--dot {
   gap: var(--s-2);
 }
@@ -56,10 +75,15 @@
 }
 
 .atlas-text-tag--sm {
-  --text-tag-height: 30px;
-  --text-tag-padding-x: 12px;
+  --text-tag-height: 24px;
+  --text-tag-padding-x: 10px;
 
-  font-size: var(--font-size-xs);
+  font-size: 11px;
+}
+
+.atlas-text-tag--sm.atlas-text-tag--dot::before {
+  block-size: 5px;
+  inline-size: 5px;
 }
 
 .atlas-text-tag--md {

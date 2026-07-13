@@ -3,7 +3,12 @@ import type { HTMLAttributes, ReactNode } from 'react'
 import './TextTag.css'
 
 export type TextTagSize = 'sm' | 'md'
-export type TextTagVariant = 'default' | 'outline' | 'subtle'
+export type TextTagVariant =
+  | 'default'
+  | 'outline'
+  | 'subtle'
+  | 'hard-skill'
+  | 'soft-skill'
 
 export interface TextTagProps extends HTMLAttributes<HTMLSpanElement> {
   children: ReactNode

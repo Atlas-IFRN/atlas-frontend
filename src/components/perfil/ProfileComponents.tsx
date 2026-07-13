@@ -4,14 +4,13 @@ import type { AuthUser } from '../../contexts/AuthContext'
 import {
   MINHAS_NOTAS,
   tagLabel,
-  type NoteTag,
   type ProfileNote,
 } from '../../lib/notas-mock'
 import { Avatar } from '../atoms/Avatar'
 import { Button } from '../atoms/Button'
 import { ButtonLink } from '../atoms/ButtonLink'
 import { StatCard } from '../atoms/StatCard'
-import { StatusBadge, type StatusBadgeStatus } from '../atoms/StatusBadge'
+import { TextTag } from '../atoms/TextTag'
 import { RailTrackList } from '../feed/rails/RailTrackList'
 import { InfoCard } from '../molecules/InfoCard'
 import { EmptyState } from '../states/EmptyState'
@@ -54,12 +53,6 @@ function formatIra(ira: number) {
     maximumFractionDigits: 2,
     minimumFractionDigits: 1,
   })
-}
-
-const noteTagStatus: Record<NoteTag, StatusBadgeStatus> = {
-  'ponto-forte': 'completed',
-  'soft-skill': 'primary',
-  atencao: 'warning',
 }
 
 interface ProfileIdentityProps {
@@ -173,20 +166,26 @@ export function AboutCard({ bio }: { bio: string }) {
 
 export function NotePreviewCard({ note }: { note: ProfileNote }) {
   return (
-    <Link className="profile-note" to="/notas" aria-label={`Ver nota de ${note.professor}`}>
-      <Avatar name={note.professor} color="blue" size="sm" />
+    <Link
+      className="profile-note"
+      to="/notas"
+      aria-label={`Ver nota de ${note.professor.name}`}
+    >
+      <Avatar
+        name={note.professor.name}
+        color="blue"
+        size="sm"
+        src={note.professor.avatarSrc}
+      />
       <div className="profile-note__content">
         <div className="profile-note__heading">
-          <strong>Prof. {note.professor}</strong>
-          <span>{note.context}</span>
+          <strong>Prof. {note.professor.name}</strong>
         </div>
-        <p>“{note.excerpt}”</p>
+        <p>“{note.content}”</p>
         <div className="profile-note__tags">
-          {note.tags.map((tag) => (
-            <StatusBadge key={tag} size="sm" status={noteTagStatus[tag]}>
-              {tagLabel(tag)}
-            </StatusBadge>
-          ))}
+          <TextTag size="sm" variant={note.tag} withDot>
+            {tagLabel(note.tag)}
+          </TextTag>
         </div>
       </div>
     </Link>
