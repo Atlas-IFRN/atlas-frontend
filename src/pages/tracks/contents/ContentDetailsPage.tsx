@@ -560,30 +560,6 @@ export default function ContentDetailsPage() {
                         </div>
                       </InfoCard>
 
-                      <InfoCard
-                        as="article"
-                        className="challenge-card--requirements"
-                        eyebrow="Implementação"
-                        icon={<CheckCircle2 size={18} />}
-                        iconTone="success"
-                        title="Requisitos técnicos"
-                      >
-                        {content.technical_requirements?.length ? (
-                          <ul className="challenge-checklist">
-                            {content.technical_requirements.map((requirement) => (
-                              <li key={requirement}>
-                                <Check aria-hidden="true" size={16} />
-                                <span>{requirement}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="challenge-card__empty">
-                            Nenhum requisito técnico foi informado.
-                          </p>
-                        )}
-                      </InfoCard>
-
                       <article className="challenge-card challenge-card--evaluation">
                         <header className="challenge-card__header">
                           <span className="challenge-card__icon challenge-card__icon--warning">

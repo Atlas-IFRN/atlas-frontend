@@ -1032,15 +1032,6 @@
     border-color var(--t-fast);
 }
 
-.content-editor-field--requirements {
-  margin-block-start: var(--s-4);
-}
-
-.content-editor-field--requirements textarea {
-  line-height: 1.65;
-  min-block-size: 150px;
-}
-
 .content-editor-upload:hover {
   background: var(--primary-soft);
   border-color: color-mix(in srgb, var(--primary) 62%, transparent);
