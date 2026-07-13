@@ -66,7 +66,6 @@ interface DraftContent {
   estimatedDuration: string
   visibility: Visibility
   instructions: string
-  technicalRequirements: string
   language: string
   criteria: EvaluationCriterion[]
   isPersisted: boolean
@@ -342,14 +341,6 @@ function validateTrackForPublication({
           })
         }
 
-        if (!content.technicalRequirements.trim()) {
-          errors.push({
-            ...validationContext,
-            field: 'content-requirements',
-            message: `${contentLabel}: informe pelo menos um requisito técnico.`,
-          })
-        }
-
         const hasUnnamedCriterion = content.criteria.some(
           (criterion) => !criterion.label.trim(),
         )
@@ -429,7 +420,6 @@ function mapApiContentToDraft(content: ApiContent): DraftContent {
     estimatedDuration: formatDuration(content.duration_minutes),
     visibility: content.visibility ?? 'enrolled',
     instructions: content.instructions ?? '',
-    technicalRequirements: (content.technical_requirements ?? []).join('\n'),
     language: content.language ?? 'Python',
     criteria: apiCriteriaToDraft(content.evaluation_criteria),
     isPersisted: true,
@@ -504,10 +494,6 @@ function getContentPayload(
 
   if (content.type === 'CHALLENGE') {
     payload.instructions = content.instructions.trim()
-    payload.technical_requirements = content.technicalRequirements
-      .split(/\r?\n/)
-      .map((requirement) => requirement.trim())
-      .filter(Boolean)
     payload.language = content.language.trim() || 'Python'
     payload.evaluation_criteria = criteriaToApi(content.criteria)
   } else if (content.type === 'ARTICLE') {
@@ -1010,7 +996,6 @@ export default function CreateTrackPage() {
         estimatedDuration: '',
         visibility: 'enrolled',
         instructions: '',
-        technicalRequirements: '',
         language: 'Python',
         criteria: getDefaultCriteria(),
         isPersisted: false,
@@ -1790,8 +1775,8 @@ export default function CreateTrackPage() {
                       )}
                       data-validation-field="content-instructions"
                       value={selectedContent.instructions}
-                      placeholder="Escreva o enunciado completo do desafio em texto corrido. Explique o contexto, o que deve ser desenvolvido, as regras importantes e o que o aluno deverá entregar."
-                      rows={9}
+                      placeholder="Escreva o enunciado completo do desafio. Explique o contexto, o que deve ser desenvolvido, os requisitos técnicos, as regras importantes e o que o aluno deverá entregar."
+                      rows={14}
                       onChange={(event) =>
                         updateSelectedContent({ instructions: event.target.value })
                       }
@@ -1801,32 +1786,10 @@ export default function CreateTrackPage() {
                   <div className="content-editor-helptext" aria-live="polite">
                     <strong>Como escrever um bom enunciado</strong>
                     <p>
-                      Apresente o contexto, o problema e o resultado esperado em texto corrido. As tecnologias,
-                      bibliotecas e regras obrigatórias devem ser informadas separadamente nos requisitos técnicos.
+                      Reúna neste campo o contexto, o problema, o resultado esperado, os requisitos técnicos,
+                      as tecnologias obrigatórias, as regras e a entrega esperada.
                     </p>
                   </div>
-
-                  <label className="content-editor-field content-editor-field--requirements">
-                    <span>
-                      Requisitos técnicos * <small>um requisito por linha</small>
-                    </span>
-                    <textarea
-                      aria-invalid={hasPublicationError(
-                        'content-requirements',
-                        selectedModule?.id,
-                        selectedContent.id,
-                      )}
-                      data-validation-field="content-requirements"
-                      value={selectedContent.technicalRequirements}
-                      placeholder={'Utilizar Python.\nUtilizar Django REST Framework.\nValidar os dados com serializers.\nIncluir um arquivo README.'}
-                      rows={6}
-                      onChange={(event) =>
-                        updateSelectedContent({
-                          technicalRequirements: event.target.value,
-                        })
-                      }
-                    />
-                  </label>
 
                   <div className="content-editor-grid content-editor-grid--two">
                     <label className="content-editor-field">
