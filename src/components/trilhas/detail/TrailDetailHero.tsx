@@ -1,6 +1,7 @@
 import { CalendarDays, Star, Timer } from 'lucide-react'
 import { TextTag } from '../../atoms/TextTag'
 import type { Trail } from '../../../types/tracks'
+import { TrailSkillList } from '../catalog/TrailSkillList'
 import { TrailBannerIcon } from '../catalog/trailBannerIcons'
 
 interface TrailDetailHeroProps {
@@ -23,6 +24,12 @@ export function TrailDetailHero({ trail }: TrailDetailHeroProps) {
 
         <h1>{trail.title}</h1>
         <p>{summary}</p>
+
+        {trail.skills.length > 0 ? (
+          <div className="trail-detail-hero__skills">
+            <TrailSkillList skills={trail.skills} />
+          </div>
+        ) : null}
 
         <div className="trail-detail-hero__meta" aria-label="Resumo da trilha">
           <span>
