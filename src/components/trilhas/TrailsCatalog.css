@@ -243,6 +243,14 @@
   block-size: 7px;
 }
 
+.trail-card .progress--completed .progress-bar {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--success) 82%, var(--primary)),
+    var(--success)
+  );
+}
+
 .trail-footer-meta {
   align-items: center;
   border-top: 1px solid var(--border);

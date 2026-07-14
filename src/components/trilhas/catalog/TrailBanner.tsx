@@ -8,6 +8,8 @@ interface TrailBannerProps {
 }
 
 export function TrailBanner({ trail }: TrailBannerProps) {
+  const isCompleted = trail.enrollmentStatus === 'COMPLETED'
+
   return (
     <div className={`trail-banner ${trail.theme}`}>
       <TextTag className="trail-banner__area" size="sm" withDot>
@@ -19,9 +21,9 @@ export function TrailBanner({ trail }: TrailBannerProps) {
           <StatusBadge
             className="trail-banner__badge"
             size="sm"
-            status="primary"
+            status={isCompleted ? 'completed' : 'primary'}
           >
-            Matriculado
+            {isCompleted ? 'Concluído' : 'Matriculado'}
           </StatusBadge>
         ) : null}
         {trail.isNew ? (
