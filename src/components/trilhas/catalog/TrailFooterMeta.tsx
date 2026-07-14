@@ -17,7 +17,12 @@ export function TrailFooterMeta({
   onEnroll,
   trail,
 }: TrailFooterMetaProps) {
-  const ctaLabel = trail.enrolled ? 'Continuar' : 'Inscrever-se'
+  const isCompleted = trail.enrollmentStatus === 'COMPLETED'
+  const ctaLabel = trail.enrolled
+    ? isCompleted
+      ? 'Revisar trilha'
+      : 'Continuar'
+    : 'Inscrever-se'
 
   return (
     <footer className="trail-footer-meta">

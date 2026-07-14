@@ -40,7 +40,15 @@ export function TrailCard({ trail }: TrailCardProps) {
           <p title={trail.description}>{trail.description}</p>
 
           {trail.progress !== null ? (
-            <ProgressBar label="Progresso" value={trail.progress} />
+            <ProgressBar
+              className={
+                trail.enrollmentStatus === 'COMPLETED'
+                  ? 'progress--completed'
+                  : undefined
+              }
+              label="Progresso"
+              value={trail.progress}
+            />
           ) : null}
         </div>
       </Link>
