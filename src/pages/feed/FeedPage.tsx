@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Newspaper } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import {
+  BannerManageModal,
   FeedComposer,
   FeedFilters,
   FeedHero,
@@ -13,9 +14,15 @@ import {
 import { Button } from '../../components/atoms/Button'
 import { EmptyState, ErrorState, LoadingState } from '../../components/states'
 import { useFeedPosts } from '../../hooks/useFeed'
+import { useBanners } from '../../hooks/useBanners'
+import { bannerToSlide } from '../../services/banners'
 import type { AvatarColor } from '../../components/atoms/Avatar'
 import { ACTIVE_SCHOLARSHIPS, HERO_SLIDES, MY_TRACKS } from './feedData'
 import '../../components/feed/Feed.css'
+
+function isTeacherRole(role: string) {
+  return ['teacher', 'professor'].includes(role.trim().toLowerCase())
+}
 
 const EMPTY_COPY: Record<FeedFilter, { title: string; description: string }> = {
   principal: {
@@ -39,9 +46,17 @@ const EMPTY_COPY: Record<FeedFilter, { title: string; description: string }> = {
 export default function FeedPage() {
   const { user } = useAuth()
   const [filter, setFilter] = useState<FeedFilter>('principal')
+  const [isBannerModalOpen, setBannerModalOpen] = useState(false)
+  const isTeacher = Boolean(user && isTeacherRole(user.role))
 
   // Mesmo nome exibido no cabeçalho (TopBar): usa o primeiro nome.
   const currentUserName = user?.firstName || 'Usuário ATLAS'
+
+  const { data: banners = [] } = useBanners()
+  const heroSlides = useMemo(
+    () => [...HERO_SLIDES, ...banners.map(bannerToSlide)],
+    [banners],
+  )
 
   const {
     data,
@@ -76,7 +91,14 @@ export default function FeedPage() {
 
   return (
     <main className="feed-page">
-      <FeedHero slides={HERO_SLIDES} />
+      <FeedHero
+        onManageBanners={isTeacher ? () => setBannerModalOpen(true) : undefined}
+        slides={heroSlides}
+      />
+
+      {isBannerModalOpen ? (
+        <BannerManageModal onClose={() => setBannerModalOpen(false)} />
+      ) : null}
 
       <div className="feed-layout">
         <FeedLeftRail scholarships={ACTIVE_SCHOLARSHIPS} />

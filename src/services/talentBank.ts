@@ -1,5 +1,7 @@
 import axios from 'axios'
 import api from './api'
+import type { AuthUser } from '../contexts/AuthContext'
+import { getUserProfileById } from './auth'
 
 export type TalentRegistrationStatus = 'Active' | 'Inactive'
 
@@ -49,6 +51,50 @@ export async function getMyTalentRegistration(): Promise<TalentRegistration | nu
   const registration = data.results[0]
 
   return registration ? toTalentRegistration(registration) : null
+}
+
+export async function getActiveTalentRegistrations(): Promise<
+  TalentRegistration[]
+> {
+  const registrations: TalentRegistration[] = []
+  let page = 1
+  let hasNextPage = true
+
+  while (hasNextPage) {
+    const { data } = await api.get<PaginatedTalentRegistrationsApi>(
+      TALENT_BANK_PATH,
+      {
+        params: { page, page_size: 50, status: 'Active' },
+      },
+    )
+
+    registrations.push(...data.results.map(toTalentRegistration))
+    hasNextPage = Boolean(data.next)
+    page += 1
+  }
+
+  return registrations
+}
+
+export async function getActiveTalentStudents(): Promise<AuthUser[]> {
+  const registrations = await getActiveTalentRegistrations()
+  const uniqueStudentIds = [
+    ...new Set(registrations.map((registration) => registration.studentId)),
+  ]
+  const profileResults = await Promise.allSettled(
+    uniqueStudentIds.map(getUserProfileById),
+  )
+  const students = profileResults.flatMap((result) =>
+    result.status === 'fulfilled' ? [result.value] : [],
+  )
+
+  if (uniqueStudentIds.length > 0 && students.length === 0) {
+    throw new Error('Não foi possível carregar os perfis dos alunos.')
+  }
+
+  return students.filter((student) =>
+    ['student', 'aluno'].includes(student.role.trim().toLowerCase()),
+  )
 }
 
 export async function createTalentRegistration(): Promise<TalentRegistration> {
