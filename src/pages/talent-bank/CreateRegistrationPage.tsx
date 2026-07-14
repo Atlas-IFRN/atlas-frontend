@@ -1,12 +1,54 @@
-import { useState } from 'react'
 import { Check } from 'lucide-react'
 import { Button } from '../../components/atoms/Button'
 import { InfoCard } from '../../components/molecules/InfoCard'
 import { PageHeroCopy } from '../../components/molecules/PageHeroCopy'
+import {
+  useJoinTalentBank,
+  useLeaveTalentBank,
+  useTalentRegistration,
+} from '../../hooks/useTalentBank'
+import { getTalentBankErrorMessage } from '../../services/talentBank'
 import './TalentBankPage.css'
 
 export default function CreateRegistrationPage() {
-  const [isRegistered, setIsRegistered] = useState(false)
+  const registrationQuery = useTalentRegistration()
+  const joinMutation = useJoinTalentBank()
+  const leaveMutation = useLeaveTalentBank()
+  const registration = registrationQuery.data
+  const isRegistered = registration?.status === 'Active'
+  const isInactive = registration?.status === 'Inactive'
+  const actionMutation = isRegistered ? leaveMutation : joinMutation
+  const actionError = actionMutation.error
+  const actionPending = joinMutation.isPending || leaveMutation.isPending
+
+  function handleRegistrationAction() {
+    if (isRegistered) {
+      joinMutation.reset()
+      leaveMutation.mutate()
+      return
+    }
+
+    leaveMutation.reset()
+    joinMutation.mutate(Boolean(registration))
+  }
+
+  const statusTitle = registrationQuery.isError
+    ? 'Não foi possível consultar sua inscrição'
+    : registrationQuery.isLoading
+      ? 'Consultando sua inscrição...'
+      : isRegistered
+        ? 'Inscrito no Banco de Talentos'
+        : isInactive
+          ? 'Sua inscrição está desativada'
+          : 'Você ainda não está inscrito'
+
+  const actionLabel = registrationQuery.isError
+    ? 'Tentar novamente'
+    : isRegistered
+      ? 'Sair do Banco de Talentos'
+      : isInactive
+        ? 'Reativar inscrição'
+        : 'Inscrever-se agora'
 
   return (
     <main className="talent-bank-page">
@@ -80,10 +122,10 @@ export default function CreateRegistrationPage() {
             {isRegistered ? (
               <>
                 <Check aria-hidden="true" size={18} strokeWidth={2.5} />
-                Inscrito no Banco de Talentos
+                {statusTitle}
               </>
             ) : (
-              'Você ainda não está inscrito'
+              statusTitle
             )}
           </h2>
           <Button
@@ -92,16 +134,37 @@ export default function CreateRegistrationPage() {
                 ? ' talent-bank-page__register-button--registered'
                 : ''
             }`}
-            onClick={() => setIsRegistered((registered) => !registered)}
+            disabled={registrationQuery.isLoading}
+            loading={registrationQuery.isFetching || actionPending}
+            onClick={() => {
+              if (registrationQuery.isError) {
+                void registrationQuery.refetch()
+                return
+              }
+
+              handleRegistrationAction()
+            }}
             size="md"
             variant={isRegistered ? 'outline' : 'primary'}
           >
-            {isRegistered
-              ? 'Sair do Banco de Talentos'
-              : 'Inscrever-se agora'}
+            {actionLabel}
           </Button>
+          {registrationQuery.isError ? (
+            <p className="talent-bank-page__status-error" role="alert">
+              {getTalentBankErrorMessage(
+                registrationQuery.error,
+                'Não foi possível acessar o Banco de Talentos.',
+              )}
+            </p>
+          ) : actionError ? (
+            <p className="talent-bank-page__status-error" role="alert">
+              {getTalentBankErrorMessage(actionError)}
+            </p>
+          ) : null}
           <p className="talent-bank-page__status-help">
-            Sua inscrição é gratuita e pode ser cancelada a qualquer momento.
+            {isRegistered
+              ? 'Seu perfil está visível para professores orientadores.'
+              : 'Sua inscrição é gratuita e pode ser cancelada a qualquer momento.'}
           </p>
         </aside>
       </div>
