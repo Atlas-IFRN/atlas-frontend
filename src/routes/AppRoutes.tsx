@@ -156,6 +156,10 @@ export function AppRoutes() {
                 element={<TeacherPanelPage />}
               />
               <Route
+                path="/professor/notas"
+                element={<NotesPage />}
+              />
+              <Route
                 path="/bolsas/nova"
                 element={<CreateScholarshipPage />}
               />

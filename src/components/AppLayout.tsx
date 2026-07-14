@@ -10,6 +10,7 @@ import {
   Briefcase,
   Home,
   LogOut,
+  NotebookPen,
   User,
   Users,
 } from 'lucide-react'
@@ -93,9 +94,12 @@ export function AppLayout() {
         Icon: Users,
         activePrefix: '/banco-talentos',
       },
+      ...(isTeacher
+        ? [{ to: '/professor/notas', label: 'Notas', Icon: NotebookPen }]
+        : []),
       { to: profilePath, label: 'Meu Perfil', Icon: User },
     ],
-    [profilePath],
+    [isTeacher, profilePath],
   )
 
   useEffect(() => {

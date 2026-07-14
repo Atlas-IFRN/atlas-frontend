@@ -72,7 +72,7 @@ export function ProfileIdentity({
   const identityDetails = [
     roleLabel(user.role),
     user.courseName ? courseLabel(user.courseName) : null,
-    user.period !== null ? periodLabel(user.period) : null,
+    isStudent && user.period !== null ? periodLabel(user.period) : null,
   ].filter((detail): detail is string => Boolean(detail))
 
   return (
@@ -230,15 +230,14 @@ export function NotasPreviewSection({
 
 interface ProfileSidebarProps {
   user: AuthUser
-  onEdit?: () => void
 }
 
-export function ProfileSidebar({ user, onEdit }: ProfileSidebarProps) {
+export function ProfileSidebar({ user }: ProfileSidebarProps) {
   const isTeacher = isTeacherRole(user.role)
 
   return (
     <aside className="profile-detail-side">
-      <ProfileLinksCard user={user} onEdit={onEdit} />
+      <ProfileLinksCard user={user} />
       {!isTeacher ? (
         <>
           <RailTrackList tracks={PROFILE_TRACKS} />
@@ -249,7 +248,7 @@ export function ProfileSidebar({ user, onEdit }: ProfileSidebarProps) {
   )
 }
 
-export function ProfileLinksCard({ user, onEdit }: ProfileSidebarProps) {
+export function ProfileLinksCard({ user }: ProfileSidebarProps) {
   if (isTeacherRole(user.role)) {
     const lattesUrl = user.curriculoLattes.trim()
 
@@ -293,15 +292,7 @@ export function ProfileLinksCard({ user, onEdit }: ProfileSidebarProps) {
   }
 
   return (
-    <InfoCard
-      className="profile-links"
-      title="Links"
-      action={onEdit ? (
-        <Button onClick={onEdit} size="sm" variant="soft">
-          Editar
-        </Button>
-      ) : undefined}
-    >
+    <InfoCard className="profile-links" title="Links">
       <div className="profile-links__list">
         <a
           className="profile-social-link"
