@@ -59,6 +59,9 @@ const EditModulePage = lazy(
 const ContentDetailsPage = lazy(
   () => import('../pages/tracks/contents/ContentDetailsPage'),
 )
+const ChallengeSubmissionPage = lazy(
+  () => import('../pages/tracks/challenges/ChallengeSubmissionPage'),
+)
 const CreateContentPage = lazy(
   () => import('../pages/tracks/contents/CreateContentPage'),
 )
@@ -140,6 +143,10 @@ export function AppRoutes() {
             <Route path="/notas" element={<MyNotesPage />} />
 
             <Route element={<RoleRoute allowedRoles={STUDENT_ROLES} />}>
+              <Route
+                path="/trilhas/:trackId/modulos/:moduleId/conteudos/:contentId/avaliacao"
+                element={<ChallengeSubmissionPage />}
+              />
               <Route
                 path="/bolsas/minhas-candidaturas"
                 element={<MyApplicationsPage />}

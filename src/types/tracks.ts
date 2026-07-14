@@ -73,6 +73,7 @@ export interface Trail {
   area: TrailAreaLabel
   theme: TrailTheme
   enrolled: boolean
+  enrollmentStatus: 'IN_PROGRESS' | 'COMPLETED' | null
   isNew: boolean
   progress: number | null
   modules: number

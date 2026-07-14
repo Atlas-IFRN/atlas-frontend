@@ -48,6 +48,7 @@ export interface ApiModule {
 
 interface ApiUserProgress {
   enrolled?: boolean
+  status?: 'IN_PROGRESS' | 'COMPLETED' | null
   completed_modules?: number
   completed_content_ids?: string[]
   percentage?: number
@@ -109,6 +110,42 @@ export interface ApiUserTrack {
   status: 'IN_PROGRESS' | 'COMPLETED' | 'DROPPED'
   enrolled_at: string
   completed_at?: string | null
+}
+
+export type ChallengeSubmissionStatus =
+  | 'PENDING_AI'
+  | 'EVALUATING'
+  | 'EVALUATED'
+  | 'FAILED'
+
+export interface ApiChallengeCriterion {
+  id?: string
+  label?: string
+  name?: string
+  kind?: 'profile' | 'criterion'
+  weight?: number
+  present?: boolean
+  passed?: boolean
+  evidence?: string
+}
+
+export interface ApiChallengeSubmission {
+  id: string
+  user_track: string
+  challenge: string
+  github_url: string
+  ai_status: ChallengeSubmissionStatus
+  ai_feedback?: string | null
+  ai_score?: number | string | null
+  ai_criteries?: ApiChallengeCriterion[]
+  submitted_at: string
+  evaluated_at?: string | null
+}
+
+export interface CreateChallengeSubmissionPayload {
+  user_track: string
+  challenge: string
+  github_url: string
 }
 
 interface ApiCompletedTrack {
@@ -246,27 +283,34 @@ function mapEvaluation(evaluation?: ApiEvaluation | null): TrailEvaluation | nul
 
 function mapModules(track: ApiTrack): TrailModule[] {
   const completedModules = track.user_progress?.completed_modules ?? 0
+  const completedContentIds = new Set(
+    track.user_progress?.completed_content_ids ?? [],
+  )
 
   return (track.modules ?? []).map((module, index) => {
     const contents = [...(module.contents ?? [])].sort(
       (current, next) => (current.display_order ?? 0) - (next.display_order ?? 0),
     )
     const lessons = contents.length || module.contents_count || 0
-    const isCompleted = index < completedModules
+    const completedLessons = contents.filter((content) =>
+      completedContentIds.has(content.id),
+    ).length
+    const locked =
+      Boolean(track.user_progress?.enrolled) && index > completedModules
 
     return {
       id: module.id,
       title: module.title,
       lessons,
-      completedLessons: isCompleted ? lessons : 0,
+      completedLessons,
       lessonsList: contents.map((content) => ({
         id: content.id,
         title: content.title,
         type: content.content_type ?? 'VIDEO',
         durationMinutes: content.duration_minutes ?? null,
-        completed: isCompleted,
+        completed: completedContentIds.has(content.id),
       })),
-      locked: Boolean(track.user_progress?.enrolled) && index > completedModules,
+      locked,
     }
   })
 }
@@ -286,6 +330,10 @@ export function mapTrackToTrail(track: ApiTrack): Trail {
   const userProgress = track.user_progress
   const enrolled = Boolean(userProgress?.enrolled)
   const progress = enrolled ? Number(userProgress?.percentage ?? 0) : null
+  const enrollmentStatus = enrolled
+    ? (userProgress?.status ??
+      (progress !== null && progress >= 100 ? 'COMPLETED' : 'IN_PROGRESS'))
+    : null
   const durationWeeks = track.duration_weeks ?? 1
 
   return {
@@ -294,6 +342,7 @@ export function mapTrackToTrail(track: ApiTrack): Trail {
     area: themeLabels[theme],
     theme,
     enrolled,
+    enrollmentStatus,
     isNew: Boolean(track.is_new),
     progress,
     modules: track.modules_count ?? track.modules?.length ?? 0,
@@ -351,6 +400,56 @@ export async function getModuleById(moduleId: string): Promise<ApiModule> {
 export async function getContentById(contentId: string): Promise<ApiContent> {
   const { data } = await tracksApi.get<ApiContent>(
     `track/contents/${contentId}/`,
+  )
+
+  return data
+}
+
+export async function getMyTrackEnrollment(
+  trackId: string,
+): Promise<ApiUserTrack | null> {
+  const { data } = await tracksApi.get<
+    ApiUserTrack[] | ApiPaginatedResponse<ApiUserTrack>
+  >('track/user-tracks/')
+  const enrollments = unwrapPaginatedResponse(data)
+
+  return (
+    enrollments.find(
+      (enrollment) =>
+        String(enrollment.track) === trackId &&
+        enrollment.status === 'IN_PROGRESS',
+    ) ??
+    enrollments.find(
+      (enrollment) =>
+        String(enrollment.track) === trackId &&
+        enrollment.status === 'COMPLETED',
+    ) ??
+    null
+  )
+}
+
+export async function getChallengeSubmissions(
+  challengeId: string,
+): Promise<ApiChallengeSubmission[]> {
+  const { data } = await tracksApi.get<
+    ApiChallengeSubmission[] | ApiPaginatedResponse<ApiChallengeSubmission>
+  >('track/submissions/')
+
+  return unwrapPaginatedResponse(data)
+    .filter((submission) => String(submission.challenge) === challengeId)
+    .sort(
+      (current, next) =>
+        new Date(next.submitted_at).getTime() -
+        new Date(current.submitted_at).getTime(),
+    )
+}
+
+export async function createChallengeSubmission(
+  payload: CreateChallengeSubmissionPayload,
+): Promise<ApiChallengeSubmission> {
+  const { data } = await tracksApi.post<ApiChallengeSubmission>(
+    'track/submissions/',
+    payload,
   )
 
   return data
@@ -426,6 +525,9 @@ export function getTrackRequestErrorMessage(
   const preferredFields = [
     'detail',
     'track',
+    'github_url',
+    'challenge',
+    'user_track',
     'user_id',
     'status',
     'non_field_errors',
