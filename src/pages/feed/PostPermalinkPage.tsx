@@ -13,7 +13,8 @@ import '../../components/feed/Feed.css'
 export default function PostPermalinkPage() {
   const { postId } = useParams<{ postId: string }>()
   const { user } = useAuth()
-  const currentUserName = user?.fullName || user?.firstName || 'Você'
+  // Mesmo nome exibido no cabeçalho (TopBar): usa o primeiro nome.
+  const currentUserName = user?.firstName || 'Usuário ATLAS'
 
   const { data: post, isLoading, isError, refetch } = useFeedPost(postId)
 

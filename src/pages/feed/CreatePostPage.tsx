@@ -7,7 +7,8 @@ import '../../components/feed/Feed.css'
 export default function CreatePostPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const currentUserName = user?.fullName || user?.firstName || 'Você'
+  // Mesmo nome exibido no cabeçalho (TopBar): usa o primeiro nome.
+  const currentUserName = user?.firstName || 'Usuário ATLAS'
 
   return (
     <main className="feed-page feed-page--single">
