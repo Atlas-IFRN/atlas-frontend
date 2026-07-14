@@ -123,6 +123,14 @@ const VISIBILITY_OPTIONS: Array<{ value: Visibility; label: string }> = [
   { value: 'draft', label: 'Manter como rascunho' },
 ]
 
+const CHALLENGE_TECHNOLOGY_OPTIONS = [
+  { value: 'Django', label: 'Django / Django REST Framework' },
+  { value: 'React', label: 'React (web)' },
+  { value: 'React Native', label: 'React Native' },
+] as const
+
+const DEFAULT_CHALLENGE_TECHNOLOGY = CHALLENGE_TECHNOLOGY_OPTIONS[0].value
+
 const TRACK_LEVEL_OPTIONS: Array<{ value: TrackLevel; label: string }> = [
   { value: 'BEGINNER', label: 'Iniciante' },
   { value: 'INTERMEDIATE', label: 'Intermediário' },
@@ -341,6 +349,18 @@ function validateTrackForPublication({
           })
         }
 
+        if (
+          !CHALLENGE_TECHNOLOGY_OPTIONS.some(
+            (technology) => technology.value === content.language,
+          )
+        ) {
+          errors.push({
+            ...validationContext,
+            field: 'content-language',
+            message: `${contentLabel}: selecione uma tecnologia compatível com a avaliação por IA.`,
+          })
+        }
+
         const hasUnnamedCriterion = content.criteria.some(
           (criterion) => !criterion.label.trim(),
         )
@@ -420,7 +440,7 @@ function mapApiContentToDraft(content: ApiContent): DraftContent {
     estimatedDuration: formatDuration(content.duration_minutes),
     visibility: content.visibility ?? 'enrolled',
     instructions: content.instructions ?? '',
-    language: content.language ?? 'Python',
+    language: content.language ?? DEFAULT_CHALLENGE_TECHNOLOGY,
     criteria: apiCriteriaToDraft(content.evaluation_criteria),
     isPersisted: true,
   }
@@ -494,7 +514,7 @@ function getContentPayload(
 
   if (content.type === 'CHALLENGE') {
     payload.instructions = content.instructions.trim()
-    payload.language = content.language.trim() || 'Python'
+    payload.language = content.language.trim() || DEFAULT_CHALLENGE_TECHNOLOGY
     payload.evaluation_criteria = criteriaToApi(content.criteria)
   } else if (content.type === 'ARTICLE') {
     payload.content = content.articleContent.trim()
@@ -996,7 +1016,7 @@ export default function CreateTrackPage() {
         estimatedDuration: '',
         visibility: 'enrolled',
         instructions: '',
-        language: 'Python',
+        language: DEFAULT_CHALLENGE_TECHNOLOGY,
         criteria: getDefaultCriteria(),
         isPersisted: false,
       }
@@ -1795,15 +1815,31 @@ export default function CreateTrackPage() {
                     <label className="content-editor-field">
                       <span>Tecnologia do desafio</span>
                       <select
+                        aria-invalid={hasPublicationError(
+                          'content-language',
+                          selectedModule?.id,
+                          selectedContent.id,
+                        )}
+                        data-validation-field="content-language"
                         value={selectedContent.language}
                         onChange={(event) =>
                           updateSelectedContent({ language: event.target.value })
                         }
                       >
-                        <option>Python</option>
-                        <option>JavaScript</option>
-                        <option>TypeScript</option>
-                        <option>Docker</option>
+                        {selectedContent.language &&
+                        !CHALLENGE_TECHNOLOGY_OPTIONS.some(
+                          (technology) =>
+                            technology.value === selectedContent.language,
+                        ) ? (
+                          <option value={selectedContent.language}>
+                            {selectedContent.language} (não compatível com a IA)
+                          </option>
+                        ) : null}
+                        {CHALLENGE_TECHNOLOGY_OPTIONS.map((technology) => (
+                          <option key={technology.value} value={technology.value}>
+                            {technology.label}
+                          </option>
+                        ))}
                       </select>
                     </label>
 
