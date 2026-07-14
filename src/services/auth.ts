@@ -117,6 +117,24 @@ export async function getUserProfileById(userId: string): Promise<AuthUser> {
   return toAuthUser(data)
 }
 
+/**
+ * [DEBUG] Alterna o papel do usuário logado (professor/estudante). Disponível
+ * apenas quando o auth-service roda com DJANGO_DEBUG=True — do contrário o
+ * endpoint responde 404. Devolve novos tokens (com a claim `role` atualizada) e
+ * o perfil, para o front substituir a sessão inteira.
+ */
+export async function setDebugRole(teacher: boolean): Promise<LoginData> {
+  const { data } = await api.post<SuapCallbackResponse>('auth/debug/set-role/', {
+    teacher,
+  })
+
+  return {
+    accessToken: data.access,
+    refreshToken: data.refresh,
+    user: toAuthUser(data.user),
+  }
+}
+
 export async function getSuapLoginUrl(): Promise<string> {
   const { data } = await api.get<SuapLoginResponse>('auth/suap/login/')
 

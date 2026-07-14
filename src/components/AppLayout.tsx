@@ -14,8 +14,14 @@ import {
   Users,
 } from 'lucide-react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import { useAuth } from '../contexts/AuthContext'
+import { setDebugRole } from '../services/auth'
 import { TopBar } from './molecules/TopBar'
+
+// Só expõe o switch de papel (debug) quando o build está em modo debug. O
+// endpoint no auth-service tem o seu próprio guard por DJANGO_DEBUG.
+const DEBUG_ENABLED = import.meta.env.VITE_DEBUG === 'true'
 import logoIcon from '../assets/brand/atlas-logo.svg'
 import logoFull from '../assets/brand/atlas-logo-full.svg'
 
@@ -45,15 +51,34 @@ function getRoleLabel(role: string | undefined) {
 }
 
 export function AppLayout() {
-  const { user, logout } = useAuth()
+  const { user, logout, login } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
   const previousPathname = useRef(location.pathname)
   const [collapsed, setCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [roleSwitching, setRoleSwitching] = useState(false)
   const userName = user?.firstName || 'Usuário ATLAS'
   const userRole = getRoleLabel(user?.role)
+  const normalizedUserRole = user?.role?.trim().toLowerCase()
+  const isTeacher =
+    normalizedUserRole === 'teacher' || normalizedUserRole === 'professor'
+
+  async function handleToggleTeacher(next: boolean) {
+    setRoleSwitching(true)
+    try {
+      // Substitui a sessão inteira: novos tokens (claim `role` atualizada) + perfil.
+      login(await setDebugRole(next))
+      toast.success(
+        next ? 'Modo professor ativado.' : 'Modo estudante ativado.',
+      )
+    } catch {
+      toast.error('Não foi possível alterar o papel.')
+    } finally {
+      setRoleSwitching(false)
+    }
+  }
   const profilePath = user?.matricula
     ? `/perfil/${encodeURIComponent(user.matricula)}`
     : '/perfil'
@@ -226,6 +251,15 @@ export function AppLayout() {
             sidebarExpanded={isMobile ? mobileOpen : !collapsed}
             onToggleSidebar={toggleSidebar}
             onLogout={handleLogout}
+            debugRole={
+              DEBUG_ENABLED
+                ? {
+                    isTeacher,
+                    pending: roleSwitching,
+                    onToggle: (next) => void handleToggleTeacher(next),
+                  }
+                : undefined
+            }
           />
 
           <div className="content-scroll">
