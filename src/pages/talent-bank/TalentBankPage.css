@@ -103,6 +103,14 @@
   margin: 12px 0 0;
 }
 
+.talent-bank-page__status-error {
+  color: var(--danger);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: var(--line-height-sm);
+  margin: 12px 0 0;
+}
+
 @media (max-width: 820px) {
   .talent-bank-page__grid {
     grid-template-columns: 1fr;

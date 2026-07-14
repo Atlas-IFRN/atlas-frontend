@@ -111,11 +111,16 @@ export async function updateCurrentUserProfile(
   return toAuthUser(data)
 }
 
-export async function getUserProfileById(userId: string): Promise<AuthUser> {
-  const { data } = await api.get<SuapUserResponse>(`auth/users/${userId}/`)
+export async function getUserProfile(userLookup: string): Promise<AuthUser> {
+  const encodedLookup = encodeURIComponent(userLookup.trim())
+  const { data } = await api.get<SuapUserResponse>(
+    `auth/users/${encodedLookup}/`,
+  )
 
   return toAuthUser(data)
 }
+
+export const getUserProfileById = getUserProfile
 
 export async function getSuapLoginUrl(): Promise<string> {
   const { data } = await api.get<SuapLoginResponse>('auth/suap/login/')

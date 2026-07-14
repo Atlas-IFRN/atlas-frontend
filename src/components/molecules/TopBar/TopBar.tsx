@@ -17,11 +17,6 @@ import { NotificationMenu } from '../NotificationMenu'
 import './TopBar.css'
 
 const DEFAULT_SEARCH_PLACEHOLDER = 'Buscar trilhas, bolsas, pessoas...'
-const PROFILE_STATS = [
-  { value: 3, label: 'Trilhas ativas' },
-  { value: 4, label: 'Trilhas concluídas' },
-  { value: 2, label: 'Bolsas inscritas' },
-] as const
 const OPEN_SCHOLARSHIPS_COUNT = 4
 
 export interface TopBarProps {
@@ -181,18 +176,6 @@ export function TopBar({
                   </span>
                 </div>
               </div>
-
-              <dl
-                className="profile-menu__stats"
-                aria-label="Estatísticas do perfil"
-              >
-                {PROFILE_STATS.map((stat) => (
-                  <div key={stat.label}>
-                    <dt>{stat.label}</dt>
-                    <dd>{stat.value}</dd>
-                  </div>
-                ))}
-              </dl>
 
               <nav
                 className="profile-menu__navigation"

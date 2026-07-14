@@ -1,4 +1,4 @@
-import { ArrowRight, Pencil, Share2 } from 'lucide-react'
+import { ArrowRight, FileText, Pencil, Share2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { AuthUser } from '../../contexts/AuthContext'
 import {
@@ -9,13 +9,12 @@ import {
 import { Avatar } from '../atoms/Avatar'
 import { Button } from '../atoms/Button'
 import { ButtonLink } from '../atoms/ButtonLink'
-import { StatCard } from '../atoms/StatCard'
 import { TextTag } from '../atoms/TextTag'
 import { RailTrackList } from '../feed/rails/RailTrackList'
 import { InfoCard } from '../molecules/InfoCard'
 import { EmptyState } from '../states/EmptyState'
 import { ProfileAchievementsCard } from './ProfileAchievementsCard'
-import { PROFILE_STATS, PROFILE_TRACKS } from './profileData'
+import { PROFILE_TRACKS } from './profileData'
 
 function roleLabel(role: string) {
   const normalizedRole = role.trim().toLowerCase()
@@ -29,6 +28,10 @@ function roleLabel(role: string) {
   }
 
   return role || 'Usuário'
+}
+
+function isTeacherRole(role: string) {
+  return ['teacher', 'professor'].includes(role.trim().toLowerCase())
 }
 
 function periodLabel(period: number) {
@@ -57,9 +60,13 @@ function formatIra(ira: number) {
 
 interface ProfileIdentityProps {
   user: AuthUser
+  showPrivateDetails?: boolean
 }
 
-export function ProfileIdentity({ user }: ProfileIdentityProps) {
+export function ProfileIdentity({
+  user,
+  showPrivateDetails = true,
+}: ProfileIdentityProps) {
   const name = user.firstName || 'Usuário ATLAS'
   const isStudent = ['student', 'aluno'].includes(user.role.toLowerCase())
   const identityDetails = [
@@ -88,10 +95,12 @@ export function ProfileIdentity({ user }: ProfileIdentityProps) {
           ))}
         </p>
         <dl className="profile-identity__meta">
-          <div>
-            <dt>Matrícula</dt>
-            <dd>{user.matricula || 'Não informada'}</dd>
-          </div>
+          {showPrivateDetails ? (
+            <div>
+              <dt>Matrícula</dt>
+              <dd>{user.matricula || 'Não informada'}</dd>
+            </div>
+          ) : null}
           <div>
             <dt>Campus</dt>
             <dd>{user.institutionName || 'Não informado'}</dd>
@@ -100,7 +109,7 @@ export function ProfileIdentity({ user }: ProfileIdentityProps) {
             <dt>E-mail</dt>
             <dd>{user.email || 'Não informado'}</dd>
           </div>
-          {isStudent && user.ira !== null ? (
+          {showPrivateDetails && isStudent && user.ira !== null ? (
             <div>
               <dt>IRA</dt>
               <dd>{formatIra(user.ira)}</dd>
@@ -114,45 +123,41 @@ export function ProfileIdentity({ user }: ProfileIdentityProps) {
 
 interface ProfileHeaderProps {
   user: AuthUser
-  onEdit: () => void
+  onEdit?: () => void
   onShare: () => void
+  showPrivateDetails?: boolean
 }
 
-export function ProfileHeader({ user, onEdit, onShare }: ProfileHeaderProps) {
+export function ProfileHeader({
+  user,
+  onEdit,
+  onShare,
+  showPrivateDetails = true,
+}: ProfileHeaderProps) {
+  const headerClassName = isTeacherRole(user.role)
+    ? 'profile-header profile-header--teacher card'
+    : 'profile-header card'
+
   return (
-    <header className="profile-header card">
+    <header className={headerClassName}>
       <div className="profile-header__cover" aria-hidden="true" />
       <div className="profile-header__body">
-        <ProfileIdentity user={user} />
+        <ProfileIdentity
+          user={user}
+          showPrivateDetails={showPrivateDetails}
+        />
         <div className="profile-header__actions">
-          <Button variant="outline" size="sm" iconLeft={Pencil} onClick={onEdit}>
-            Editar perfil
-          </Button>
+          {onEdit ? (
+            <Button variant="outline" size="sm" iconLeft={Pencil} onClick={onEdit}>
+              Editar perfil
+            </Button>
+          ) : null}
           <Button size="sm" iconLeft={Share2} onClick={onShare}>
             Compartilhar
           </Button>
         </div>
       </div>
     </header>
-  )
-}
-
-export function ProfileStatsRow() {
-  return (
-    <section className="profile-stats" aria-label="Resumo do perfil">
-      {PROFILE_STATS.map((stat) => (
-        <StatCard
-          key={stat.label}
-          label={stat.label}
-          value={stat.value}
-          icon={stat.icon}
-          tone={stat.tone}
-          actionLabel={stat.actionLabel}
-          actionHref={stat.actionHref}
-          actionAriaLabel={stat.actionAriaLabel}
-        />
-      ))}
-    </section>
   )
 }
 
@@ -225,29 +230,77 @@ export function NotasPreviewSection({
 
 interface ProfileSidebarProps {
   user: AuthUser
-  onEdit: () => void
+  onEdit?: () => void
 }
 
 export function ProfileSidebar({ user, onEdit }: ProfileSidebarProps) {
+  const isTeacher = isTeacherRole(user.role)
+
   return (
     <aside className="profile-detail-side">
       <ProfileLinksCard user={user} onEdit={onEdit} />
-      <RailTrackList tracks={PROFILE_TRACKS} />
-      <ProfileAchievementsCard />
+      {!isTeacher ? (
+        <>
+          <RailTrackList tracks={PROFILE_TRACKS} />
+          <ProfileAchievementsCard userId={user.id} />
+        </>
+      ) : null}
     </aside>
   )
 }
 
 export function ProfileLinksCard({ user, onEdit }: ProfileSidebarProps) {
+  if (isTeacherRole(user.role)) {
+    const lattesUrl = user.curriculoLattes.trim()
+
+    return (
+      <InfoCard className="profile-links" title="Currículo Lattes">
+        <div className="profile-links__list">
+          {lattesUrl ? (
+            <a
+              className="profile-social-link"
+              href={lattesUrl}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <FileText
+                aria-hidden="true"
+                className="profile-lattes-link__icon"
+              />
+              <span>
+                <strong>Plataforma Lattes</strong>
+                <small>Acessar currículo acadêmico</small>
+              </span>
+            </a>
+          ) : (
+            <div
+              aria-label="Currículo Lattes não informado"
+              className="profile-social-link profile-social-link--unavailable"
+            >
+              <FileText
+                aria-hidden="true"
+                className="profile-lattes-link__icon"
+              />
+              <span>
+                <strong>Plataforma Lattes</strong>
+                <small>Currículo não informado</small>
+              </span>
+            </div>
+          )}
+        </div>
+      </InfoCard>
+    )
+  }
+
   return (
     <InfoCard
       className="profile-links"
       title="Links"
-      action={(
+      action={onEdit ? (
         <Button onClick={onEdit} size="sm" variant="soft">
           Editar
         </Button>
-      )}
+      ) : undefined}
     >
       <div className="profile-links__list">
         <a

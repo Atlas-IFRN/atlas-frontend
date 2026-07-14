@@ -26,6 +26,25 @@
   opacity: 0.92;
 }
 
+.profile-header--teacher .profile-header__cover {
+  background-color: var(--teal);
+  background-image:
+    linear-gradient(
+      color-mix(in srgb, var(--teal) 38%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--teal) 38%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--teal) 82%, var(--primary)),
+      color-mix(in srgb, var(--teal) 72%, #8ee8b6)
+    );
+}
+
 .profile-header__body {
   align-items: center;
   display: flex;
@@ -103,12 +122,6 @@
   display: flex;
   flex-shrink: 0;
   gap: var(--s-3);
-}
-
-.profile-stats {
-  display: grid;
-  gap: var(--s-4);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .profile-detail-grid {
@@ -211,6 +224,30 @@
   line-height: var(--line-height-base);
 }
 
+.profile-achievements__state.atlas-loading-state--spinner {
+  background: color-mix(in srgb, var(--surface-2) 56%, transparent);
+  border-color: var(--border);
+  margin-top: var(--s-3);
+  min-block-size: 104px;
+}
+
+.profile-achievements__feedback,
+.profile-achievements__empty {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: var(--line-height-base);
+  margin: var(--s-3) 0 0;
+}
+
+.profile-achievements__feedback {
+  align-items: flex-start;
+  display: grid;
+  gap: var(--s-3);
+}
+
+.profile-achievements__feedback p { margin: 0; }
+.profile-achievements__feedback .atlas-button { justify-self: start; }
+
 .profile-achievements__list {
   display: grid;
   gap: var(--s-2);
@@ -284,6 +321,12 @@
   white-space: nowrap;
 }
 
+.profile-achievement-tag__content small {
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: var(--line-height-xs);
+}
+
 .profile-achievement-tag:hover,
 .profile-achievement-tag:focus-visible {
   background:
@@ -327,8 +370,19 @@
   outline: none;
 }
 
+.profile-social-link--unavailable {
+  cursor: default;
+  opacity: 0.68;
+}
+
+.profile-social-link--unavailable:hover {
+  background: transparent;
+  border-color: var(--border-2);
+}
+
 .profile-social-link > span { display: grid; min-width: 0; }
 .profile-social-link__icon { fill: currentColor; height: 20px; width: 20px; }
+.profile-lattes-link__icon { color: var(--teal); height: 20px; width: 20px; }
 .profile-social-link__linkedin-icon {
   border: 1.5px solid currentColor;
   border-radius: 2px;
@@ -517,7 +571,6 @@
 .profile-page > .atlas-error-state { margin: auto; max-width: 720px; width: 100%; }
 
 @media (max-width: 1180px) {
-  .profile-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .profile-loading .atlas-loading-state__skeleton-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
@@ -538,7 +591,6 @@
   .profile-identity h1 { font-size: 26px; }
   .profile-identity__meta { display: grid; gap: var(--s-1); }
   .profile-header__actions { flex-direction: column; width: 100%; }
-  .profile-stats { gap: var(--s-3); }
   .profile-notes__header { min-height: 73.5px; padding-inline: var(--s-4); }
   .profile-notes__body { padding: var(--s-4); }
   .profile-note__heading { gap: var(--s-1); }
