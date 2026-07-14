@@ -11,8 +11,8 @@ import {
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { Button } from '../../atoms/Button'
-import { SearchInput } from '../../atoms/SearchInput'
 import { Avatar, type AvatarColor } from '../../atoms/Avatar'
+import { SearchBox } from '../SearchBox'
 import { UserChip } from '../UserChip'
 import { NotificationMenu } from '../NotificationMenu'
 import './TopBar.css'
@@ -120,11 +120,7 @@ export function TopBar({
         onClick={onToggleSidebar}
       />
 
-      <SearchInput
-        aria-label="Buscar"
-        className="topbar-search"
-        placeholder={searchPlaceholder}
-      />
+      <SearchBox className="topbar-search" placeholder={searchPlaceholder} />
 
       <div className="topbar-right">
         <NotificationMenu
