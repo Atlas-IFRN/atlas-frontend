@@ -1,0 +1,116 @@
+.search-page {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: var(--s-6, 24px) var(--s-5, 20px) var(--s-8, 40px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-6, 24px);
+}
+
+.search-page__header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.search-page__header p {
+  margin: var(--s-1, 4px) 0 0;
+  color: var(--text-soft);
+  font-size: 14px;
+}
+
+.search-page__sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-6, 24px);
+}
+
+.search-page-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3, 12px);
+}
+
+.search-page-section__header {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2, 8px);
+  color: var(--text);
+}
+
+.search-page-section__header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.search-page-section__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--r-pill, 999px);
+  background: var(--surface-2);
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.search-page-section__empty {
+  margin: 0;
+  padding: var(--s-3, 12px) 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.search-page-section__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-2, 8px);
+}
+
+.search-page-result {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--s-3, 12px);
+  padding: var(--s-3, 12px) var(--s-4, 16px);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-md, 12px);
+  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
+  text-decoration: none;
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+
+.search-page-result:hover {
+  background: var(--surface-2);
+  border-color: var(--primary);
+}
+
+.search-page-result__avatar {
+  flex: none;
+}
+
+.search-page-result__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.search-page-result__primary {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.search-page-result__secondary {
+  font-size: 13px;
+  color: var(--text-soft);
+}
