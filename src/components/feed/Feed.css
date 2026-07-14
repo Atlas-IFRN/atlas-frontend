@@ -544,6 +544,10 @@
   gap: var(--s-2);
   font-size: var(--font-size-sm);
   line-height: 1.6;
+  /* Quebra strings longas sem espaços em vez de estourar a largura do card. */
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .post-body p {
@@ -894,6 +898,9 @@
   font-size: 13px;
   line-height: 1.5;
   margin-block-start: 4px;
+  /* Quebra strings longas sem espaços (ex.: "KKKK...") em vez de estourar. */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .comment__content p + p {
