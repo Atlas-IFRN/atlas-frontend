@@ -1,18 +1,17 @@
-import { ArrowRight, FileText, Pencil, Share2 } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import type { AuthUser } from '../../contexts/AuthContext'
 import {
-  MINHAS_NOTAS,
-  tagLabel,
-  type ProfileNote,
-} from '../../lib/notas-mock'
+  ArrowRight,
+  FileText,
+  MessageSquareText,
+  Pencil,
+  Share2,
+} from 'lucide-react'
+import type { AuthUser } from '../../contexts/AuthContext'
+import { getCourseLabel } from '../../lib/course-label'
 import { Avatar } from '../atoms/Avatar'
 import { Button } from '../atoms/Button'
 import { ButtonLink } from '../atoms/ButtonLink'
-import { TextTag } from '../atoms/TextTag'
 import { RailTrackList } from '../feed/rails/RailTrackList'
 import { InfoCard } from '../molecules/InfoCard'
-import { EmptyState } from '../states/EmptyState'
 import { ProfileAchievementsCard } from './ProfileAchievementsCard'
 import { PROFILE_TRACKS } from './profileData'
 
@@ -38,19 +37,6 @@ function periodLabel(period: number) {
   return `${period}º período`
 }
 
-function courseLabel(courseName: string) {
-  const normalizedCourseName = courseName
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-
-  if (normalizedCourseName.includes('analise e desenvolvimento de sistemas')) {
-    return 'ADS'
-  }
-
-  return courseName
-}
-
 function formatIra(ira: number) {
   return ira.toLocaleString('pt-BR', {
     maximumFractionDigits: 2,
@@ -71,7 +57,7 @@ export function ProfileIdentity({
   const isStudent = ['student', 'aluno'].includes(user.role.toLowerCase())
   const identityDetails = [
     roleLabel(user.role),
-    user.courseName ? courseLabel(user.courseName) : null,
+    user.courseName ? getCourseLabel(user.courseName) : null,
     isStudent && user.period !== null ? periodLabel(user.period) : null,
   ].filter((detail): detail is string => Boolean(detail))
 
@@ -169,61 +155,53 @@ export function AboutCard({ bio }: { bio: string }) {
   )
 }
 
-export function NotePreviewCard({ note }: { note: ProfileNote }) {
-  return (
-    <Link
-      className="profile-note"
-      to="/notas"
-      aria-label={`Ver nota de ${note.professor.name}`}
-    >
-      <Avatar
-        name={note.professor.name}
-        color="blue"
-        size="sm"
-        src={note.professor.avatarSrc}
-      />
-      <div className="profile-note__content">
-        <div className="profile-note__heading">
-          <strong>Prof. {note.professor.name}</strong>
-        </div>
-        <p>“{note.content}”</p>
-        <div className="profile-note__tags">
-          <TextTag size="sm" variant={note.tag} withDot>
-            {tagLabel(note.tag)}
-          </TextTag>
-        </div>
-      </div>
-    </Link>
-  )
-}
+type StudentNotesSummaryCardProps = {
+  isError?: boolean
+  isLoading?: boolean
+  notesCount: number
+} & ({ onOpen: () => void; to?: never } | { onOpen?: never; to: string })
 
-export function NotasPreviewSection({
-  notes = MINHAS_NOTAS,
-}: {
-  notes?: ProfileNote[]
-}) {
+export function StudentNotesSummaryCard(props: StudentNotesSummaryCardProps) {
+  const { isError = false, isLoading = false, notesCount } = props
+  const countLabel = notesCount === 1 ? 'nota cadastrada' : 'notas cadastradas'
+
   return (
-    <section className="profile-notes" aria-labelledby="profile-notes-title">
-      <header className="profile-notes__header">
-        <h2 id="profile-notes-title">Notas dos professores</h2>
-        <ButtonLink size="sm" to="/notas" variant="soft">
-          Ver todas <ArrowRight aria-hidden="true" size={18} />
-        </ButtonLink>
-      </header>
-      <div className="profile-notes__body">
-        {notes.length ? (
-          <div className="profile-notes__list">
-            {notes.slice(0, 3).map((note) => (
-              <NotePreviewCard note={note} key={note.id} />
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            title="Nenhuma nota recebida"
-            description="Seus feedbacks aparecerão aqui quando forem publicados."
-          />
-        )}
+    <section
+      aria-labelledby="student-notes-summary-title"
+      className="student-notes-summary"
+    >
+      <div className="student-notes-summary__icon" aria-hidden="true">
+        <MessageSquareText size={22} />
       </div>
+      <div className="student-notes-summary__content">
+        <h2 id="student-notes-summary-title">Notas dos professores</h2>
+        <p aria-live="polite">
+          {isLoading ? (
+            'Carregando notas...'
+          ) : isError ? (
+            'Não foi possível carregar a contagem.'
+          ) : (
+            <>
+              <strong>{notesCount}</strong> {countLabel}
+            </>
+          )}
+        </p>
+      </div>
+      {typeof props.to === 'string' ? (
+        <ButtonLink size="sm" to={props.to} variant="soft">
+          Ver notas <ArrowRight aria-hidden="true" size={18} />
+        </ButtonLink>
+      ) : (
+        <Button
+          aria-haspopup="dialog"
+          iconRight={ArrowRight}
+          onClick={props.onOpen}
+          size="sm"
+          variant="soft"
+        >
+          Ver notas
+        </Button>
+      )}
     </section>
   )
 }

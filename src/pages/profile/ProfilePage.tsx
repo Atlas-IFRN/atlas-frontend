@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import {
   AboutCard,
-  NotasPreviewSection,
   ProfileHeader,
   ProfileSidebar,
+  StudentNotesSummaryCard,
 } from '../../components/perfil/ProfileComponents'
 import { ProfileEditModal } from '../../components/perfil/ProfileEditModal'
 import '../../components/perfil/Profile.css'
@@ -12,6 +12,7 @@ import '../../components/feed/Feed.css'
 import { ErrorState } from '../../components/states/ErrorState'
 import { LoadingState } from '../../components/states/LoadingState'
 import { useAuth } from '../../contexts/AuthContext'
+import { useMyNotes } from '../../hooks/useNotes'
 
 function ProfileLoading() {
   return (
@@ -123,7 +124,10 @@ export default function ProfilePage() {
     }
   }
 
-  const isTeacher = ['teacher', 'professor'].includes(user?.role.toLowerCase() ?? '')
+  const isTeacher = ['teacher', 'professor'].includes(
+    user?.role.toLowerCase() ?? '',
+  )
+  const notesQuery = useMyNotes(Boolean(user && !isTeacher))
 
   return (
     <div className="profile-page">
@@ -145,7 +149,14 @@ export default function ProfilePage() {
           <div className="profile-detail-grid">
             <div className="profile-main">
               <AboutCard bio={user.aboutMe} />
-              {!isTeacher ? <NotasPreviewSection /> : null}
+              {!isTeacher ? (
+                <StudentNotesSummaryCard
+                  isError={notesQuery.isError}
+                  isLoading={notesQuery.isLoading}
+                  notesCount={notesQuery.data?.length ?? 0}
+                  to="/notas"
+                />
+              ) : null}
             </div>
             <ProfileSidebar user={user} />
           </div>
