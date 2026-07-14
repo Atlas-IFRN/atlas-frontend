@@ -111,6 +111,18 @@ export interface ApiUserTrack {
   completed_at?: string | null
 }
 
+interface ApiCompletedTrack {
+  track_id: string
+  track_title: string
+  completed_at?: string | null
+}
+
+export interface CompletedTrack {
+  trackId: string
+  title: string
+  completedAt: string | null
+}
+
 export interface CreateTrackPayload {
   title: string
   description: string
@@ -370,6 +382,21 @@ export async function enrollInTrack(trackId: string): Promise<ApiUserTrack> {
   })
 
   return data
+}
+
+export async function getCompletedTracks(
+  userId: string,
+): Promise<CompletedTrack[]> {
+  const { data } = await tracksApi.get<ApiCompletedTrack[]>(
+    'track/user-tracks/completed/',
+    { params: { user_uuid: userId } },
+  )
+
+  return data.map((completedTrack) => ({
+    trackId: completedTrack.track_id,
+    title: completedTrack.track_title,
+    completedAt: completedTrack.completed_at ?? null,
+  }))
 }
 
 export function getTrackRequestErrorMessage(
