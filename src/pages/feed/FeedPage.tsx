@@ -40,7 +40,8 @@ export default function FeedPage() {
   const { user } = useAuth()
   const [filter, setFilter] = useState<FeedFilter>('principal')
 
-  const currentUserName = user?.fullName || user?.firstName || 'Você'
+  // Mesmo nome exibido no cabeçalho (TopBar): usa o primeiro nome.
+  const currentUserName = user?.firstName || 'Usuário ATLAS'
 
   const {
     data,
