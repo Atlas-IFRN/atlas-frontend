@@ -13,12 +13,25 @@ import type {
   EditableProfileFields,
 } from '../../contexts/AuthContext'
 import { Button } from '../atoms/Button'
-import { isValidOptionalUrl } from '../../utils/url'
+import {
+  buildGithubProfileUrl,
+  buildLinkedinProfileUrl,
+  extractGithubUsername,
+  extractLinkedinUsername,
+  isValidGithubUsername,
+  isValidLinkedinUsername,
+} from '../../utils/socialProfiles'
 
 interface ProfileEditModalProps {
   user: AuthUser
   onClose: () => void
   onSave: (fields: EditableProfileFields) => Promise<void>
+}
+
+interface ProfileFormFields {
+  aboutMe: string
+  githubUsername: string
+  linkedinUsername: string
 }
 
 function isTeacherRole(role: string) {
@@ -29,10 +42,10 @@ export function ProfileEditModal({ user, onClose, onSave }: ProfileEditModalProp
   const titleId = useId()
   const descriptionId = useId()
   const aboutInputRef = useRef<HTMLTextAreaElement>(null)
-  const [fields, setFields] = useState<EditableProfileFields>({
+  const [fields, setFields] = useState<ProfileFormFields>({
     aboutMe: user.aboutMe,
-    linkedin: user.linkedin,
-    github: user.github,
+    githubUsername: extractGithubUsername(user.github),
+    linkedinUsername: extractLinkedinUsername(user.linkedin),
   })
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -57,7 +70,7 @@ export function ProfileEditModal({ user, onClose, onSave }: ProfileEditModalProp
     }
   }, [onClose, saving])
 
-  function updateField(field: keyof EditableProfileFields, value: string) {
+  function updateField(field: keyof ProfileFormFields, value: string) {
     setFields((current) => ({ ...current, [field]: value }))
     setError('')
   }
@@ -71,11 +84,17 @@ export function ProfileEditModal({ user, onClose, onSave }: ProfileEditModalProp
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (
-      !isTeacher
-      && (!isValidOptionalUrl(fields.github) || !isValidOptionalUrl(fields.linkedin))
-    ) {
-      setError('Informe links completos começando com http:// ou https://.')
+    if (!isTeacher && !isValidGithubUsername(fields.githubUsername)) {
+      setError(
+        'O usuário do GitHub deve ter até 39 letras, números ou hífens, sem hífens seguidos ou nas extremidades.',
+      )
+      return
+    }
+
+    if (!isTeacher && !isValidLinkedinUsername(fields.linkedinUsername)) {
+      setError(
+        'O identificador do LinkedIn deve ter entre 3 e 100 letras, números ou hífens.',
+      )
       return
     }
 
@@ -85,8 +104,12 @@ export function ProfileEditModal({ user, onClose, onSave }: ProfileEditModalProp
     try {
       await onSave({
         aboutMe: fields.aboutMe.trim(),
-        linkedin: fields.linkedin.trim(),
-        github: fields.github.trim(),
+        linkedin: isTeacher
+          ? user.linkedin
+          : buildLinkedinProfileUrl(fields.linkedinUsername),
+        github: isTeacher
+          ? user.github
+          : buildGithubProfileUrl(fields.githubUsername),
       })
     } catch {
       setError('Não foi possível salvar o perfil. Revise os dados e tente novamente.')
@@ -149,28 +172,46 @@ export function ProfileEditModal({ user, onClose, onSave }: ProfileEditModalProp
                 <span className="profile-edit-field__label">
                   <Code2 aria-hidden="true" size={16} /> GitHub
                 </span>
-                <input
-                  inputMode="url"
-                  maxLength={200}
-                  onChange={(event) => updateField('github', event.target.value)}
-                  placeholder="https://github.com/seu-usuario"
-                  type="url"
-                  value={fields.github}
-                />
+                <div className="profile-edit-handle">
+                  <span aria-hidden="true">github.com/</span>
+                  <input
+                    aria-label="Nome de usuário do GitHub"
+                    autoCapitalize="none"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    maxLength={39}
+                    onChange={(event) =>
+                      updateField('githubUsername', event.target.value)
+                    }
+                    placeholder="seu-usuario"
+                    spellCheck={false}
+                    type="text"
+                    value={fields.githubUsername}
+                  />
+                </div>
               </label>
 
               <label className="profile-edit-field">
                 <span className="profile-edit-field__label">
                   <Briefcase aria-hidden="true" size={16} /> LinkedIn
                 </span>
-                <input
-                  inputMode="url"
-                  maxLength={200}
-                  onChange={(event) => updateField('linkedin', event.target.value)}
-                  placeholder="https://linkedin.com/in/seu-usuario"
-                  type="url"
-                  value={fields.linkedin}
-                />
+                <div className="profile-edit-handle">
+                  <span aria-hidden="true">linkedin.com/in/</span>
+                  <input
+                    aria-label="Identificador do perfil no LinkedIn"
+                    autoCapitalize="none"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    maxLength={100}
+                    onChange={(event) =>
+                      updateField('linkedinUsername', event.target.value)
+                    }
+                    placeholder="seu-usuario"
+                    spellCheck={false}
+                    type="text"
+                    value={fields.linkedinUsername}
+                  />
+                </div>
               </label>
             </div>
           ) : null}

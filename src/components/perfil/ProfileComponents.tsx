@@ -7,6 +7,12 @@ import {
 } from 'lucide-react'
 import type { AuthUser } from '../../contexts/AuthContext'
 import { getCourseLabel } from '../../lib/course-label'
+import {
+  buildGithubProfileUrl,
+  buildLinkedinProfileUrl,
+  extractGithubUsername,
+  extractLinkedinUsername,
+} from '../../utils/socialProfiles'
 import { Avatar } from '../atoms/Avatar'
 import { Button } from '../atoms/Button'
 import { ButtonLink } from '../atoms/ButtonLink'
@@ -81,12 +87,10 @@ export function ProfileIdentity({
           ))}
         </p>
         <dl className="profile-identity__meta">
-          {showPrivateDetails ? (
-            <div>
-              <dt>Matrícula</dt>
-              <dd>{user.matricula || 'Não informada'}</dd>
-            </div>
-          ) : null}
+          <div>
+            <dt>Matrícula</dt>
+            <dd>{user.matricula || 'Não informada'}</dd>
+          </div>
           <div>
             <dt>Campus</dt>
             <dd>{user.institutionName || 'Não informado'}</dd>
@@ -269,12 +273,17 @@ export function ProfileLinksCard({ user }: ProfileSidebarProps) {
     )
   }
 
+  const githubUsername = extractGithubUsername(user.github)
+  const linkedinUsername = extractLinkedinUsername(user.linkedin)
+  const githubUrl = buildGithubProfileUrl(githubUsername)
+  const linkedinUrl = buildLinkedinProfileUrl(linkedinUsername)
+
   return (
     <InfoCard className="profile-links" title="Links">
       <div className="profile-links__list">
         <a
           className="profile-social-link"
-          href={user.github || 'https://github.com/'}
+          href={githubUrl || 'https://github.com/'}
           rel="noreferrer"
           target="_blank"
         >
@@ -287,12 +296,12 @@ export function ProfileLinksCard({ user }: ProfileSidebarProps) {
           </svg>
           <span>
             <strong>GitHub</strong>
-            <small>{user.github ? user.github.replace(/^https?:\/\//, '') : 'Adicionar ao perfil'}</small>
+            <small>{githubUsername ? `github.com/${githubUsername}` : 'Adicionar ao perfil'}</small>
           </span>
         </a>
         <a
           className="profile-social-link"
-          href={user.linkedin || 'https://www.linkedin.com/'}
+          href={linkedinUrl || 'https://www.linkedin.com/'}
           rel="noreferrer"
           target="_blank"
         >
@@ -301,7 +310,7 @@ export function ProfileLinksCard({ user }: ProfileSidebarProps) {
           </span>
           <span>
             <strong>LinkedIn</strong>
-            <small>{user.linkedin ? user.linkedin.replace(/^https?:\/\//, '') : 'Adicionar ao perfil'}</small>
+            <small>{linkedinUsername ? `linkedin.com/in/${linkedinUsername}` : 'Adicionar ao perfil'}</small>
           </span>
         </a>
       </div>
