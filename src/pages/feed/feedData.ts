@@ -24,19 +24,6 @@ export const HERO_SLIDES: FeedHeroSlide[] = [
       { label: 'Ver bolsas abertas', href: '/bolsas', variant: 'soft' },
     ],
   },
-  {
-    id: 'etal',
-    theme: 'green',
-    eyebrow: 'Comunicado IFRN · Pau dos Ferros',
-    title: 'VII ETAL',
-    titleAccent: '2026',
-    description:
-      'O VII Encontro de Tecnologia, Arte e Linguagens acontece no Campus Pau dos Ferros nos dias 26, 27 e 28 de novembro de 2026. Participe!',
-    actions: [
-      { label: 'Quero participar', href: '/inicio', variant: 'primary' },
-      { label: 'Ver programação', href: '/inicio', variant: 'soft' },
-    ],
-  },
 ]
 
 export const MY_TRACKS: FeedTrackProgress[] = [

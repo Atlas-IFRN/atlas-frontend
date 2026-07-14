@@ -83,6 +83,18 @@
   mask-image: radial-gradient(120% 100% at 80% 0%, #000 20%, transparent 75%);
 }
 
+.feed-hero__manage {
+  color: var(--text-on-dark);
+  inset-block-start: var(--s-4);
+  inset-inline-end: var(--s-4);
+  position: absolute;
+  z-index: 2;
+}
+
+.feed-hero__manage:hover {
+  background: color-mix(in srgb, var(--text-on-dark) 14%, transparent);
+}
+
 .feed-hero__track {
   display: flex;
   position: relative;
@@ -173,6 +185,258 @@
 .feed-hero__dot-btn--active {
   background: var(--text-on-dark);
   inline-size: 30px;
+}
+
+/* ---------- Modal de gestão de banners ---------- */
+
+.banner-manage-modal {
+  align-items: center;
+  background: color-mix(in srgb, #02060d 78%, transparent);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: var(--s-4);
+  position: fixed;
+  z-index: 1000;
+}
+
+.banner-manage-modal__dialog {
+  background: var(--card-bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-panel);
+  box-shadow: 0 24px 80px color-mix(in srgb, #000 58%, transparent);
+  max-height: calc(100vh - 32px);
+  max-width: 640px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.banner-manage-modal__header {
+  align-items: flex-start;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  gap: var(--s-3);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: var(--s-6);
+}
+
+.banner-manage-modal__heading-icon {
+  align-items: center;
+  background: var(--primary-soft);
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+  border-radius: var(--r-md);
+  color: var(--primary);
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  width: 44px;
+}
+
+.banner-manage-modal__eyebrow {
+  color: var(--primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin: 0 0 var(--s-1);
+  text-transform: uppercase;
+}
+
+.banner-manage-modal__header h2 {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 21px;
+  margin: 0;
+}
+
+.banner-manage-modal__header p:last-child {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: var(--line-height-base);
+  margin: var(--s-1) 0 0;
+}
+
+.banner-manage-modal__close { margin-top: -4px; }
+
+.banner-manage-modal__error {
+  background: var(--danger-soft);
+  border: 1px solid color-mix(in srgb, var(--danger) 32%, transparent);
+  border-radius: var(--r-md);
+  color: #ff9a9a;
+  font-size: 12px;
+  margin: var(--s-4) var(--s-6) 0;
+  padding: var(--s-3) var(--s-4);
+}
+
+.banner-manage-list {
+  display: grid;
+  gap: var(--s-4);
+  padding: var(--s-6);
+}
+
+.banner-manage-list__empty {
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: var(--s-4) 0;
+  text-align: center;
+}
+
+.banner-manage-list__items {
+  display: grid;
+  gap: var(--s-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.banner-manage-list__item {
+  align-items: center;
+  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-md);
+  display: grid;
+  gap: var(--s-3);
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  padding: var(--s-3) var(--s-4);
+}
+
+.banner-manage-list__reorder {
+  display: grid;
+  gap: 2px;
+}
+
+.banner-manage-list__info {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.banner-manage-list__info strong {
+  color: var(--text);
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.banner-manage-list__info span {
+  color: var(--text-muted);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.banner-manage-list__type {
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.banner-manage-list__active {
+  align-items: center;
+  color: var(--text-soft);
+  display: flex;
+  font-size: 12px;
+  gap: var(--s-2);
+  white-space: nowrap;
+}
+
+.banner-manage-list__actions {
+  display: flex;
+  gap: var(--s-2);
+}
+
+.banner-manage-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.banner-manage-form {
+  display: grid;
+  gap: var(--s-5);
+  padding: var(--s-6);
+}
+
+.banner-manage-form__row {
+  display: grid;
+  gap: var(--s-4);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.banner-manage-field {
+  display: grid;
+  gap: var(--s-2);
+}
+
+.banner-manage-field--checkbox {
+  align-items: center;
+  color: var(--text-soft);
+  display: flex;
+  flex-direction: row;
+  font-size: 13px;
+  gap: var(--s-2);
+}
+
+.banner-manage-field__label {
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.banner-manage-field input,
+.banner-manage-field select,
+.banner-manage-field textarea {
+  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-md);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+  padding: 12px 14px;
+  transition: background var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast);
+  width: 100%;
+}
+
+.banner-manage-field textarea {
+  line-height: var(--line-height-base);
+  min-height: 84px;
+  resize: vertical;
+}
+
+.banner-manage-field input:focus,
+.banner-manage-field select:focus,
+.banner-manage-field textarea:focus {
+  background: var(--surface-2);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.banner-manage-form__actions {
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: var(--s-3);
+  justify-content: flex-end;
+  margin: 0 calc(var(--s-6) * -1) calc(var(--s-6) * -1);
+  padding: var(--s-4) var(--s-6);
+}
+
+@media (max-width: 600px) {
+  .banner-manage-modal { align-items: flex-end; padding: 0; }
+  .banner-manage-modal__dialog { border-radius: var(--r-panel) var(--r-panel) 0 0; max-height: 92vh; }
+  .banner-manage-modal__header,
+  .banner-manage-list,
+  .banner-manage-form { padding: var(--s-4); }
+  .banner-manage-list__item { grid-template-columns: 1fr; }
+  .banner-manage-form__row { grid-template-columns: 1fr; }
+  .banner-manage-form__actions {
+    margin: 0 calc(var(--s-4) * -1) calc(var(--s-4) * -1);
+    padding: var(--s-4);
+  }
+  .banner-manage-form__actions .atlas-button { flex: 1; }
 }
 
 /* ---------- Grade de 3 colunas ---------- */

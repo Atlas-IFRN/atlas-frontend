@@ -13,24 +13,12 @@ import type {
   EditableProfileFields,
 } from '../../contexts/AuthContext'
 import { Button } from '../atoms/Button'
+import { isValidOptionalUrl } from '../../utils/url'
 
 interface ProfileEditModalProps {
   user: AuthUser
   onClose: () => void
   onSave: (fields: EditableProfileFields) => Promise<void>
-}
-
-function isValidOptionalUrl(value: string) {
-  if (!value.trim()) {
-    return true
-  }
-
-  try {
-    const url = new URL(value)
-    return url.protocol === 'http:' || url.protocol === 'https:'
-  } catch {
-    return false
-  }
 }
 
 function isTeacherRole(role: string) {
