@@ -59,6 +59,7 @@ const EditModulePage = lazy(
 const ContentDetailsPage = lazy(
   () => import('../pages/tracks/contents/ContentDetailsPage'),
 )
+
 const CreateContentPage = lazy(
   () => import('../pages/tracks/contents/CreateContentPage'),
 )
