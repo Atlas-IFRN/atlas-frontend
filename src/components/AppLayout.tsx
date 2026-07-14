@@ -19,9 +19,9 @@ import { useAuth } from '../contexts/AuthContext'
 import { setDebugRole } from '../services/auth'
 import { TopBar } from './molecules/TopBar'
 
-// Só expõe o switch de papel (debug) quando o build está em modo debug. O
-// endpoint no auth-service tem o seu próprio guard por DJANGO_DEBUG.
-const DEBUG_ENABLED = import.meta.env.VITE_DEBUG === 'true'
+// Só expõe o switch de papel quando o build habilita as ferramentas de demo. O
+// endpoint no auth-service tem o seu próprio guard (flag ATLAS_DEMO_TOOLS).
+const DEMO_TOOLS_ENABLED = import.meta.env.VITE_DEMO_TOOLS === 'true'
 import logoIcon from '../assets/brand/atlas-logo.svg'
 import logoFull from '../assets/brand/atlas-logo-full.svg'
 
@@ -252,7 +252,7 @@ export function AppLayout() {
             onToggleSidebar={toggleSidebar}
             onLogout={handleLogout}
             debugRole={
-              DEBUG_ENABLED
+              DEMO_TOOLS_ENABLED
                 ? {
                     isTeacher,
                     pending: roleSwitching,

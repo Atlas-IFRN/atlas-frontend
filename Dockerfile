@@ -18,8 +18,12 @@ RUN npm ci
 # já que o Nginx gateway serve front e back no mesmo domínio.
 ARG VITE_API_URL=/api
 ARG VITE_ENV_NAME=production
+# Ferramentas de demo (switch de papel professor). "false" por padrão; o
+# docker-compose.debug.yml passa "true" para builds de apresentação.
+ARG VITE_DEMO_TOOLS=false
 ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_ENV_NAME=$VITE_ENV_NAME
+ENV VITE_DEMO_TOOLS=$VITE_DEMO_TOOLS
 
 COPY . .
 RUN npm run build
