@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { Settings } from 'lucide-react'
+import { Button } from '../../atoms/Button'
 import { ButtonLink } from '../../atoms/ButtonLink'
 import atlasMark from '../../../assets/brand/atlas-logo.svg'
 import type { FeedHeroSlide } from '../../../types/feed'
@@ -7,10 +9,12 @@ interface FeedHeroProps {
   slides: FeedHeroSlide[]
   /** Intervalo do autoplay em ms. Use 0 para desativar. */
   intervalMs?: number
+  /** Presente só para professores: abre o modal de gestão de banners. */
+  onManageBanners?: () => void
 }
 
 /** Carrossel de destaques no topo do feed. */
-export function FeedHero({ slides, intervalMs = 7000 }: FeedHeroProps) {
+export function FeedHero({ slides, intervalMs = 7000, onManageBanners }: FeedHeroProps) {
   const [index, setIndex] = useState(0)
   const count = slides.length
 
@@ -42,6 +46,17 @@ export function FeedHero({ slides, intervalMs = 7000 }: FeedHeroProps) {
         <div className="feed-hero__grid" />
       </div>
 
+      {onManageBanners ? (
+        <Button
+          aria-label="Gerenciar banners"
+          className="feed-hero__manage"
+          iconLeft={Settings}
+          onClick={onManageBanners}
+          size="sm"
+          variant="ghost"
+        />
+      ) : null}
+
       <div
         className="feed-hero__track"
         style={{ transform: `translateX(-${index * 100}%)` }}
@@ -56,11 +71,17 @@ export function FeedHero({ slides, intervalMs = 7000 }: FeedHeroProps) {
 
               <h2 className="feed-hero__title">
                 {slide.title}
-                <br />
-                <em>{slide.titleAccent}</em>
+                {slide.titleAccent ? (
+                  <>
+                    <br />
+                    <em>{slide.titleAccent}</em>
+                  </>
+                ) : null}
               </h2>
 
-              <p className="feed-hero__desc">{slide.description}</p>
+              {slide.description ? (
+                <p className="feed-hero__desc">{slide.description}</p>
+              ) : null}
 
               <div className="feed-hero__actions">
                 {slide.actions.map((action) => (

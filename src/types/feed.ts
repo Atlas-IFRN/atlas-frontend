@@ -112,6 +112,22 @@ export interface FeedHeroSlide {
   }>
 }
 
+export type BannerType = 'COMUNICADO_IFRN' | 'SISTEMA'
+
+/** Banner dinâmico do carrossel do feed, gerenciado por docentes. */
+export interface Banner {
+  id: string
+  type: BannerType
+  title: string
+  subtitle: string
+  primaryButtonText: string
+  primaryButtonLink: string
+  secondaryButtonText: string
+  secondaryButtonLink: string
+  isActive: boolean
+  order: number
+}
+
 export interface FeedTrackProgress {
   id: string
   label: string
