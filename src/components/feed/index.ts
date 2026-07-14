@@ -14,7 +14,9 @@ export type {
   SystemPostTone,
 } from '../../types/feed'
 export { PostComposer } from './composer/PostComposer'
+export { FeedComposer } from './composer/FeedComposer'
 export { FeedFilters } from './filters/FeedFilters'
+export { FeedPostCard } from './post/FeedPostCard'
 export { FeedHero } from './hero/FeedHero'
 export { Comment } from './post/Comment'
 export { CommentComposer } from './post/CommentComposer'

@@ -1,15 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import type { PostComment } from '../../../types/feed'
+import type { FeedAuthor, PostComment } from '../../../types/feed'
 import { Comment } from './Comment'
 import { CommentComposer } from './CommentComposer'
 
 interface PostCommentsProps {
   comments: PostComment[]
   currentUserName: string
+  currentUserAvatar?: string
   onAddComment: (content: string) => void
   onReply: (parentId: string, content: string) => void
   onToggleLike: (commentId: string) => void
+  /** Clique no autor de um comentário (→ perfil pela matrícula). */
+  onAuthorClick?: (author: FeedAuthor) => void
 }
 
 const INITIAL_VISIBLE = 3
@@ -19,9 +22,11 @@ const BLOCK_SIZE = 3
 export function PostComments({
   comments,
   currentUserName,
+  currentUserAvatar,
   onAddComment,
   onReply,
   onToggleLike,
+  onAuthorClick,
 }: PostCommentsProps) {
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE)
   const previousLength = useRef(comments.length)
@@ -44,8 +49,10 @@ export function PostComments({
           {visibleComments.map((comment) => (
             <Comment
               comment={comment}
+              currentUserAvatar={currentUserAvatar}
               currentUserName={currentUserName}
               key={comment.id}
+              onAuthorClick={onAuthorClick}
               onReply={onReply}
               onToggleLike={onToggleLike}
             />
@@ -71,6 +78,7 @@ export function PostComments({
       ) : null}
 
       <CommentComposer
+        currentUserAvatar={currentUserAvatar}
         currentUserName={currentUserName}
         onSubmit={onAddComment}
       />

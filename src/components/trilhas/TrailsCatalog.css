@@ -177,18 +177,25 @@
 }
 
 .trail-card__body {
-  align-content: start;
   display: grid;
   gap: var(--trail-card-body-gap);
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
   padding: var(--s-5);
 }
 
 .trail-card h2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   color: var(--text);
   font-family: var(--font-display);
   font-size: 18px;
   font-weight: 700;
   line-height: 24px;
+  margin: 0;
+  min-block-size: 48px;
+  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 .trail-skill-list {
@@ -196,15 +203,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
+  max-block-size: 59px;
+  min-block-size: 27px;
+  overflow: hidden;
 }
 
-.trail-skill-list .atlas-text-tag {
-  --text-tag-bg: color-mix(in srgb, var(--surface-2) 82%, transparent);
-  --text-tag-border: transparent;
-  --text-tag-color: var(--text-muted);
-
-  background: color-mix(in srgb, var(--surface-2) 82%, transparent);
-  border-color: transparent;
+.trail-skill-list .atlas-tech-tag {
   flex: 0 0 auto;
   font-size: 12px;
   inline-size: auto;
@@ -213,15 +217,22 @@
 }
 
 .trail-card__body p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
   color: var(--text-muted);
   font-family: var(--font-sans);
   font-size: 13px;
   line-height: 1.55;
-
+  margin: 0;
+  max-block-size: calc(1.55em * 4);
+  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 .trail-card .progress {
-  margin-block-start: var(--s-1);
+  align-self: end;
+  margin-block-start: var(--s-2);
 }
 
 .trail-card .progress__header {
@@ -450,6 +461,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--s-2);
+}
+
+.trail-detail-hero__skills .trail-skill-list {
+  max-block-size: none;
 }
 
 .trail-detail-hero h1 {

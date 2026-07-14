@@ -1,9 +1,11 @@
 import type { AvatarColor } from '../components/atoms/Avatar'
 
-export type FeedFilter = 'for-you' | 'following' | 'community' | 'notices'
+export type FeedFilter = 'principal' | 'mais-curtidos' | 'docentes' | 'sistema'
 
 export interface FeedAuthor {
   id: string
+  /** Matrícula do autor — usada na rota de perfil (/perfil/{matricula}). */
+  matricula?: string
   name: string
   /** Papel/curso exibido abaixo do nome, ex.: "Backend · 3º período". */
   role: string
@@ -73,6 +75,10 @@ export interface FeedPost {
   likes: number
   liked?: boolean
   shares?: number
+  /** Post fixado por um docente (aparece no topo do feed "principal"). */
+  isFixed?: boolean
+  /** Total de comentários (contador do backend, antes de carregar a thread). */
+  commentsCount?: number
   comments: PostComment[]
 }
 

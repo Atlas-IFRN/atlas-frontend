@@ -5,6 +5,7 @@ import { Button } from '../../atoms/Button'
 export interface CommentComposerProps {
   currentUserName: string
   currentUserColor?: AvatarColor
+  currentUserAvatar?: string
   placeholder?: string
   submitLabel?: string
   autoFocus?: boolean
@@ -16,6 +17,7 @@ export interface CommentComposerProps {
 export function CommentComposer({
   currentUserName,
   currentUserColor = 'blue',
+  currentUserAvatar,
   placeholder = 'Escreva um comentário…',
   submitLabel = 'Comentar',
   autoFocus = false,
@@ -37,7 +39,12 @@ export function CommentComposer({
 
   return (
     <div className={`comment-composer${compact ? ' comment-composer--compact' : ''}`}>
-      <Avatar color={currentUserColor} name={currentUserName} size="sm" />
+      <Avatar
+        color={currentUserColor}
+        name={currentUserName}
+        size="sm"
+        src={currentUserAvatar}
+      />
 
       <div className="comment-composer__field">
         <textarea

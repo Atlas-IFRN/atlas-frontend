@@ -8,10 +8,10 @@ interface FeedFiltersProps {
 }
 
 const FILTERS: Array<{ value: FeedFilter; label: string }> = [
-  { value: 'for-you', label: 'Para você' },
-  { value: 'following', label: 'Seguindo' },
-  { value: 'community', label: 'Comunidade' },
-  { value: 'notices', label: 'Avisos' },
+  { value: 'principal', label: 'Principal' },
+  { value: 'mais-curtidos', label: 'Mais curtidos' },
+  { value: 'docentes', label: 'Docentes' },
+  { value: 'sistema', label: 'Sistema' },
 ]
 
 /** Filtros segmentados do feed (estilo abas). */

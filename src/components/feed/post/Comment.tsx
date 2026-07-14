@@ -3,26 +3,32 @@ import { Heart } from 'lucide-react'
 import { Avatar } from '../../atoms/Avatar'
 import { StatusBadge } from '../../atoms/StatusBadge'
 import { renderRichText } from './richText'
-import type { PostComment } from '../../../types/feed'
+import type { FeedAuthor, PostComment } from '../../../types/feed'
 import { CommentComposer } from './CommentComposer'
 
 interface CommentProps {
   comment: PostComment
   currentUserName: string
+  currentUserAvatar?: string
   /** Comentário aninhado (resposta). Bloqueia novos níveis de resposta. */
   isReply?: boolean
   onToggleLike: (commentId: string) => void
   onReply: (parentId: string, content: string) => void
+  /** Clique no autor (→ perfil pela matrícula). */
+  onAuthorClick?: (author: FeedAuthor) => void
 }
 
 export function Comment({
   comment,
   currentUserName,
+  currentUserAvatar,
   isReply = false,
   onToggleLike,
   onReply,
+  onAuthorClick,
 }: CommentProps) {
   const [replying, setReplying] = useState(false)
+  const canOpenAuthor = Boolean(onAuthorClick && comment.author.matricula)
 
   function handleReply(content: string) {
     onReply(comment.id, content)
@@ -32,8 +38,10 @@ export function Comment({
   return (
     <div className={`comment${isReply ? ' comment--reply' : ''}`}>
       <Avatar
+        className={canOpenAuthor ? 'comment__avatar--link' : undefined}
         color={comment.author.avatarColor ?? 'blue'}
         name={comment.author.name}
+        onClick={canOpenAuthor ? () => onAuthorClick?.(comment.author) : undefined}
         size="sm"
         src={comment.author.avatarSrc}
       />
@@ -41,7 +49,17 @@ export function Comment({
       <div className="comment__main">
         <div className="comment__bubble">
           <div className="comment__meta">
-            <strong>{comment.author.name}</strong>
+            {canOpenAuthor ? (
+              <button
+                className="comment__author-link"
+                onClick={() => onAuthorClick?.(comment.author)}
+                type="button"
+              >
+                {comment.author.name}
+              </button>
+            ) : (
+              <strong>{comment.author.name}</strong>
+            )}
             {comment.author.badge ? (
               <StatusBadge size="sm" status="primary">
                 {comment.author.badge}
@@ -91,6 +109,7 @@ export function Comment({
           <CommentComposer
             autoFocus
             compact
+            currentUserAvatar={currentUserAvatar}
             currentUserName={currentUserName}
             onCancel={() => setReplying(false)}
             onSubmit={handleReply}
@@ -104,9 +123,11 @@ export function Comment({
             {comment.replies.map((reply) => (
               <Comment
                 comment={reply}
+                currentUserAvatar={currentUserAvatar}
                 currentUserName={currentUserName}
                 isReply
                 key={reply.id}
+                onAuthorClick={onAuthorClick}
                 onReply={onReply}
                 onToggleLike={onToggleLike}
               />

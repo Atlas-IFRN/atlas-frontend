@@ -37,7 +37,7 @@ export function TrailCard({ trail }: TrailCardProps) {
         <div className="trail-card__body">
           <h2>{trail.title}</h2>
           <TrailSkillList skills={trail.skills} />
-          <p>{trail.description}</p>
+          <p title={trail.description}>{trail.description}</p>
 
           {trail.progress !== null ? (
             <ProgressBar label="Progresso" value={trail.progress} />

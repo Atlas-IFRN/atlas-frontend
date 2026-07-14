@@ -31,6 +31,8 @@ export default defineConfig({
       '/api/track': proxyToLocalService(8001),
       '/api/scholarship': proxyToLocalService(8002),
       '/api/ai': proxyToLocalService(8003),
+      '/api/feed': proxyToLocalService(8004),
+      '/api/notifications': proxyToLocalService(8005),
     },
   },
   resolve: {

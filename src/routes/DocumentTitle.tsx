@@ -8,6 +8,7 @@ const routeTitles = [
   { path: '/auth/callback', title: 'Entrando' },
   { path: '/componentes', title: 'Componentes' },
   { path: '/inicio/novo', title: 'Novo post' },
+  { path: '/inicio/post/:postId', title: 'Publicação' },
   { path: '/inicio/:postId/editar', title: 'Editar post' },
   { path: '/inicio', title: 'Início' },
   { path: '/bolsas/minhas-candidaturas', title: 'Minhas candidaturas' },
