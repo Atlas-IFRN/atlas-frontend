@@ -5,7 +5,6 @@ import {
   NotasPreviewSection,
   ProfileHeader,
   ProfileSidebar,
-  ProfileStatsRow,
 } from '../../components/perfil/ProfileComponents'
 import { ProfileEditModal } from '../../components/perfil/ProfileEditModal'
 import '../../components/perfil/Profile.css'
@@ -18,7 +17,6 @@ function ProfileLoading() {
   return (
     <div className="profile-loading" aria-label="Carregando perfil">
       <div className="profile-loading__header" />
-      <LoadingState skeletonCount={4} />
       <LoadingState skeletonCount={2} />
     </div>
   )
@@ -144,7 +142,6 @@ export default function ProfilePage() {
             onEdit={() => setIsEditModalOpen(true)}
             onShare={shareProfile}
           />
-          <ProfileStatsRow />
           <div className="profile-detail-grid">
             <div className="profile-main">
               <AboutCard bio={user.aboutMe} />

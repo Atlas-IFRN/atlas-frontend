@@ -35,6 +35,38 @@ interface FeedPostCardProps {
 
 const LONG_VARIANTS: FeedPost['variant'][] = ['long-text', 'image-long']
 
+/**
+ * Copia texto para a área de transferência. Usa a Clipboard API quando
+ * disponível (HTTPS/localhost) e cai para o método legado (`execCommand`)
+ * em contexto não-seguro (ex.: acesso por HTTP via IP/domínio), onde
+ * `navigator.clipboard` é `undefined`. Retorna `true` se copiou.
+ */
+async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text)
+      return true
+    }
+  } catch {
+    // Cai para o fallback abaixo.
+  }
+
+  try {
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+    textarea.setAttribute('readonly', '')
+    textarea.style.position = 'fixed'
+    textarea.style.opacity = '0'
+    document.body.appendChild(textarea)
+    textarea.select()
+    const copied = document.execCommand('copy')
+    document.body.removeChild(textarea)
+    return copied
+  } catch {
+    return false
+  }
+}
+
 function findComment(
   comments: PostComment[],
   id: string,
@@ -174,11 +206,10 @@ export function FeedPostCard({
 
   async function handleShare() {
     const url = `${window.location.origin}/inicio/post/${post.id}`
-    try {
-      await navigator.clipboard.writeText(url)
+    if (await copyToClipboard(url)) {
       toast.success('Link da publicação copiado!')
-    } catch {
-      toast.info(url)
+    } else {
+      toast.error('Não foi possível copiar o link.')
     }
   }
 

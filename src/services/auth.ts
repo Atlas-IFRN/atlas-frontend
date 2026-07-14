@@ -111,17 +111,22 @@ export async function updateCurrentUserProfile(
   return toAuthUser(data)
 }
 
-export async function getUserProfileById(userId: string): Promise<AuthUser> {
-  const { data } = await api.get<SuapUserResponse>(`auth/users/${userId}/`)
+export async function getUserProfile(userLookup: string): Promise<AuthUser> {
+  const encodedLookup = encodeURIComponent(userLookup.trim())
+  const { data } = await api.get<SuapUserResponse>(
+    `auth/users/${encodedLookup}/`,
+  )
 
   return toAuthUser(data)
 }
 
+export const getUserProfileById = getUserProfile
+
 /**
- * [DEBUG] Alterna o papel do usuário logado (professor/estudante). Disponível
- * apenas quando o auth-service roda com DJANGO_DEBUG=True — do contrário o
- * endpoint responde 404. Devolve novos tokens (com a claim `role` atualizada) e
- * o perfil, para o front substituir a sessão inteira.
+ * [DEMO] Alterna o papel do usuário logado (professor/estudante). Disponível
+ * apenas quando o auth-service roda com a flag ATLAS_DEMO_TOOLS ligada — do
+ * contrário o endpoint responde 404. Devolve novos tokens (com a claim `role`
+ * atualizada) e o perfil, para o front substituir a sessão inteira.
  */
 export async function setDebugRole(teacher: boolean): Promise<LoginData> {
   const { data } = await api.post<SuapCallbackResponse>('auth/debug/set-role/', {
