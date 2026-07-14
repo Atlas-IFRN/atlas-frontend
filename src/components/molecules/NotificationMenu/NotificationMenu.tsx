@@ -1,5 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Bell, BriefcaseBusiness, ClipboardCheck, Info } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import {
+  Bell,
+  BriefcaseBusiness,
+  GraduationCap,
+  Heart,
+  Info,
+  MessageSquareText,
+} from 'lucide-react'
 import { Button } from '../../atoms/Button'
 import { IconTile, type IconTileVariant } from '../../atoms/IconTile'
 import {
@@ -13,7 +21,11 @@ import type {
 } from '../../../services/notifications'
 import './NotificationMenu.css'
 
-type NotificationFilter = 'ALL' | 'UNREAD' | NotificationType
+// 'POSTS' agrupa as notificações do feed (curtidas + comentários/respostas).
+type NotificationFilter = 'ALL' | 'UNREAD' | 'POSTS' | NotificationType
+
+// Tipos que caem sob a aba "Postagens".
+const POST_TYPES: NotificationType[] = ['feed_like', 'feed_comment']
 
 interface NotificationMenuProps {
   isOpen: boolean
@@ -23,27 +35,32 @@ interface NotificationMenuProps {
 const FILTERS: Array<{ value: NotificationFilter; label: string }> = [
   { value: 'ALL', label: 'Todas' },
   { value: 'UNREAD', label: 'Não lidas' },
-  { value: 'SCHOLARSHIP', label: 'Bolsas' },
-  { value: 'EVALUATION', label: 'Avaliações' },
-  { value: 'SYSTEM', label: 'Sistema' },
+  { value: 'POSTS', label: 'Postagens' },
+  { value: 'system', label: 'Sistema' },
 ]
 
 const TYPE_PRESENTATION = {
-  SCHOLARSHIP: {
-    icon: BriefcaseBusiness,
-    variant: 'primary',
-    label: 'Bolsa',
-  },
-  EVALUATION: {
-    icon: ClipboardCheck,
-    variant: 'success',
-    label: 'Avaliação',
-  },
-  SYSTEM: { icon: Info, variant: 'neutral', label: 'Sistema' },
+  feed_like: { icon: Heart, variant: 'primary', label: 'Curtida' },
+  feed_comment: { icon: MessageSquareText, variant: 'primary', label: 'Comentário' },
+  track: { icon: GraduationCap, variant: 'success', label: 'Trilha' },
+  scholarship: { icon: BriefcaseBusiness, variant: 'primary', label: 'Bolsa' },
+  system: { icon: Info, variant: 'neutral', label: 'Sistema' },
 } satisfies Record<
   NotificationType,
   { icon: typeof Bell; variant: IconTileVariant; label: string }
 >
+
+// Fallback para qualquer `type` fora do mapa (ex.: tipo novo que o backend
+// passe a emitir antes do front conhecer) — evita quebrar a renderização.
+const FALLBACK_PRESENTATION = {
+  icon: Bell,
+  variant: 'neutral' as IconTileVariant,
+  label: 'Notificação',
+}
+
+function getPresentation(type: NotificationType) {
+  return TYPE_PRESENTATION[type] ?? FALLBACK_PRESENTATION
+}
 
 const relativeTimeFormatter = new Intl.RelativeTimeFormat('pt-BR', {
   numeric: 'auto',
@@ -86,13 +103,17 @@ function formatRelativeTime(value: string) {
 
 function NotificationItem({
   notification,
-  onRead,
+  onActivate,
 }: {
   notification: Notification
-  onRead: (notificationId: string) => void
+  onActivate: (notification: Notification) => void
 }) {
-  const presentation = TYPE_PRESENTATION[notification.type]
+  const presentation = getPresentation(notification.type)
   const relativeTime = formatRelativeTime(notification.created_at)
+  const hasLink = Boolean(notification.link)
+  // Notificação lida perde a cor do ícone (fica neutra); só as não lidas
+  // destacam com a cor do tipo.
+  const tileVariant = notification.is_read ? 'neutral' : presentation.variant
 
   return (
     <li
@@ -101,21 +122,17 @@ function NotificationItem({
     >
       <button
         type="button"
-        onClick={() => {
-          if (!notification.is_read) {
-            onRead(notification.id)
-          }
-        }}
-        aria-label={`${notification.title}. ${
-          notification.is_read ? 'Notificação lida' : 'Marcar como lida'
-        }`}
+        onClick={() => onActivate(notification)}
+        aria-label={`${notification.title}.${
+          hasLink ? ' Abrir.' : ''
+        } ${notification.is_read ? 'Notificação lida' : 'Marcar como lida'}`}
       >
         <span className="notification-menu__unread-dot" aria-hidden="true" />
         <IconTile
           aria-hidden="true"
           icon={presentation.icon}
           size="md"
-          variant={presentation.variant}
+          variant={tileVariant}
         />
 
         <span className="notification-menu__item-content">
@@ -136,6 +153,7 @@ export function NotificationMenu({
   isOpen,
   onOpenChange,
 }: NotificationMenuProps) {
+  const navigate = useNavigate()
   const rootRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const [filter, setFilter] = useState<NotificationFilter>('ALL')
@@ -145,9 +163,25 @@ export function NotificationMenu({
   const notifications = notificationsQuery.data ?? EMPTY_NOTIFICATIONS
   const unreadCount = notifications.filter((item) => !item.is_read).length
 
+  // Clicar numa notificação: marca como lida (se não lida) e, havendo `link`,
+  // navega para o item relacionado e fecha o menu.
+  function handleActivate(notification: Notification) {
+    if (!notification.is_read) {
+      markAsRead.mutate(notification.id)
+    }
+    if (notification.link) {
+      onOpenChange(false)
+      navigate(notification.link)
+    }
+  }
+
   const filteredNotifications = useMemo(() => {
     if (filter === 'UNREAD') {
       return notifications.filter((item) => !item.is_read)
+    }
+
+    if (filter === 'POSTS') {
+      return notifications.filter((item) => POST_TYPES.includes(item.type))
     }
 
     if (filter !== 'ALL') {
@@ -285,9 +319,7 @@ export function NotificationMenu({
                   <NotificationItem
                     key={notification.id}
                     notification={notification}
-                    onRead={(notificationId) =>
-                      markAsRead.mutate(notificationId)
-                    }
+                    onActivate={handleActivate}
                   />
                 ))}
               </ul>
