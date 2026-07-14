@@ -4,6 +4,7 @@ import {
   BriefcaseBusiness,
   ChevronDown,
   CircleHelp,
+  FlaskConical,
   LogOut,
   Menu,
   UserRound,
@@ -32,6 +33,15 @@ export interface TopBarProps {
   searchPlaceholder?: string
   onToggleSidebar: () => void
   onLogout: () => void
+  /**
+   * Quando definido, exibe no menu do perfil um switch de DEBUG para alternar o
+   * papel do usuário entre professor e estudante. Só é passado em builds de debug.
+   */
+  debugRole?: {
+    isTeacher: boolean
+    pending: boolean
+    onToggle: (next: boolean) => void
+  }
 }
 
 export function TopBar({
@@ -41,6 +51,7 @@ export function TopBar({
   searchPlaceholder = DEFAULT_SEARCH_PLACEHOLDER,
   onToggleSidebar,
   onLogout,
+  debugRole,
 }: TopBarProps) {
   const location = useLocation()
   const profileMenuRef = useRef<HTMLDivElement>(null)
@@ -176,6 +187,31 @@ export function TopBar({
                   </span>
                 </div>
               </div>
+
+              {debugRole ? (
+                <div className="profile-menu__debug">
+                  <label className="debug-switch">
+                    <span className="debug-switch__label">
+                      <FlaskConical aria-hidden="true" />
+                      <span className="debug-switch__text">
+                        Modo professor
+                        <small>Demo — define seu papel como docente</small>
+                      </span>
+                    </span>
+                    <input
+                      className="debug-switch__input"
+                      type="checkbox"
+                      role="switch"
+                      checked={debugRole.isTeacher}
+                      disabled={debugRole.pending}
+                      onChange={(event) =>
+                        debugRole.onToggle(event.target.checked)
+                      }
+                    />
+                    <span className="debug-switch__slider" aria-hidden="true" />
+                  </label>
+                </div>
+              ) : null}
 
               <nav
                 className="profile-menu__navigation"
