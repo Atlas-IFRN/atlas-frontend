@@ -596,6 +596,8 @@
 .post-media img {
   display: block;
   inline-size: 100%;
+  /* Limita a altura no feed; clicar abre o lightbox em tamanho completo. */
+  max-block-size: 512px;
   object-fit: cover;
 }
 
@@ -1309,7 +1311,8 @@
   border: 0;
   color: var(--text);
   cursor: pointer;
-  font-size: inherit;
+  /* Alinha com `.comment__meta strong` (nome não-clicável). */
+  font-size: 13px;
   font-weight: 700;
   padding: 0;
 }
