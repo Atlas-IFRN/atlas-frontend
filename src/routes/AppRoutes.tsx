@@ -67,6 +67,8 @@ const EditContentPage = lazy(
   () => import('../pages/tracks/contents/EditContentPage'),
 )
 
+const SearchResultsPage = lazy(() => import('../pages/search/SearchResultsPage'))
+
 const TalentBankPage = lazy(
   () => import('../pages/talent-bank/TalentBankPage'),
 )
@@ -111,6 +113,8 @@ export function AppRoutes() {
 
           <Route element={<AppLayout />}>
             <Route path="/inicio" element={<FeedPage />} />
+
+            <Route path="/busca" element={<SearchResultsPage />} />
             <Route path="/inicio/novo" element={<CreatePostPage />} />
             <Route path="/inicio/post/:postId" element={<PostPermalinkPage />} />
             <Route path="/inicio/:postId/editar" element={<EditPostPage />} />
