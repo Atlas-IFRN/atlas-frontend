@@ -77,6 +77,18 @@
   min-inline-size: 0;
 }
 
+.my-notes-page__state {
+  min-block-size: 280px;
+}
+
+.my-notes-page__loading .atlas-loading-state__skeleton-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.my-notes-page__loading .atlas-loading-state__skeleton-card {
+  min-block-size: 158px;
+}
+
 .note-card {
   --note-accent: var(--primary);
 
@@ -196,6 +208,12 @@
   justify-content: space-between;
 }
 
+.note-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1);
+}
+
 .note-card__date {
   align-items: center;
   color: var(--text-faint);
@@ -207,6 +225,10 @@
 }
 
 @container my-notes (max-width: 850px) {
+  .my-notes-page__loading .atlas-loading-state__skeleton-grid {
+    grid-template-columns: 1fr;
+  }
+
   .my-notes-page__list {
     display: flex;
     flex-direction: column;
