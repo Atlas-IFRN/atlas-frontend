@@ -19,7 +19,6 @@ export type TrackLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED'
 export type TrailLessonType =
   | 'VIDEO'
   | 'ARTICLE'
-  | 'REPOSITORY'
   | 'CHALLENGE'
 
 export interface TrailsStats {
