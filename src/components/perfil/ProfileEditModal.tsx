@@ -33,6 +33,10 @@ function isValidOptionalUrl(value: string) {
   }
 }
 
+function isTeacherRole(role: string) {
+  return ['teacher', 'professor'].includes(role.trim().toLowerCase())
+}
+
 export function ProfileEditModal({ user, onClose, onSave }: ProfileEditModalProps) {
   const titleId = useId()
   const descriptionId = useId()
@@ -44,6 +48,7 @@ export function ProfileEditModal({ user, onClose, onSave }: ProfileEditModalProp
   })
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
+  const isTeacher = isTeacherRole(user.role)
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
@@ -78,7 +83,10 @@ export function ProfileEditModal({ user, onClose, onSave }: ProfileEditModalProp
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (!isValidOptionalUrl(fields.github) || !isValidOptionalUrl(fields.linkedin)) {
+    if (
+      !isTeacher
+      && (!isValidOptionalUrl(fields.github) || !isValidOptionalUrl(fields.linkedin))
+    ) {
       setError('Informe links completos começando com http:// ou https://.')
       return
     }
@@ -147,35 +155,37 @@ export function ProfileEditModal({ user, onClose, onSave }: ProfileEditModalProp
             <small>{fields.aboutMe.length}/1000 caracteres</small>
           </label>
 
-          <div className="profile-edit-form__links">
-            <label className="profile-edit-field">
-              <span className="profile-edit-field__label">
-                <Code2 aria-hidden="true" size={16} /> GitHub
-              </span>
-              <input
-                inputMode="url"
-                maxLength={200}
-                onChange={(event) => updateField('github', event.target.value)}
-                placeholder="https://github.com/seu-usuario"
-                type="url"
-                value={fields.github}
-              />
-            </label>
+          {!isTeacher ? (
+            <div className="profile-edit-form__links">
+              <label className="profile-edit-field">
+                <span className="profile-edit-field__label">
+                  <Code2 aria-hidden="true" size={16} /> GitHub
+                </span>
+                <input
+                  inputMode="url"
+                  maxLength={200}
+                  onChange={(event) => updateField('github', event.target.value)}
+                  placeholder="https://github.com/seu-usuario"
+                  type="url"
+                  value={fields.github}
+                />
+              </label>
 
-            <label className="profile-edit-field">
-              <span className="profile-edit-field__label">
-                <Briefcase aria-hidden="true" size={16} /> LinkedIn
-              </span>
-              <input
-                inputMode="url"
-                maxLength={200}
-                onChange={(event) => updateField('linkedin', event.target.value)}
-                placeholder="https://linkedin.com/in/seu-usuario"
-                type="url"
-                value={fields.linkedin}
-              />
-            </label>
-          </div>
+              <label className="profile-edit-field">
+                <span className="profile-edit-field__label">
+                  <Briefcase aria-hidden="true" size={16} /> LinkedIn
+                </span>
+                <input
+                  inputMode="url"
+                  maxLength={200}
+                  onChange={(event) => updateField('linkedin', event.target.value)}
+                  placeholder="https://linkedin.com/in/seu-usuario"
+                  type="url"
+                  value={fields.linkedin}
+                />
+              </label>
+            </div>
+          ) : null}
 
           <div className="profile-edit-form__notice">
             Nome, matrícula, curso, campus e demais dados acadêmicos são sincronizados automaticamente.

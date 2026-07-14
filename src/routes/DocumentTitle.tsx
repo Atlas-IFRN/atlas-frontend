@@ -45,6 +45,7 @@ const routeTitles = [
   { path: '/banco-talentos/:studentId/notas/nova', title: 'Nova nota' },
   { path: '/banco-talentos/:studentId/notas', title: 'Notas do estudante' },
   { path: '/banco-talentos', title: 'Banco de talentos' },
+  { path: '/professor/notas', title: 'Notas dos alunos' },
   { path: '/professor', title: 'Painel do professor' },
 ]
 

@@ -147,7 +147,7 @@ export default function ProfilePage() {
               <AboutCard bio={user.aboutMe} />
               {!isTeacher ? <NotasPreviewSection /> : null}
             </div>
-            <ProfileSidebar user={user} onEdit={() => setIsEditModalOpen(true)} />
+            <ProfileSidebar user={user} />
           </div>
           {isEditModalOpen ? (
             <ProfileEditModal
