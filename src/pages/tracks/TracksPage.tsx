@@ -76,12 +76,8 @@ export default function TracksPage() {
       const matchesFilter =
         filter === 'all' ||
         (filter === 'enrolled' && trail.enrolled) ||
-        (filter === 'in-progress' &&
-          trail.enrolled &&
-          trail.progress !== 100) ||
-        (filter === 'completed' &&
-          trail.enrolled &&
-          trail.progress === 100) ||
+        (filter === 'in-progress' && trail.enrollmentStatus === 'IN_PROGRESS') ||
+        (filter === 'completed' && trail.enrollmentStatus === 'COMPLETED') ||
         (filter === 'new' && trail.isNew)
 
       if (!matchesFilter) {
