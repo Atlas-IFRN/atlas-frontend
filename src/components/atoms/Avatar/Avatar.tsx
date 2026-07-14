@@ -30,7 +30,12 @@ export function Avatar({
   // Se a imagem falhar ao carregar (URL do SUAP indisponível/protegida),
   // cai para as iniciais em vez de exibir um ícone de imagem quebrada.
   const [failedSrc, setFailedSrc] = useState<string>()
+  // Guarda qual `src` já terminou de carregar. As iniciais ficam visíveis
+  // por baixo e a foto entra com fade quando pronta — evita o "círculo vazio"
+  // enquanto a imagem remota (SUAP) baixa.
+  const [loadedSrc, setLoadedSrc] = useState<string>()
   const showImage = Boolean(src) && failedSrc !== src
+  const isLoaded = loadedSrc === src
 
   const classNames = [
     styles.avatar,
@@ -43,16 +48,19 @@ export function Avatar({
 
   return (
     <div {...props} className={classNames} role="img" aria-label={name}>
+      {getInitials(name)}
+
       {showImage ? (
         <img
-          className={styles.image}
-          src={src}
           alt=""
+          className={styles.image}
+          data-loaded={isLoaded || undefined}
+          key={src}
           onError={() => setFailedSrc(src)}
+          onLoad={() => setLoadedSrc(src)}
+          src={src}
         />
-      ) : (
-        getInitials(name)
-      )}
+      ) : null}
     </div>
   )
 }

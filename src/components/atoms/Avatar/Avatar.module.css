@@ -1,4 +1,5 @@
 .avatar {
+  position: relative;
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -51,7 +52,16 @@
 }
 
 .image {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Iniciais aparecem na hora; a foto entra com fade quando termina de baixar. */
+  opacity: 0;
+  transition: opacity 180ms ease-out;
+}
+
+.image[data-loaded] {
+  opacity: 1;
 }

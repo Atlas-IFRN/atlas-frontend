@@ -8,6 +8,8 @@ export interface PostActionsProps {
   commentsOpen: boolean
   onToggleLike: () => void
   onToggleComments: () => void
+  /** Quando definido, o botão "Compartilhar" fica ativo e chama este handler. */
+  onShare?: () => void
 }
 
 export function PostActions({
@@ -18,6 +20,7 @@ export function PostActions({
   commentsOpen,
   onToggleLike,
   onToggleComments,
+  onShare,
 }: PostActionsProps) {
   return (
     <div className="post-actions">
@@ -47,7 +50,11 @@ export function PostActions({
         {commentsCount === 1 ? 'comentário' : 'comentários'}
       </button>
 
-      <button className="post-action post-action--share" type="button">
+      <button
+        className="post-action post-action--share"
+        onClick={onShare}
+        type="button"
+      >
         <Share2 aria-hidden="true" size={15} strokeWidth={2} />
         Compartilhar
         {shares ? <span className="post-action__count">{shares}</span> : null}
