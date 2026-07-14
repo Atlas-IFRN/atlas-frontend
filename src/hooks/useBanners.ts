@@ -21,12 +21,32 @@ export function useBanners(all = false) {
   })
 }
 
+/**
+ * As mutações de banner atualizam apenas a listagem de GESTÃO (`all=true`) —
+ * o que o docente vê no modal enquanto trabalha. A listagem PÚBLICA do
+ * carrossel (`all=false`) é deixada intacta de propósito: ela só é atualizada
+ * quando o docente confirma as mudanças (ver `usePublishBanners`), evitando que
+ * o carrossel "pisque" a cada edição intermediária.
+ */
+function invalidateManagementList(queryClient: ReturnType<typeof useQueryClient>) {
+  return queryClient.invalidateQueries({ queryKey: bannerKeys.list(true) })
+}
+
+/**
+ * Publica as alterações no carrossel: invalida a listagem pública, forçando o
+ * `FeedPage` a rebuscar os banners ativos. É o "salvar alterações" do modal.
+ */
+export function usePublishBanners() {
+  const queryClient = useQueryClient()
+  return () => queryClient.invalidateQueries({ queryKey: bannerKeys.list(false) })
+}
+
 export function useCreateBanner() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (input: BannerInput) => createBanner(input),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: bannerKeys.all })
+      void invalidateManagementList(queryClient)
     },
   })
 }
@@ -37,7 +57,7 @@ export function useUpdateBanner() {
     mutationFn: ({ id, patch }: { id: string; patch: Partial<BannerInput> }) =>
       updateBanner(id, patch),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: bannerKeys.all })
+      void invalidateManagementList(queryClient)
     },
   })
 }
@@ -47,7 +67,7 @@ export function useDeleteBanner() {
   return useMutation({
     mutationFn: (id: string) => deleteBanner(id),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: bannerKeys.all })
+      void invalidateManagementList(queryClient)
     },
   })
 }
@@ -57,7 +77,7 @@ export function useReorderBanner() {
   return useMutation({
     mutationFn: ({ id, order }: { id: string; order: number }) => setBannerOrder(id, order),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: bannerKeys.all })
+      void invalidateManagementList(queryClient)
     },
   })
 }

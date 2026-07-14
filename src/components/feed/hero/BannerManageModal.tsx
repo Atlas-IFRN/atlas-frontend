@@ -1,11 +1,12 @@
 import { useEffect, useId, useState, type FormEvent, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
-import { ArrowDown, ArrowUp, Layers, Pencil, Plus, Trash2, X } from 'lucide-react'
+import { ArrowDown, ArrowUp, Check, Layers, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { Button } from '../../atoms/Button'
 import {
   useBanners,
   useCreateBanner,
   useDeleteBanner,
+  usePublishBanners,
   useReorderBanner,
   useUpdateBanner,
 } from '../../../hooks/useBanners'
@@ -55,12 +56,16 @@ export function BannerManageModal({ onClose }: BannerManageModalProps) {
   const [form, setForm] = useState<BannerInput>(EMPTY_FORM)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  // Fica true assim que o docente faz qualquer alteração persistida no modal.
+  // O carrossel público só é atualizado quando ele clica em "Salvar alterações".
+  const [dirty, setDirty] = useState(false)
 
   const { data: banners = [], isLoading, isError } = useBanners(true)
   const createBanner = useCreateBanner()
   const updateBanner = useUpdateBanner()
   const deleteBanner = useDeleteBanner()
   const reorderBanner = useReorderBanner()
+  const publishBanners = usePublishBanners()
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
@@ -112,6 +117,7 @@ export function BannerManageModal({ onClose }: BannerManageModalProps) {
     setBusy(true)
     try {
       await deleteBanner.mutateAsync(banner.id)
+      setDirty(true)
     } catch (err) {
       setError(getFeedRequestErrorMessage(err, 'Não foi possível excluir o banner.'))
     } finally {
@@ -123,6 +129,7 @@ export function BannerManageModal({ onClose }: BannerManageModalProps) {
     setBusy(true)
     try {
       await updateBanner.mutateAsync({ id: banner.id, patch: { isActive: !banner.isActive } })
+      setDirty(true)
     } catch (err) {
       setError(getFeedRequestErrorMessage(err, 'Não foi possível atualizar o banner.'))
     } finally {
@@ -143,11 +150,20 @@ export function BannerManageModal({ onClose }: BannerManageModalProps) {
         reorderBanner.mutateAsync({ id: current.id, order: target.order }),
         reorderBanner.mutateAsync({ id: target.id, order: current.order }),
       ])
+      setDirty(true)
     } catch (err) {
       setError(getFeedRequestErrorMessage(err, 'Não foi possível reordenar os banners.'))
     } finally {
       setBusy(false)
     }
+  }
+
+  /** "Salvar alterações": publica o que foi editado no carrossel e fecha o modal. */
+  async function handleSaveAndClose() {
+    if (dirty) {
+      await publishBanners()
+    }
+    onClose()
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -171,6 +187,7 @@ export function BannerManageModal({ onClose }: BannerManageModalProps) {
       } else {
         await createBanner.mutateAsync(form)
       }
+      setDirty(true)
       setMode('list')
     } catch (err) {
       setError(getFeedRequestErrorMessage(err, 'Não foi possível salvar o banner.'))
@@ -290,9 +307,24 @@ export function BannerManageModal({ onClose }: BannerManageModalProps) {
             )}
 
             <footer className="banner-manage-modal__footer">
-              <Button iconLeft={Plus} onClick={openCreateForm} type="button">
+              <Button iconLeft={Plus} onClick={openCreateForm} type="button" variant="outline">
                 Novo banner
               </Button>
+              <div className="banner-manage-modal__footer-actions">
+                {dirty ? (
+                  <span className="banner-manage-modal__footer-hint">
+                    Alterações salvas — publique no carrossel.
+                  </span>
+                ) : null}
+                <Button
+                  disabled={busy}
+                  iconLeft={Check}
+                  onClick={() => void handleSaveAndClose()}
+                  type="button"
+                >
+                  Salvar alterações
+                </Button>
+              </div>
             </footer>
           </div>
         ) : (
