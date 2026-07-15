@@ -1,6 +1,7 @@
 import { useMemo, useState, type CSSProperties } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
+import { toast } from 'sonner'
 import {
   ArrowLeft,
   CalendarDays,
@@ -12,6 +13,7 @@ import {
   ExternalLink,
   Link2,
   Pencil,
+  Trash2,
   UserRound,
   Users,
   XCircle,
@@ -30,6 +32,7 @@ import { EmptyState, ErrorState, LoadingState } from '../../states'
 import {
   applyToScholarship,
   cancelScholarshipApplication,
+  deleteScholarship,
   getScholarship,
 } from '../../../services/scholarships'
 import { getUserProfileById } from '../../../services/auth'
@@ -51,6 +54,7 @@ export function ScholarshipDetails() {
   )
   const [calendarMonth, setCalendarMonth] = useState<Date | null>(null)
   const [cancelConfirmationOpen, setCancelConfirmationOpen] = useState(false)
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false)
 
   const scholarshipQuery = useQuery({
     queryKey: ['scholarships', 'detail', scholarshipId],
@@ -95,6 +99,19 @@ export function ScholarshipDetails() {
       queryClient.invalidateQueries({
         queryKey: ['scholarships', 'applications', 'my'],
       })
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteScholarship(scholarshipId ?? ''),
+    onSuccess: () => {
+      setDeleteConfirmationOpen(false)
+      queryClient.removeQueries({
+        queryKey: ['scholarships', 'detail', scholarshipId],
+      })
+      queryClient.invalidateQueries({ queryKey: ['scholarships'] })
+      toast.success('Bolsa excluída.')
+      navigate('/bolsas', { replace: true })
     },
   })
 
@@ -204,6 +221,8 @@ export function ScholarshipDetails() {
     !registrationDeadlineExceeded
   const canCancelApplication =
     isStudent && application?.applied && application.status === 'Enrolled'
+  const canDeleteScholarship =
+    isTeacher && scholarship.publishedBy === user?.id
   const applyLabel = getApplyLabel(
     scholarship,
     isStudent,
@@ -248,6 +267,28 @@ export function ScholarshipDetails() {
     }
 
     cancelMutation.mutate()
+  }
+  const handleOpenDeleteConfirmation = () => {
+    if (!canDeleteScholarship || deleteMutation.isPending) {
+      return
+    }
+
+    deleteMutation.reset()
+    setDeleteConfirmationOpen(true)
+  }
+  const handleCloseDeleteConfirmation = () => {
+    if (deleteMutation.isPending) {
+      return
+    }
+
+    setDeleteConfirmationOpen(false)
+  }
+  const handleDeleteScholarship = () => {
+    if (!canDeleteScholarship || deleteMutation.isPending) {
+      return
+    }
+
+    deleteMutation.mutate()
   }
 
   return (
@@ -557,6 +598,16 @@ export function ScholarshipDetails() {
                 >
                   Editar
                 </Button>
+                {canDeleteScholarship ? (
+                  <Button
+                    iconLeft={Trash2}
+                    onClick={handleOpenDeleteConfirmation}
+                    size="lg"
+                    variant="danger"
+                  >
+                    Excluir bolsa
+                  </Button>
+                ) : null}
               </div>
             ) : (
               <div className="scholarship-detail-apply__actions">
@@ -671,6 +722,59 @@ export function ScholarshipDetails() {
                 variant="danger"
               >
                 Cancelar candidatura
+              </Button>
+            </div>
+          </section>
+        </div>
+      ) : null}
+
+      {deleteConfirmationOpen ? (
+        <div className="scholarship-detail-cancel-modal" role="presentation">
+          <section
+            aria-describedby="delete-scholarship-description"
+            aria-labelledby="delete-scholarship-title"
+            aria-modal="true"
+            className="scholarship-detail-cancel-modal__dialog"
+            role="alertdialog"
+          >
+            <div>
+              <span
+                className="scholarship-detail-cancel-modal__icon"
+                aria-hidden="true"
+              >
+                <Trash2 size={22} strokeWidth={2.2} />
+              </span>
+              <div>
+                <h2 id="delete-scholarship-title">Excluir bolsa?</h2>
+                <p id="delete-scholarship-description">
+                  A bolsa, suas fases, requisitos, links e todas as candidaturas
+                  relacionadas serão excluídos permanentemente. Esta ação não
+                  poderá ser desfeita.
+                </p>
+              </div>
+            </div>
+
+            {deleteMutation.isError ? (
+              <p className="scholarship-detail-cancel-modal__error" role="alert">
+                {getErrorMessage(deleteMutation.error)}
+              </p>
+            ) : null}
+
+            <div className="scholarship-detail-cancel-modal__actions">
+              <Button
+                disabled={deleteMutation.isPending}
+                onClick={handleCloseDeleteConfirmation}
+                variant="outline"
+              >
+                Manter bolsa
+              </Button>
+              <Button
+                iconLeft={Trash2}
+                loading={deleteMutation.isPending}
+                onClick={handleDeleteScholarship}
+                variant="danger"
+              >
+                Excluir bolsa
               </Button>
             </div>
           </section>
