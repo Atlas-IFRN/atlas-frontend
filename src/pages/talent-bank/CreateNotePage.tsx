@@ -11,9 +11,7 @@ export default function CreateNotePage() {
 
   const navigationState = location.state as CreateNoteLocationState | null
   const stateReturnTo = navigationState?.returnTo
-  const defaultReturnTo = studentId
-    ? `/banco-talentos/${encodeURIComponent(studentId)}/notas`
-    : '/professor/notas'
+  const defaultReturnTo = '/professor/notas'
   const returnTo =
     typeof stateReturnTo === 'string' && stateReturnTo.startsWith('/')
       ? stateReturnTo

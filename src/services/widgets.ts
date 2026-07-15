@@ -24,6 +24,15 @@ interface ApiTopTrack {
   progress_pct: number
 }
 
+interface ApiUserTrackStatus {
+  status: 'IN_PROGRESS' | 'COMPLETED' | 'DROPPED'
+}
+
+export interface FeedHeroStats {
+  activeTracks: number
+  openScholarships: number
+}
+
 function toFeedTrackProgress(hit: ApiTopTrack): FeedTrackProgress {
   return {
     id: hit.track_id,
@@ -119,6 +128,31 @@ function toActiveScholarship(hit: ApiActiveScholarship): ActiveScholarship {
 interface ApiPaginated<T> {
   count: number
   results: T[]
+}
+
+/** Resumo real usado pelo banner de boas-vindas do aluno. */
+export async function getFeedHeroStats(): Promise<FeedHeroStats> {
+  const [tracksResponse, scholarshipsResponse] = await Promise.all([
+    tracksApi.get<ApiUserTrackStatus[] | ApiPaginated<ApiUserTrackStatus>>(
+      'track/user-tracks/',
+      { params: { status: 'IN_PROGRESS' } },
+    ),
+    api.get<ApiPaginated<ApiActiveScholarship>>(
+      'scholarship/scholarships/',
+      { params: { page_size: 1, status: 'Open' } },
+    ),
+  ])
+
+  const userTracks = Array.isArray(tracksResponse.data)
+    ? tracksResponse.data
+    : tracksResponse.data.results ?? []
+
+  return {
+    activeTracks: userTracks.filter(
+      (enrollment) => enrollment.status === 'IN_PROGRESS',
+    ).length,
+    openScholarships: scholarshipsResponse.data.count,
+  }
 }
 
 /** Bolsas ativas (global) para o widget, no máximo `limit`. */

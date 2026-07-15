@@ -18,7 +18,6 @@ import { NotificationMenu } from '../NotificationMenu'
 import './TopBar.css'
 
 const DEFAULT_SEARCH_PLACEHOLDER = 'Buscar trilhas, bolsas, pessoas...'
-const OPEN_SCHOLARSHIPS_COUNT = 4
 
 export interface TopBarProps {
   user: {
@@ -224,12 +223,6 @@ export function TopBar({
                 <Link to="/bolsas" onClick={closeProfileMenu}>
                   <BriefcaseBusiness aria-hidden="true" />
                   <span>Bolsas abertas</span>
-                  <span
-                    className="profile-menu__badge"
-                    aria-label={`${OPEN_SCHOLARSHIPS_COUNT} bolsas abertas`}
-                  >
-                    {OPEN_SCHOLARSHIPS_COUNT}
-                  </span>
                 </Link>
                 <a
                   href="https://nadic.ifrn.edu.br/#contato"

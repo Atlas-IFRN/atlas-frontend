@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { useParams } from 'react-router-dom'
 import {
@@ -15,14 +15,10 @@ import '../../components/feed/Feed.css'
 import { ErrorState } from '../../components/states/ErrorState'
 import { LoadingState } from '../../components/states/LoadingState'
 import { useAuth } from '../../contexts/AuthContext'
-import { MINHAS_NOTAS } from '../../lib/notas-mock'
+import { useNoteAuthors, useStudentNotes } from '../../hooks/useNotes'
+import { toStudentNotesModalNotes } from '../../lib/note-presenter'
 import { getUserProfile } from '../../services/auth'
 import ProfilePage from './ProfilePage'
-
-const PROFILE_MODAL_NOTES = MINHAS_NOTAS.map((note) => ({
-  ...note,
-  tags: [note.tag],
-}))
 
 function ProfileLoading() {
   return (
@@ -73,6 +69,25 @@ export default function UserProfilePage() {
   const isStudentProfile = ['student', 'aluno'].includes(
     profile?.role.trim().toLowerCase() ?? '',
   )
+  const notesQuery = useStudentNotes(
+    profile?.id ?? '',
+    isTeacherViewer && isStudentProfile,
+  )
+  const authorsQuery = useNoteAuthors(notesQuery.data)
+  const modalNotes = useMemo(
+    () => toStudentNotesModalNotes(notesQuery.data ?? [], authorsQuery.data),
+    [authorsQuery.data, notesQuery.data],
+  )
+  const isNotesLoading =
+    notesQuery.isLoading ||
+    (Boolean(notesQuery.data?.length) && authorsQuery.isLoading) ||
+    (notesQuery.isError && notesQuery.isFetching) ||
+    (authorsQuery.isError && authorsQuery.isFetching)
+  const isNotesError = notesQuery.isError || authorsQuery.isError
+
+  function retryNotes() {
+    void Promise.all([notesQuery.refetch(), authorsQuery.refetch()])
+  }
 
   if (isOwnProfile) {
     return <ProfilePage />
@@ -140,8 +155,11 @@ export default function UserProfilePage() {
               <AboutCard bio={profile.aboutMe} />
               {isTeacherViewer && isStudentProfile ? (
                 <StudentNotesSummaryCard
-                  notesCount={MINHAS_NOTAS.length}
+                  isError={isNotesError}
+                  isLoading={isNotesLoading}
+                  notesCount={notesQuery.data?.length ?? 0}
                   onOpen={() => setIsNotesModalOpen(true)}
+                  onRetry={retryNotes}
                 />
               ) : null}
               <ProfilePostsSection matricula={lookup} />
@@ -150,7 +168,8 @@ export default function UserProfilePage() {
           </div>
           {isTeacherViewer && isStudentProfile && isNotesModalOpen ? (
             <StudentNotesModal
-              notes={PROFILE_MODAL_NOTES}
+              canCreateNote
+              notes={modalNotes}
               onClose={() => setIsNotesModalOpen(false)}
               student={profile}
             />

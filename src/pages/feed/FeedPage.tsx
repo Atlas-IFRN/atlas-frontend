@@ -15,10 +15,14 @@ import { Button } from '../../components/atoms/Button'
 import { EmptyState, ErrorState, LoadingState } from '../../components/states'
 import { useFeedPosts } from '../../hooks/useFeed'
 import { useBanners } from '../../hooks/useBanners'
-import { useActiveScholarships, useTopTracks } from '../../hooks/useWidgets'
+import {
+  useActiveScholarships,
+  useFeedHeroStats,
+  useTopTracks,
+} from '../../hooks/useWidgets'
 import { bannerToSlide } from '../../services/banners'
 import type { AvatarColor } from '../../components/atoms/Avatar'
-import { HERO_SLIDES } from './feedData'
+import { createFeedWelcomeSlide } from './feedHero'
 import '../../components/feed/Feed.css'
 
 function isTeacherRole(role: string) {
@@ -57,9 +61,28 @@ export default function FeedPage() {
   // Widgets das laterais: bolsas ativas (global) e minhas trilhas (usuário logado).
   const { data: activeScholarships = [], isLoading: scholarshipsLoading } = useActiveScholarships()
   const { data: myTracks = [], isLoading: tracksLoading } = useTopTracks()
+  const heroStatsQuery = useFeedHeroStats(Boolean(user && !isTeacher))
+  const welcomeSlide = useMemo(
+    () =>
+      createFeedWelcomeSlide({
+        activeTracks: heroStatsQuery.data?.activeTracks,
+        firstName: currentUserName,
+        isError: heroStatsQuery.isError,
+        isLoading: heroStatsQuery.isLoading,
+        isTeacher,
+        openScholarships: heroStatsQuery.data?.openScholarships,
+      }),
+    [
+      currentUserName,
+      heroStatsQuery.data,
+      heroStatsQuery.isError,
+      heroStatsQuery.isLoading,
+      isTeacher,
+    ],
+  )
   const heroSlides = useMemo(
-    () => [...HERO_SLIDES, ...banners.map(bannerToSlide)],
-    [banners],
+    () => [welcomeSlide, ...banners.map(bannerToSlide)],
+    [banners, welcomeSlide],
   )
 
   const {
