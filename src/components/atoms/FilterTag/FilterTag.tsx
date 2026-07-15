@@ -1,6 +1,6 @@
 import { forwardRef } from 'react'
 import type { ButtonHTMLAttributes, MouseEventHandler, ReactNode } from 'react'
-import type { LucideIcon } from 'lucide-react'
+import { Circle, type LucideIcon } from 'lucide-react'
 import './FilterTag.css'
 
 export interface FilterTagProps
@@ -33,6 +33,7 @@ export const FilterTag = forwardRef<HTMLButtonElement, FilterTagProps>(
     ]
       .filter(Boolean)
       .join(' ')
+    const IndicatorIcon = IconLeft ?? (active ? Circle : undefined)
 
     const handleClick: MouseEventHandler<HTMLButtonElement> = (event) => {
       if (disabled) {
@@ -55,8 +56,11 @@ export const FilterTag = forwardRef<HTMLButtonElement, FilterTagProps>(
         onClick={handleClick}
         type={type ?? 'button'}
       >
-        {IconLeft ? (
-          <IconLeft className="atlas-filter-tag__icon" aria-hidden="true" />
+        {IndicatorIcon ? (
+          <IndicatorIcon
+            className="atlas-filter-tag__icon"
+            aria-hidden="true"
+          />
         ) : null}
 
         <span className="atlas-filter-tag__label">{label}</span>

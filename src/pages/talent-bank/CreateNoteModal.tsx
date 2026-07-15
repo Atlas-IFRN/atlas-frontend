@@ -22,10 +22,11 @@ import {
   getNoteErrorMessage,
   type NoteSkillTag,
 } from '../../services/notes'
+import './NotesPage.css'
 
 interface CreateNoteModalProps {
   isCovered?: boolean
-  onChangeStudent: () => void
+  onChangeStudent?: () => void
   onClose: () => void
   onSaved: () => void
   studentId: string
@@ -106,6 +107,7 @@ export function CreateNoteModal({
   const isSaving = createNoteMutation.isPending
   const isSavingRef = useRef(isSaving)
   const isCoveredRef = useRef(isCovered)
+  const dialogRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     isSavingRef.current = isSaving
@@ -119,8 +121,49 @@ export function CreateNoteModal({
     const previouslyFocusedElement = document.activeElement as HTMLElement | null
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+    if (!dialogRef.current?.contains(document.activeElement)) {
+      dialogRef.current?.focus()
+    }
 
     function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Tab' && !isCoveredRef.current) {
+        const dialog = dialogRef.current
+        const focusableElements = dialog
+          ? Array.from(
+              dialog.querySelectorAll<HTMLElement>(
+                'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+              ),
+            )
+          : []
+        const firstElement = focusableElements[0]
+        const lastElement = focusableElements.at(-1)
+        const activeElement = document.activeElement
+
+        if (!firstElement || !lastElement) {
+          event.preventDefault()
+          dialog?.focus()
+          return
+        }
+
+        if (
+          event.shiftKey &&
+          (activeElement === firstElement || !dialog?.contains(activeElement))
+        ) {
+          event.preventDefault()
+          lastElement.focus()
+          return
+        }
+
+        if (
+          !event.shiftKey &&
+          (activeElement === lastElement || !dialog?.contains(activeElement))
+        ) {
+          event.preventDefault()
+          firstElement.focus()
+          return
+        }
+      }
+
       if (
         event.key === 'Escape' &&
         !isSavingRef.current &&
@@ -190,7 +233,9 @@ export function CreateNoteModal({
         aria-labelledby={titleId}
         aria-modal="true"
         className="create-note-modal__dialog"
+        ref={dialogRef}
         role="dialog"
+        tabIndex={-1}
       >
         <header className="create-note-modal__header">
           <h2 id={titleId}>Nova nota</h2>
@@ -238,15 +283,17 @@ export function CreateNoteModal({
                 size="md"
                 src={student.image || undefined}
               />
-              <Button
-                disabled={isSaving}
-                onClick={onChangeStudent}
-                size="sm"
-                type="button"
-                variant="outline"
-              >
-                Trocar
-              </Button>
+              {onChangeStudent ? (
+                <Button
+                  disabled={isSaving}
+                  onClick={onChangeStudent}
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                >
+                  Trocar
+                </Button>
+              ) : null}
             </div>
 
             <label className="create-note-form__field">

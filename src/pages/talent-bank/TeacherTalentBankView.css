@@ -1,0 +1,349 @@
+.teacher-talent-bank-page {
+  align-content: start;
+  box-sizing: border-box;
+  color: var(--text);
+  display: grid;
+  gap: var(--s-6);
+  min-block-size: 100%;
+  padding: var(--page-gutter-inline);
+  text-align: start;
+}
+
+.teacher-talent-bank-page__header {
+  border-block-end: 1px solid var(--border);
+  padding-block-end: var(--s-6);
+}
+
+.teacher-talent-bank-page__header .atlas-page-hero-copy {
+  max-inline-size: 760px;
+}
+
+.teacher-talent-bank-page__stats {
+  display: grid;
+  gap: var(--s-3);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.teacher-talent-bank-page__stats .atlas-stat-card__body {
+  min-block-size: 94px;
+}
+
+.teacher-talent-bank-page__controls {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3) var(--s-5);
+}
+
+.teacher-talent-bank-page__search {
+  flex: 0 1 390px;
+}
+
+.teacher-talent-bank-page__filters {
+  display: flex;
+  flex: 1 1 520px;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.teacher-talent-bank-page__warning {
+  align-items: center;
+  background: color-mix(in srgb, var(--warning-soft) 70%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--amber) 28%, transparent);
+  border-radius: var(--r-md);
+  color: var(--text-soft);
+  display: flex;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+}
+
+.teacher-talent-bank-page__warning > svg {
+  color: var(--amber);
+  flex: 0 0 auto;
+}
+
+.teacher-talent-bank-page__warning p {
+  flex: 1 1 auto;
+  font-size: 12px;
+  line-height: var(--line-height-sm);
+}
+
+.teacher-talent-bank-page__directory {
+  min-inline-size: 0;
+}
+
+.teacher-talent-bank-page__results-header {
+  align-items: baseline;
+  display: flex;
+  gap: var(--s-3);
+  justify-content: space-between;
+  margin-block-end: var(--s-3);
+}
+
+.teacher-talent-bank-page__results-header h2 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 750;
+  line-height: var(--line-height-base);
+  margin: 0;
+}
+
+.teacher-talent-bank-page__results-header span {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.teacher-talent-bank-page__list {
+  display: grid;
+  gap: var(--s-4);
+}
+
+.teacher-talent-card {
+  align-items: center;
+  background: color-mix(in srgb, var(--surface) 88%, var(--content-bg));
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
+  border-radius: var(--r-panel);
+  box-sizing: border-box;
+  display: grid;
+  gap: var(--s-5);
+  grid-template-columns:
+    minmax(250px, 280px)
+    minmax(112px, 140px)
+    minmax(260px, 1fr)
+    120px;
+  inline-size: 100%;
+  min-block-size: 124px;
+  min-inline-size: 0;
+  padding: 18px 24px;
+}
+
+.teacher-talent-card__identity {
+  align-items: center;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 56px minmax(0, 1fr);
+  min-inline-size: 0;
+}
+
+.teacher-talent-card__avatar {
+  block-size: 56px;
+  font-size: 18px;
+  inline-size: 56px;
+}
+
+.teacher-talent-card__student-copy {
+  display: grid;
+  gap: 2px;
+  min-inline-size: 0;
+}
+
+.teacher-talent-card__student-copy h3 {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.25;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.teacher-talent-card__student-copy p {
+  color: var(--text-soft);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.35;
+  margin-block-end: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.teacher-talent-card__student-copy span {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.025em;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.teacher-talent-card__ira,
+.teacher-talent-card__tracks {
+  align-content: center;
+  display: grid;
+  gap: 7px;
+  min-inline-size: 0;
+}
+
+.teacher-talent-card__ira > span,
+.teacher-talent-card__section-label {
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.teacher-talent-card__ira strong {
+  color: var(--primary);
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.teacher-talent-card__tracks ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.teacher-talent-card__tracks li {
+  display: flex;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.teacher-talent-card__tracks .atlas-text-tag {
+  --text-tag-bg: color-mix(in srgb, var(--surface-2) 88%, transparent);
+  --text-tag-border: color-mix(in srgb, var(--primary) 10%, transparent);
+  --text-tag-color: var(--text-soft);
+
+  max-inline-size: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.teacher-talent-card__tracks p {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: var(--line-height-sm);
+}
+
+.teacher-talent-card__actions {
+  display: grid;
+  gap: 8px;
+}
+
+.teacher-talent-card__actions .atlas-button {
+  inline-size: 100%;
+}
+
+.teacher-talent-bank-page__state {
+  min-block-size: 260px;
+}
+
+.teacher-talent-bank-page__loading .atlas-loading-state__skeleton-grid {
+  gap: var(--s-4);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.teacher-talent-bank-page__loading .atlas-loading-state__skeleton-card {
+  min-block-size: 124px;
+}
+
+@media (max-width: 1180px) {
+  .teacher-talent-card {
+    align-items: start;
+    grid-template-columns: minmax(250px, 1fr) 120px 120px;
+  }
+
+  .teacher-talent-card__tracks {
+    grid-column: 1 / 3;
+    grid-row: 2;
+  }
+
+  .teacher-talent-card__actions {
+    align-self: center;
+    grid-column: 3;
+    grid-row: 1 / 3;
+  }
+}
+
+@media (max-width: 760px) {
+  .teacher-talent-bank-page__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .teacher-talent-bank-page__search,
+  .teacher-talent-bank-page__filters {
+    flex-basis: 100%;
+  }
+
+  .teacher-talent-card {
+    grid-template-columns: minmax(0, 1fr) 110px;
+  }
+
+  .teacher-talent-card__tracks,
+  .teacher-talent-card__actions {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+
+  .teacher-talent-card__actions {
+    display: flex;
+  }
+
+  .teacher-talent-card__actions .atlas-button {
+    flex: 1 1 50%;
+  }
+}
+
+@media (max-width: 520px) {
+  .teacher-talent-bank-page {
+    gap: var(--s-5);
+  }
+
+  .teacher-talent-bank-page__header {
+    padding-block-end: var(--s-5);
+  }
+
+  .teacher-talent-bank-page__warning {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .teacher-talent-bank-page__warning .atlas-button {
+    inline-size: 100%;
+  }
+
+  .teacher-talent-card {
+    gap: var(--s-4);
+    grid-template-columns: minmax(0, 1fr);
+    padding: var(--s-4);
+  }
+
+  .teacher-talent-card__identity,
+  .teacher-talent-card__ira,
+  .teacher-talent-card__tracks,
+  .teacher-talent-card__actions {
+    grid-column: 1;
+  }
+
+  .teacher-talent-card__ira {
+    border-block: 1px solid var(--border);
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding-block: var(--s-3);
+  }
+
+  .teacher-talent-card__ira strong {
+    font-size: 22px;
+  }
+
+  .teacher-talent-card__actions {
+    flex-direction: column;
+  }
+}
