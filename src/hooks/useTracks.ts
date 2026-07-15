@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
+  dropTrackEnrollment,
   enrollInTrack,
   getCompletedTracks,
   getTrackById,
@@ -41,7 +42,25 @@ export function useEnrollInTrack() {
 
   return useMutation({
     mutationFn: enrollInTrack,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: tracksQueryKeys.all }),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: tracksQueryKeys.all }),
+        queryClient.invalidateQueries({ queryKey: ['widgets'] }),
+      ])
+    },
+  })
+}
+
+export function useDropTrackEnrollment() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: dropTrackEnrollment,
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: tracksQueryKeys.all }),
+        queryClient.invalidateQueries({ queryKey: ['widgets'] }),
+      ])
+    },
   })
 }

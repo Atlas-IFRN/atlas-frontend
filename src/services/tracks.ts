@@ -59,6 +59,7 @@ export interface ApiModule {
 
 interface ApiUserProgress {
   enrolled?: boolean
+  enrollment_id?: string | null
   status?: 'IN_PROGRESS' | 'COMPLETED' | null
   completed_modules?: number
   completed_content_ids?: string[]
@@ -358,6 +359,7 @@ export function mapTrackToTrail(track: ApiTrack): Trail {
     level,
     levelLabel: track.level_display ?? trackLevelLabels[level],
     enrolled,
+    enrollmentId: userProgress?.enrollment_id ?? null,
     enrollmentStatus,
     isNew: Boolean(track.is_new),
     progress,
@@ -501,6 +503,31 @@ export async function enrollInTrack(trackId: string): Promise<ApiUserTrack> {
   const { data } = await tracksApi.post<ApiUserTrack>('track/user-tracks/', {
     track: trackId,
   })
+
+  return data
+}
+
+interface DropTrackEnrollmentParams {
+  trackId: string
+  enrollmentId?: string | null
+}
+
+export async function dropTrackEnrollment({
+  trackId,
+  enrollmentId,
+}: DropTrackEnrollmentParams): Promise<ApiUserTrack> {
+  const enrollment = enrollmentId ? null : await getMyTrackEnrollment(trackId)
+  const activeEnrollmentId = enrollmentId ?? enrollment?.id
+
+  if (!activeEnrollmentId) {
+    throw new Error(
+      'Não foi encontrada uma matrícula em andamento nesta trilha.',
+    )
+  }
+
+  const { data } = await tracksApi.post<ApiUserTrack>(
+    `track/user-tracks/${activeEnrollmentId}/drop/`,
+  )
 
   return data
 }
