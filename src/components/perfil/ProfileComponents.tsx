@@ -216,9 +216,11 @@ interface ProfileSidebarProps {
 }
 
 export function ProfileSidebar({ user }: ProfileSidebarProps) {
+  const { user: currentUser } = useAuth()
   const isTeacher = isTeacherRole(user.role)
+  const isOwnProfile = currentUser?.id === user.id
   // Trilhas deste perfil, ordenadas por progresso (professor não se matricula,
-  // então nem busca). Bolsas ativas são globais (iguais em qualquer perfil).
+  // então nem busca).
   const { data: tracks = [], isLoading: tracksLoading } = useTopTracks(user.id, !isTeacher)
 
   return (
@@ -226,7 +228,11 @@ export function ProfileSidebar({ user }: ProfileSidebarProps) {
       <ProfileLinksCard user={user} />
       {!isTeacher ? (
         <>
-          <RailTrackList tracks={tracks} isLoading={tracksLoading} />
+          <RailTrackList
+            tracks={tracks}
+            isLoading={tracksLoading}
+            title={isOwnProfile ? 'Minhas trilhas' : 'Trilhas em andamento'}
+          />
           <ProfileAchievementsCard userId={user.id} />
         </>
       ) : null}

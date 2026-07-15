@@ -9,6 +9,9 @@ interface RailTrackListProps {
   isLoading?: boolean
   exploreHref?: string
   emptyMessage?: string
+  /** Título do bloco. "Minhas trilhas" (padrão) no feed/perfil próprio;
+   *  "Trilhas em andamento" ao ver o perfil de outra pessoa. */
+  title?: string
 }
 
 function overallPercent(track: FeedTrackProgress) {
@@ -29,10 +32,11 @@ export function RailTrackList({
   isLoading = false,
   exploreHref = '/trilhas',
   emptyMessage = 'Não há trilhas em andamento.',
+  title = 'Minhas trilhas',
 }: RailTrackListProps) {
   return (
     <section className="rail-block">
-      <h2 className="rail-block__label">Minhas trilhas</h2>
+      <h2 className="rail-block__label">{title}</h2>
 
       {isLoading ? null : tracks.length === 0 ? (
         <p className="rail-block__empty">{emptyMessage}</p>
