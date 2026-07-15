@@ -639,6 +639,10 @@
   display: block;
 }
 
+.segmented-progress[data-completed='true'] .segmented-progress__fill {
+  background: var(--success);
+}
+
 /* ---------- Composer ---------- */
 
 .composer {

@@ -31,8 +31,7 @@ function toFeedTrackProgress(hit: ApiTopTrack): FeedTrackProgress {
     href: `/trilhas/${hit.track_id}`,
     modules: hit.total_modules,
     completedModules: hit.completed_modules,
-    // O progresso do endpoint é por módulos concluídos; não há progresso parcial
-    // do módulo atual, então 0 mantém o cálculo do componente igual ao pct.
+    progressPercent: Math.min(100, Math.max(0, Number(hit.progress_pct) || 0)),
     currentModuleProgress: 0,
   }
 }
