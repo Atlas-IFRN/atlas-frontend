@@ -173,12 +173,9 @@ export async function getTalentBankDirectory(): Promise<TalentBankDirectory> {
         return null
       }
 
-      let completedTracks: CompletedTrack[] | null = null
-      try {
-        completedTracks = await getCompletedTracks(registration.studentId)
-      } catch {
-        completedTracks = null
-      }
+      const completedTracks: CompletedTrack[] | null = await getCompletedTracks(
+        registration.studentId,
+      ).catch(() => null)
 
       return { completedTracks, registration, student }
     },
