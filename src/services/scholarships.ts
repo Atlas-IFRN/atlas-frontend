@@ -570,6 +570,10 @@ export async function updateScholarship(
   return toScholarship(data)
 }
 
+export async function deleteScholarship(scholarshipId: string): Promise<void> {
+  await api.delete(`scholarship/scholarships/${scholarshipId}/`)
+}
+
 export async function listScholarshipTechnologies(): Promise<
   ScholarshipTechnology[]
 > {

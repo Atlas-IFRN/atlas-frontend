@@ -852,6 +852,12 @@
   margin: 8px 0 0;
 }
 
+.scholarship-detail-cancel-modal .scholarship-detail-cancel-modal__error {
+  color: color-mix(in srgb, var(--danger) 82%, #ffffff);
+  font-size: 0.78rem;
+  margin: 0;
+}
+
 .scholarship-detail-cancel-modal__actions {
   display: grid;
   gap: 10px;

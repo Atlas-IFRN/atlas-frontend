@@ -90,6 +90,7 @@ export interface Trail {
   level: TrackLevel
   levelLabel: string
   enrolled: boolean
+  enrollmentId: string | null
   enrollmentStatus: 'IN_PROGRESS' | 'COMPLETED' | null
   isNew: boolean
   progress: number | null

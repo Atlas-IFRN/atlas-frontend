@@ -1,10 +1,15 @@
-import { ArrowRight, Info, Star } from 'lucide-react'
+import { useEffect, useId, useState, type MouseEvent } from 'react'
+import { createPortal } from 'react-dom'
+import { AlertTriangle, ArrowRight, Info, LogOut, Star, X } from 'lucide-react'
 import { Button } from '../../atoms/Button'
 import { ButtonLink } from '../../atoms/ButtonLink'
 import { ProgressBar } from '../../atoms/ProgressBar'
 import { StatusBadge } from '../../atoms/StatusBadge'
 import { useAuth } from '../../../contexts/AuthContext'
-import { useEnrollInTrack } from '../../../hooks/useTracks'
+import {
+  useDropTrackEnrollment,
+  useEnrollInTrack,
+} from '../../../hooks/useTracks'
 import { getTrackRequestErrorMessage } from '../../../services/tracks'
 import type { Trail } from '../../../types/tracks'
 
@@ -18,11 +23,53 @@ export function TrailDetailSidebar({ trail }: TrailDetailSidebarProps) {
   const workload = trail.hours > 0 ? `~${trail.hours}h` : 'A definir'
   const { user } = useAuth()
   const enrollment = useEnrollInTrack()
+  const dropEnrollment = useDropTrackEnrollment()
+  const [showDropConfirmation, setShowDropConfirmation] = useState(false)
+  const dialogTitleId = useId()
+  const dialogDescriptionId = useId()
   const normalizedRole = user?.role.trim().toLowerCase()
   const canEnroll = normalizedRole !== 'teacher' && normalizedRole !== 'professor'
+  const canDrop = canEnroll && trail.enrollmentStatus === 'IN_PROGRESS'
+
+  useEffect(() => {
+    if (!showDropConfirmation) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape' && !dropEnrollment.isPending) {
+        setShowDropConfirmation(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [dropEnrollment.isPending, showDropConfirmation])
 
   function handleEnroll() {
     enrollment.mutate(trail.id)
+  }
+
+  function handleDrop() {
+    dropEnrollment.mutate(
+      {
+        trackId: trail.id,
+        enrollmentId: trail.enrollmentId,
+      },
+      {
+        onSuccess: () => setShowDropConfirmation(false),
+      },
+    )
+  }
+
+  function handleDialogBackdrop(event: MouseEvent<HTMLDivElement>) {
+    if (event.target === event.currentTarget && !dropEnrollment.isPending) {
+      setShowDropConfirmation(false)
+    }
   }
 
   return (
@@ -87,6 +134,21 @@ export function TrailDetailSidebar({ trail }: TrailDetailSidebarProps) {
               'Não foi possível realizar a inscrição nesta trilha.',
             )}
           </p>
+        ) : null}
+
+        {canDrop ? (
+          <Button
+            className="trail-detail-sidebar__drop"
+            iconLeft={LogOut}
+            onClick={() => {
+              dropEnrollment.reset()
+              setShowDropConfirmation(true)
+            }}
+            size="sm"
+            variant="ghost"
+          >
+            Sair da trilha
+          </Button>
         ) : null}
 
         <div className="trail-detail-sidebar__stats">
@@ -157,6 +219,81 @@ export function TrailDetailSidebar({ trail }: TrailDetailSidebarProps) {
           </p>
         </div>
       </section>
+
+      {showDropConfirmation
+        ? createPortal(
+            <div
+              className="trail-drop-modal"
+              onMouseDown={handleDialogBackdrop}
+              role="presentation"
+            >
+              <section
+                aria-describedby={dialogDescriptionId}
+                aria-labelledby={dialogTitleId}
+                aria-modal="true"
+                className="trail-drop-modal__dialog"
+                role="dialog"
+              >
+                <header className="trail-drop-modal__header">
+                  <span className="trail-drop-modal__icon" aria-hidden="true">
+                    <AlertTriangle size={22} />
+                  </span>
+                  <div>
+                    <p>Cancelar matrícula</p>
+                    <h2 id={dialogTitleId}>Sair desta trilha?</h2>
+                  </div>
+                  <Button
+                    aria-label="Fechar confirmação"
+                    disabled={dropEnrollment.isPending}
+                    iconLeft={X}
+                    onClick={() => setShowDropConfirmation(false)}
+                    size="sm"
+                    variant="ghost"
+                  />
+                </header>
+
+                <p
+                  id={dialogDescriptionId}
+                  className="trail-drop-modal__description"
+                >
+                  Você deixará de estar matriculado em{' '}
+                  <strong>{trail.title}</strong>. Seu progresso será preservado
+                  caso decida entrar novamente.
+                </p>
+
+                {dropEnrollment.isError ? (
+                  <p className="trail-drop-modal__error" role="alert">
+                    {getTrackRequestErrorMessage(
+                      dropEnrollment.error,
+                      'Não foi possível sair da trilha.',
+                    )}
+                  </p>
+                ) : null}
+
+                <footer className="trail-drop-modal__actions">
+                  <Button
+                    disabled={dropEnrollment.isPending}
+                    onClick={() => setShowDropConfirmation(false)}
+                    size="md"
+                    variant="outline"
+                  >
+                    Continuar na trilha
+                  </Button>
+                  <Button
+                    iconLeft={LogOut}
+                    loading={dropEnrollment.isPending}
+                    onClick={handleDrop}
+                    size="md"
+                    variant="danger"
+                  >
+                    Sair da trilha
+                  </Button>
+                </footer>
+              </section>
+            </div>,
+            document.body,
+          )
+        : null}
     </aside>
   )
 }

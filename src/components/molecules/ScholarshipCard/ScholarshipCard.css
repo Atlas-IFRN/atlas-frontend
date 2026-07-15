@@ -32,7 +32,8 @@
 }
 
 .atlas-scholarship-card__main {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 18px;
   flex: 1 1 auto;
   padding: 24px;
@@ -146,7 +147,7 @@
   flex-wrap: wrap;
   gap: 8px;
   list-style: none;
-  margin: 0;
+  margin: auto 0 0;
   padding: 0;
 }
 
