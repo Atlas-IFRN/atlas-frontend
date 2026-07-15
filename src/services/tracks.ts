@@ -8,6 +8,7 @@ import type {
   TrailTeacher,
   TrailTheme,
   TrackLevel,
+  SkillCategory,
 } from '../types/tracks'
 
 interface ApiPaginatedResponse<T> {
@@ -18,6 +19,16 @@ export interface ApiSkill {
   id: string
   name: string
   slug?: string
+  category?: SkillCategory
+  category_display?: string
+}
+
+export interface ApiTrackCategory {
+  id: string
+  name: string
+  slug: string
+  is_active?: boolean
+  display_order?: number
 }
 
 export interface ApiContent {
@@ -86,6 +97,7 @@ export interface ApiTrack {
   creator_id?: string
   title: string
   description: string
+  category?: ApiTrackCategory
   level?: string
   level_display?: string
   duration_weeks?: number
@@ -163,6 +175,7 @@ export interface CompletedTrack {
 export interface CreateTrackPayload {
   title: string
   description: string
+  category_id: string
   level?: TrackLevel
   duration_weeks?: number
   skill_ids?: string[]
@@ -219,29 +232,29 @@ function normalizeText(value: string) {
     .toLocaleLowerCase('pt-BR')
 }
 
-function inferTheme(track: ApiTrack): TrailTheme {
-  const skills = track.skills?.map((skill) => `${skill.name} ${skill.slug}`) ?? []
-  const searchableText = normalizeText(
-    [track.title, track.description, ...skills].join(' '),
-  )
+function getTrackTheme(track: ApiTrack): TrailTheme {
+  const categorySlug = track.category?.slug
+  return categorySlug && categorySlug in themeLabels
+    ? (categorySlug as TrailTheme)
+    : 'backend'
+}
 
-  if (/(ia|ai|ml|machine learning|llm|nlp|pytorch|tensorflow|scikit)/.test(searchableText)) {
-    return 'ai'
+const trackLevelLabels: Record<TrackLevel, string> = {
+  BEGINNER: 'Iniciante',
+  INTERMEDIATE: 'Intermediário',
+  ADVANCED: 'Avançado',
+}
+
+function getTrackLevel(track: ApiTrack): TrackLevel {
+  if (
+    track.level === 'BEGINNER' ||
+    track.level === 'INTERMEDIATE' ||
+    track.level === 'ADVANCED'
+  ) {
+    return track.level
   }
 
-  if (/(frontend|front-end|react|javascript|typescript|html|css|vite)/.test(searchableText)) {
-    return 'frontend'
-  }
-
-  if (/(ci\/cd|cicd|pipeline|jenkins|github actions|sonarqube|deploy)/.test(searchableText)) {
-    return 'cicd'
-  }
-
-  if (/(devops|cloud|kubernetes|terraform|aws|linux|observabilidade)/.test(searchableText)) {
-    return 'devops'
-  }
-
-  return 'backend'
+  return 'BEGINNER'
 }
 
 function getInitials(name: string) {
@@ -325,7 +338,8 @@ function splitDescription(description: string) {
 }
 
 export function mapTrackToTrail(track: ApiTrack): Trail {
-  const theme = inferTheme(track)
+  const theme = getTrackTheme(track)
+  const level = getTrackLevel(track)
   const totalMinutes = track.total_duration_minutes ?? 0
   const userProgress = track.user_progress
   const enrolled = Boolean(userProgress?.enrolled)
@@ -339,15 +353,23 @@ export function mapTrackToTrail(track: ApiTrack): Trail {
   return {
     id: track.id,
     title: track.title,
-    area: themeLabels[theme],
+    area: track.category?.name ?? themeLabels[theme],
     theme,
+    level,
+    levelLabel: track.level_display ?? trackLevelLabels[level],
     enrolled,
     enrollmentStatus,
     isNew: Boolean(track.is_new),
     progress,
     modules: track.modules_count ?? track.modules?.length ?? 0,
     hours: Math.ceil(totalMinutes / 60),
-    skills: track.skills?.map((skill) => skill.name) ?? [],
+    skills:
+      track.skills?.map((skill) => ({
+        id: skill.id,
+        name: skill.name,
+        slug: skill.slug ?? '',
+        category: skill.category ?? 'TOOL',
+      })) ?? [],
     description: track.description,
     durationLabel: `${durationWeeks} ${durationWeeks === 1 ? 'semana' : 'semanas'}`,
     longDescription: splitDescription(track.description),
@@ -589,6 +611,14 @@ export async function getSkills(): Promise<ApiSkill[]> {
   const { data } = await tracksApi.get<ApiSkill[] | ApiPaginatedResponse<ApiSkill>>(
     'track/skills/',
   )
+
+  return unwrapPaginatedResponse(data)
+}
+
+export async function getTrackCategories(): Promise<ApiTrackCategory[]> {
+  const { data } = await tracksApi.get<
+    ApiTrackCategory[] | ApiPaginatedResponse<ApiTrackCategory>
+  >('track/categories/')
 
   return unwrapPaginatedResponse(data)
 }

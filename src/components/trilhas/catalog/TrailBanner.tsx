@@ -12,9 +12,14 @@ export function TrailBanner({ trail }: TrailBannerProps) {
 
   return (
     <div className={`trail-banner ${trail.theme}`}>
-      <TextTag className="trail-banner__area" size="sm" withDot>
-        {trail.area}
-      </TextTag>
+      <div className="trail-banner__labels">
+        <TextTag className="trail-banner__area" size="sm" withDot>
+          {trail.area}
+        </TextTag>
+        <TextTag className="trail-banner__level" size="sm">
+          {trail.levelLabel}
+        </TextTag>
+      </div>
 
       <div className="trail-banner__badges">
         {trail.enrolled ? (
