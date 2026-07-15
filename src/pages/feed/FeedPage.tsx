@@ -144,9 +144,11 @@ export default function FeedPage() {
                   <Button
                     disabled={isFetchingNextPage}
                     onClick={() => void fetchNextPage()}
-                    variant="soft"
+                    variant="outline"
                   >
-                    {isFetchingNextPage ? 'Carregando…' : 'Carregar mais'}
+                    {isFetchingNextPage
+                      ? 'Carregando...'
+                      : 'Carregar mais publicações'}
                   </Button>
                 </div>
               ) : null}
