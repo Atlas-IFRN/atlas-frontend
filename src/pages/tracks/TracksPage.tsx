@@ -92,7 +92,7 @@ export default function TracksPage() {
         trail.title,
         trail.area,
         trail.description,
-        ...trail.skills,
+        ...trail.skills.map((skill) => skill.name),
       ]
         .join(' ')
         .toLocaleLowerCase('pt-BR')

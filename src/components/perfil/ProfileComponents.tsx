@@ -3,6 +3,7 @@ import {
   FileText,
   MessageSquareText,
   Pencil,
+  RefreshCcw,
   Share2,
 } from 'lucide-react'
 import type { AuthUser } from '../../contexts/AuthContext'
@@ -16,7 +17,6 @@ import {
 } from '../../utils/socialProfiles'
 import { Avatar } from '../atoms/Avatar'
 import { Button } from '../atoms/Button'
-import { ButtonLink } from '../atoms/ButtonLink'
 import { RailTrackList } from '../feed/rails/RailTrackList'
 import { InfoCard } from '../molecules/InfoCard'
 import { ProfileAchievementsCard } from './ProfileAchievementsCard'
@@ -164,10 +164,18 @@ type StudentNotesSummaryCardProps = {
   isError?: boolean
   isLoading?: boolean
   notesCount: number
-} & ({ onOpen: () => void; to?: never } | { onOpen?: never; to: string })
+  onOpen: () => void
+  onRetry?: () => void
+}
 
 export function StudentNotesSummaryCard(props: StudentNotesSummaryCardProps) {
-  const { isError = false, isLoading = false, notesCount } = props
+  const {
+    isError = false,
+    isLoading = false,
+    notesCount,
+    onOpen,
+    onRetry,
+  } = props
   const countLabel = notesCount === 1 ? 'nota cadastrada' : 'notas cadastradas'
 
   return (
@@ -192,21 +200,16 @@ export function StudentNotesSummaryCard(props: StudentNotesSummaryCardProps) {
           )}
         </p>
       </div>
-      {typeof props.to === 'string' ? (
-        <ButtonLink size="sm" to={props.to} variant="soft">
-          Ver notas <ArrowRight aria-hidden="true" size={18} />
-        </ButtonLink>
-      ) : (
-        <Button
-          aria-haspopup="dialog"
-          iconRight={ArrowRight}
-          onClick={props.onOpen}
-          size="sm"
-          variant="soft"
-        >
-          Ver notas
-        </Button>
-      )}
+      <Button
+        aria-haspopup={isError ? undefined : 'dialog'}
+        disabled={isLoading || (isError && !onRetry)}
+        iconRight={isError ? RefreshCcw : ArrowRight}
+        onClick={isError ? onRetry : onOpen}
+        size="sm"
+        variant="soft"
+      >
+        {isError ? 'Tentar novamente' : 'Ver notas'}
+      </Button>
     </section>
   )
 }

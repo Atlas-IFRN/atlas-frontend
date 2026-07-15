@@ -3,7 +3,10 @@ import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import type { AuthUser } from '../../contexts/AuthContext'
 import { getCourseLabel } from '../../lib/course-label'
-import { tagLabel, type NoteTag } from '../../lib/notas-mock'
+import {
+  noteTagLabel,
+  type StudentNotesModalNote,
+} from '../../lib/note-presenter'
 import { Button } from '../atoms/Button'
 import { ButtonLink } from '../atoms/ButtonLink'
 import { TextTag } from '../atoms/TextTag'
@@ -11,19 +14,8 @@ import { UserChip } from '../molecules/UserChip'
 import { EmptyState } from '../states/EmptyState'
 import './Profile.css'
 
-export interface StudentNotesModalNote {
-  content: string
-  createdAt: string
-  dateTime: string
-  id: string
-  professor: {
-    avatarSrc?: string
-    name: string
-  }
-  tags: NoteTag[]
-}
-
 interface StudentNotesModalProps {
+  canCreateNote: boolean
   notes: StudentNotesModalNote[]
   onClose: () => void
   returnTo?: string
@@ -44,11 +36,8 @@ function studentDetails(student: AuthUser, notesCount: number) {
     .join(' · ')
 }
 
-function displayDate(createdAt: string) {
-  return createdAt.replace(/,\s*/, ' · ')
-}
-
 export function StudentNotesModal({
+  canCreateNote,
   notes,
   onClose,
   returnTo,
@@ -135,8 +124,8 @@ export function StudentNotesModal({
               >
                 <UserChip
                   className="student-notes-modal__author"
-                  name={`Prof. ${note.professor.name}`}
-                  role={note.tags.map(tagLabel).join(' · ')}
+                  name={note.professor.name}
+                  role="Professor"
                   size="md"
                   src={note.professor.avatarSrc}
                 />
@@ -149,12 +138,12 @@ export function StudentNotesModal({
                   <div className="student-notes-modal__note-tags">
                     {note.tags.map((tag) => (
                       <TextTag key={tag} size="sm" variant={tag}>
-                        {tagLabel(tag)}
+                        {noteTagLabel(tag)}
                       </TextTag>
                     ))}
                   </div>
                   <time dateTime={note.dateTime}>
-                    {displayDate(note.createdAt)}
+                    {note.createdAt}
                   </time>
                 </footer>
               </article>
@@ -171,16 +160,18 @@ export function StudentNotesModal({
           <Button onClick={onClose} variant="outline">
             Fechar
           </Button>
-          <ButtonLink
-            state={{
-              returnTo:
-                returnTo ??
-                `/perfil/${encodeURIComponent(student.matricula)}`,
-            }}
-            to={`/banco-talentos/${encodeURIComponent(student.id)}/notas/nova`}
-          >
-            Nova nota
-          </ButtonLink>
+          {canCreateNote ? (
+            <ButtonLink
+              state={{
+                returnTo:
+                  returnTo ??
+                  `/perfil/${encodeURIComponent(student.matricula)}`,
+              }}
+              to={`/banco-talentos/${encodeURIComponent(student.id)}/notas/nova`}
+            >
+              Nova nota
+            </ButtonLink>
+          ) : null}
         </footer>
       </section>
     </div>,

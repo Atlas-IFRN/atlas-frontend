@@ -7,6 +7,7 @@ import { getStudentNotes, type StudentNote } from '../services/notes'
 export const notesQueryKeys = {
   all: ['notes'] as const,
   mine: (userId: string) => ['notes', 'mine', userId] as const,
+  student: (studentId: string) => ['notes', 'student', studentId] as const,
   authors: (authorIds: string[]) =>
     ['notes', 'authors', ...authorIds] as const,
 }
@@ -16,8 +17,16 @@ export function useMyNotes(enabled = true) {
 
   return useQuery({
     enabled: Boolean(enabled && user?.id),
-    queryFn: getStudentNotes,
+    queryFn: () => getStudentNotes({ studentId: user?.id }),
     queryKey: notesQueryKeys.mine(user?.id ?? ''),
+  })
+}
+
+export function useStudentNotes(studentId: string, enabled = true) {
+  return useQuery({
+    enabled: Boolean(enabled && studentId),
+    queryFn: () => getStudentNotes({ studentId }),
+    queryKey: notesQueryKeys.student(studentId),
   })
 }
 

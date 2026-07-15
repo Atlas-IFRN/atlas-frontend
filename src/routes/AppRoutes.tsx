@@ -72,9 +72,6 @@ const SearchResultsPage = lazy(() => import('../pages/search/SearchResultsPage')
 const TalentBankPage = lazy(
   () => import('../pages/talent-bank/TalentBankPage'),
 )
-const MyNotesPage = lazy(
-  () => import('../pages/talent-bank/MyNotesPage'),
-)
 const NotesPage = lazy(
   () => import('../pages/talent-bank/NotesPage'),
 )
@@ -145,9 +142,12 @@ export function AppRoutes() {
             <Route element={<RoleRoute allowedRoles={STUDENT_ROLES} />}>
               <Route
                 path="/banco-talentos/minhas-notas"
-                element={<MyNotesPage />}
+                element={<Navigate to="/perfil" replace />}
               />
-              <Route path="/notas" element={<MyNotesPage />} />
+              <Route
+                path="/notas"
+                element={<Navigate to="/perfil" replace />}
+              />
               <Route
                 path="/bolsas/minhas-candidaturas"
                 element={<MyApplicationsPage />}
@@ -199,7 +199,7 @@ export function AppRoutes() {
               />
               <Route
                 path="/banco-talentos/:studentId/notas"
-                element={<NotesPage />}
+                element={<Navigate to="/professor/notas" replace />}
               />
               <Route
                 path="/banco-talentos/:studentId/notas/nova"

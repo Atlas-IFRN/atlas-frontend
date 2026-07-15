@@ -1,6 +1,5 @@
 import type {
   ActiveScholarship,
-  FeedHeroSlide,
   FeedPost,
   FeedTrackProgress,
   SystemPost as SystemPostData,
@@ -10,21 +9,6 @@ import type {
  * Dados de exemplo do Feed. Nenhuma integração com backend por enquanto:
  * este arquivo existe para ser substituído pelo consumo real depois.
  */
-
-export const HERO_SLIDES: FeedHeroSlide[] = [
-  {
-    id: 'welcome',
-    eyebrow: 'sexta-feira, 10 de julho de 2026',
-    title: 'Olá, Maria.',
-    titleAccent: 'Sua jornada continua hoje.',
-    description:
-      'Você tem 2 trilhas em andamento, um desafio prático aguardando avaliação e 3 bolsas com prazo próximo.',
-    actions: [
-      { label: 'Continuar trilha', href: '/trilhas', variant: 'primary' },
-      { label: 'Ver bolsas abertas', href: '/bolsas', variant: 'soft' },
-    ],
-  },
-]
 
 export const MY_TRACKS: FeedTrackProgress[] = [
   {

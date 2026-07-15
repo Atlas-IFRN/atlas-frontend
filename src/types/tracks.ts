@@ -16,6 +16,21 @@ export type TrailAreaLabel =
 
 export type TrackLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED'
 
+export type SkillCategory =
+  | 'LANGUAGE'
+  | 'FRAMEWORK'
+  | 'DATABASE'
+  | 'DATA_AI'
+  | 'INFRA'
+  | 'TOOL'
+
+export interface TrailSkill {
+  id: string
+  name: string
+  slug: string
+  category: SkillCategory
+}
+
 export type TrailLessonType =
   | 'VIDEO'
   | 'ARTICLE'
@@ -70,15 +85,17 @@ export interface TrailEvaluation {
 export interface Trail {
   id: string
   title: string
-  area: TrailAreaLabel
+  area: string
   theme: TrailTheme
+  level: TrackLevel
+  levelLabel: string
   enrolled: boolean
   enrollmentStatus: 'IN_PROGRESS' | 'COMPLETED' | null
   isNew: boolean
   progress: number | null
   modules: number
   hours: number
-  skills: string[]
+  skills: TrailSkill[]
   description: string
   durationLabel: string
   longDescription: string[]

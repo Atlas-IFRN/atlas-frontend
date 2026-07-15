@@ -15,6 +15,10 @@ interface RailTrackListProps {
 }
 
 function overallPercent(track: FeedTrackProgress) {
+  if (track.progressPercent !== undefined) {
+    return Math.round(Math.min(100, Math.max(0, track.progressPercent)))
+  }
+
   if (track.modules === 0) {
     return 0
   }
@@ -50,6 +54,7 @@ export function RailTrackList({
                 completedModules={track.completedModules}
                 currentModuleProgress={track.currentModuleProgress}
                 modules={track.modules}
+                progressPercent={track.progressPercent}
               />
 
               <span className="rail-track__meta">

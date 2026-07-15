@@ -6,10 +6,7 @@ import { Button } from '../../components/atoms/Button'
 import { FilterTag } from '../../components/atoms/FilterTag'
 import { SearchInput } from '../../components/atoms/SearchInput'
 import { TextTag } from '../../components/atoms/TextTag'
-import {
-  StudentNotesModal,
-  type StudentNotesModalNote,
-} from '../../components/perfil/StudentNotesModal'
+import { StudentNotesModal } from '../../components/perfil/StudentNotesModal'
 import { PageHeroCopy } from '../../components/molecules/PageHeroCopy'
 import { UserChip } from '../../components/molecules/UserChip'
 import { EmptyState, ErrorState, LoadingState } from '../../components/states'
@@ -19,7 +16,11 @@ import {
   getCourseLabel,
   type CourseCategory,
 } from '../../lib/course-label'
-import type { NoteTag } from '../../lib/notas-mock'
+import {
+  formatStudentNoteDateTime,
+  toStudentNotesModalNotes,
+  type NoteTag,
+} from '../../lib/note-presenter'
 import { getUserProfileById } from '../../services/auth'
 import {
   getStudentNotes,
@@ -67,17 +68,6 @@ const SKILL_TAGS: Array<{
   { id: 'HARD_SKILL', label: 'Hard Skill', variant: 'hard-skill' },
 ]
 
-const DATE_FORMATTER = new Intl.DateTimeFormat('pt-BR', {
-  day: '2-digit',
-  month: 'short',
-  year: 'numeric',
-})
-const TIME_FORMATTER = new Intl.DateTimeFormat('pt-BR', {
-  hour: '2-digit',
-  hour12: false,
-  minute: '2-digit',
-})
-
 async function getNotesDirectory(): Promise<NotesDirectory> {
   const notes = await getStudentNotes()
   const profileIds = [
@@ -116,17 +106,6 @@ function normalizeSearchValue(value: string) {
     .toLocaleLowerCase('pt-BR')
 }
 
-function formatDateTime(value: string, separator = ' · ') {
-  const date = new Date(value)
-
-  if (Number.isNaN(date.getTime())) {
-    return 'data indisponível'
-  }
-
-  const formattedDate = DATE_FORMATTER.format(date).replace(/\./g, '')
-  return `${formattedDate}${separator}${TIME_FORMATTER.format(date)}`
-}
-
 function noteCountLabel(count: number) {
   return `${count} ${count === 1 ? 'nota' : 'notas'}`
 }
@@ -138,34 +117,6 @@ function studentDetails(student: AuthUser) {
   ]
     .filter((detail): detail is string => Boolean(detail))
     .join(' · ')
-}
-
-function toModalTag(tag: NoteSkillTag): NoteTag {
-  return tag === 'SOFT_SKILL' ? 'soft-skill' : 'hard-skill'
-}
-
-function toModalNotes(
-  notes: StudentNote[],
-  profilesById: Map<string, AuthUser>,
-): StudentNotesModalNote[] {
-  return notes.map((note) => {
-    const professor = profilesById.get(note.professorId)
-
-    return {
-      content: note.content,
-      createdAt: formatDateTime(note.createdAt, ', '),
-      dateTime: note.createdAt,
-      id: note.id,
-      professor: {
-        avatarSrc: professor?.image || undefined,
-        name:
-          professor?.fullName ||
-          professor?.firstName ||
-          'Não identificado',
-      },
-      tags: note.tags.map(toModalTag),
-    }
-  })
 }
 
 function buildStudentGroups(directory: NotesDirectory): StudentNotesGroup[] {
@@ -432,7 +383,7 @@ export default function NotesPage({
                     <footer className="student-note-directory__footer">
                       <span>
                         {noteCountLabel(group.notes.length)} · última{' '}
-                        {formatDateTime(group.latestNote.createdAt)}
+                        {formatStudentNoteDateTime(group.latestNote.createdAt)}
                       </span>
                       <strong>Ver todas →</strong>
                     </footer>
@@ -446,7 +397,8 @@ export default function NotesPage({
 
       {selectedGroup && directoryQuery.data ? (
         <StudentNotesModal
-          notes={toModalNotes(
+          canCreateNote
+          notes={toStudentNotesModalNotes(
             selectedGroup.notes,
             directoryQuery.data.profilesById,
           )}

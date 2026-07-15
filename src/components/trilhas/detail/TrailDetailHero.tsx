@@ -1,4 +1,4 @@
-import { CalendarDays, Star, Timer } from 'lucide-react'
+import { CalendarDays, Gauge, Star, Timer } from 'lucide-react'
 import { TextTag } from '../../atoms/TextTag'
 import type { Trail } from '../../../types/tracks'
 import { TrailSkillList } from '../catalog/TrailSkillList'
@@ -39,6 +39,10 @@ export function TrailDetailHero({ trail }: TrailDetailHeroProps) {
           <span>
             <Timer aria-hidden="true" size={16} />
             {trail.durationLabel}
+          </span>
+          <span>
+            <Gauge aria-hidden="true" size={16} />
+            Nível {trail.levelLabel}
           </span>
           <span>
             <Star aria-hidden="true" size={16} />

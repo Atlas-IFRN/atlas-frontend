@@ -137,6 +137,8 @@ export interface FeedTrackProgress {
   modules: number
   /** Módulos totalmente concluídos (segmentos cheios). */
   completedModules: number
+  /** Percentual real calculado a partir dos conteúdos atuais da trilha. */
+  progressPercent?: number
   /**
    * Progresso (0-100) do módulo em andamento — proporção de conteúdos
    * concluídos. Preenche parcialmente o segmento do módulo atual.
