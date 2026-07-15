@@ -508,6 +508,15 @@
   text-transform: uppercase;
 }
 
+.rail-block__empty {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+  padding-block: var(--s-4);
+  text-align: center;
+}
+
 .rail-block__cta {
   inline-size: 100%;
   margin-block-start: var(--s-1);

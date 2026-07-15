@@ -2,6 +2,7 @@ import axios from 'axios'
 import api from './api'
 import type { AuthUser } from '../contexts/AuthContext'
 import { getUserProfileById } from './auth'
+import { getCompletedTracks, type CompletedTrack } from './tracks'
 
 export type TalentRegistrationStatus = 'Active' | 'Inactive'
 
@@ -29,7 +30,43 @@ export interface TalentRegistration {
   joinedAt: string
 }
 
+export interface TalentBankStudent {
+  completedTracks: CompletedTrack[] | null
+  registration: TalentRegistration
+  student: AuthUser
+}
+
+export interface TalentBankDirectory {
+  registrations: TalentRegistration[]
+  students: TalentBankStudent[]
+}
+
 const TALENT_BANK_PATH = 'scholarship/talents/talent-bank/'
+const DIRECTORY_REQUEST_CONCURRENCY = 6
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  concurrency: number,
+  mapper: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results = new Array<R>(items.length)
+  let nextIndex = 0
+
+  async function worker() {
+    while (nextIndex < items.length) {
+      const currentIndex = nextIndex
+      nextIndex += 1
+      results[currentIndex] = await mapper(items[currentIndex])
+    }
+  }
+
+  const workers = Array.from(
+    { length: Math.min(concurrency, items.length) },
+    () => worker(),
+  )
+  await Promise.all(workers)
+  return results
+}
 
 function toTalentRegistration(
   registration: TalentRegistrationApi,
@@ -73,7 +110,14 @@ export async function getActiveTalentRegistrations(): Promise<
     page += 1
   }
 
-  return registrations
+  return [
+    ...new Map(
+      registrations.map((registration) => [
+        registration.studentId,
+        registration,
+      ]),
+    ).values(),
+  ]
 }
 
 export async function getActiveTalentStudents(): Promise<AuthUser[]> {
@@ -95,6 +139,48 @@ export async function getActiveTalentStudents(): Promise<AuthUser[]> {
   return students.filter((student) =>
     ['student', 'aluno'].includes(student.role.trim().toLowerCase()),
   )
+}
+
+export async function getTalentBankDirectory(): Promise<TalentBankDirectory> {
+  const registrations = await getActiveTalentRegistrations()
+  const studentResults = await mapWithConcurrency(
+    registrations,
+    DIRECTORY_REQUEST_CONCURRENCY,
+    async (registration) => {
+      const [profileResult, completedTracksResult] = await Promise.allSettled([
+        getUserProfileById(registration.studentId),
+        getCompletedTracks(registration.studentId),
+      ])
+
+      if (profileResult.status !== 'fulfilled') {
+        return null
+      }
+
+      const student = profileResult.value
+      const role = student.role.trim().toLowerCase()
+      if (!['student', 'aluno'].includes(role)) {
+        return null
+      }
+
+      return {
+        completedTracks:
+          completedTracksResult.status === 'fulfilled'
+            ? completedTracksResult.value
+            : null,
+        registration,
+        student,
+      }
+    },
+  )
+  const students = studentResults.flatMap((student) =>
+    student ? [student] : [],
+  )
+
+  if (registrations.length > 0 && students.length === 0) {
+    throw new Error('Não foi possível carregar os perfis dos alunos.')
+  }
+
+  return { registrations, students }
 }
 
 export async function createTalentRegistration(): Promise<TalentRegistration> {
