@@ -37,19 +37,27 @@
 }
 
 .atlas-tech-tag--language {
-  --tech-tag-accent: #3178c6;
+  --tech-tag-accent: #3478d4;
 }
 
 .atlas-tech-tag--framework {
-  --tech-tag-accent: #61dafb;
+  --tech-tag-accent: #745fd6;
+}
+
+.atlas-tech-tag--database {
+  --tech-tag-accent: #16875b;
+}
+
+.atlas-tech-tag--data-ai {
+  --tech-tag-accent: #a84fbd;
 }
 
 .atlas-tech-tag--tool {
-  --tech-tag-accent: #ff6f00;
+  --tech-tag-accent: #b96818;
 }
 
 .atlas-tech-tag--infra {
-  --tech-tag-accent: #4169e1;
+  --tech-tag-accent: #1686a3;
 }
 
 .atlas-tech-tag--outline {

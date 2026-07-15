@@ -21,10 +21,8 @@ import { StatusBadge } from '../../components/atoms/StatusBadge'
 import {
   TechIcon,
   TechTag,
-  techIconColors,
-  type TechIconName,
+  getTechnologyMeta,
 } from '../../components/atoms/TechTag'
-import { techIcons } from '../../components/atoms/TechTag/TechIcon.colors'
 import { tracksQueryKeys } from '../../hooks/useTracks'
 import {
   createContent,
@@ -34,6 +32,7 @@ import {
   deleteModule,
   deleteTrack,
   getSkills,
+  getTrackCategories,
   getTrackDraftById,
   publishTrack,
   updateContent,
@@ -42,6 +41,7 @@ import {
   type ApiContent,
   type ApiModule,
   type ApiSkill,
+  type ApiTrackCategory,
   type CreateContentPayload,
   type CreateTrackPayload,
 } from '../../services/tracks'
@@ -225,12 +225,14 @@ function isGeneratedTitle(value: string, prefix: string) {
 }
 
 function validateTrackForPublication({
+  categoryId,
   description,
   durationWeeks,
   modules,
   selectedSkills,
   title,
 }: {
+  categoryId: string
   description: string
   durationWeeks: string
   modules: DraftModule[]
@@ -247,6 +249,13 @@ function validateTrackForPublication({
     errors.push({
       field: 'track-description',
       message: 'Informe a descrição da trilha.',
+    })
+  }
+
+  if (!categoryId) {
+    errors.push({
+      field: 'track-category',
+      message: 'Selecione a área da trilha.',
     })
   }
 
@@ -457,44 +466,6 @@ function mapApiModuleToDraft(module: ApiModule): DraftModule {
   }
 }
 
-function getSkillIconName(skill: ApiSkill): TechIconName | null {
-  const aliases: Record<string, TechIconName> = {
-    fastapi: 'fastapi',
-    docker: 'docker',
-    postgresql: 'postgresql',
-    postgres: 'postgresql',
-    python: 'python',
-    rest: 'swagger',
-    react: 'react',
-    typescript: 'typescript',
-    javascript: 'nodejs',
-  }
-  const normalizedSlug = normalizeText(skill.slug || skill.name)
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-  const iconName = aliases[normalizedSlug] ?? normalizedSlug
-
-  return iconName in techIcons ? (iconName as TechIconName) : null
-}
-
-function getSkillCategory(skill: ApiSkill) {
-  const normalized = normalizeText(skill.name)
-
-  if (/(python|javascript|typescript|java|go|rust|php)/.test(normalized)) {
-    return 'language'
-  }
-
-  if (/(fastapi|react|django|spring|next)/.test(normalized)) {
-    return 'framework'
-  }
-
-  if (/(docker|postgres|kubernetes|redis|linux)/.test(normalized)) {
-    return 'infra'
-  }
-
-  return 'tool'
-}
-
 function getContentPayload(
   content: DraftContent,
   moduleId: string,
@@ -582,6 +553,8 @@ export default function CreateTrackPage() {
   const [trackStatus, setTrackStatus] = useState<'DRAFT' | 'PUBLISHED'>('DRAFT')
   const [trackTitle, setTrackTitle] = useState('')
   const [trackDescription, setTrackDescription] = useState('')
+  const [trackCategories, setTrackCategories] = useState<ApiTrackCategory[]>([])
+  const [selectedTrackCategoryId, setSelectedTrackCategoryId] = useState('')
   const [trackLevel, setTrackLevel] = useState<TrackLevel>('BEGINNER')
   const [trackDurationWeeks, setTrackDurationWeeks] = useState('1')
   const [trackOutcomes, setTrackOutcomes] = useState('')
@@ -608,6 +581,18 @@ export default function CreateTrackPage() {
       .then(setSkills)
       .catch(() => setSkills([]))
 
+    void getTrackCategories()
+      .then((categories) => {
+        setTrackCategories(categories)
+        if (!routeTrackId) {
+          const defaultCategory =
+            categories.find((category) => category.slug === 'backend') ??
+            categories[0]
+          setSelectedTrackCategoryId(defaultCategory?.id ?? '')
+        }
+      })
+      .catch(() => setTrackCategories([]))
+
     if (!routeTrackId) {
       return
     }
@@ -632,6 +617,7 @@ export default function CreateTrackPage() {
         setTrackStatus(track.status === 'PUBLISHED' ? 'PUBLISHED' : 'DRAFT')
         setTrackTitle(track.title ?? '')
         setTrackDescription(track.description ?? '')
+        setSelectedTrackCategoryId(track.category?.id ?? '')
         setTrackLevel(
           TRACK_LEVEL_OPTIONS.some((option) => option.value === track.level)
             ? (track.level as TrackLevel)
@@ -689,6 +675,7 @@ export default function CreateTrackPage() {
     () =>
       showPublicationErrors
         ? validateTrackForPublication({
+            categoryId: selectedTrackCategoryId,
             description: trackDescription,
             durationWeeks: trackDurationWeeks,
             modules,
@@ -698,6 +685,7 @@ export default function CreateTrackPage() {
         : [],
     [
       modules,
+      selectedTrackCategoryId,
       selectedSkills,
       showPublicationErrors,
       trackDescription,
@@ -737,9 +725,14 @@ export default function CreateTrackPage() {
   async function persistTrack() {
     const durationWeeks = parseDurationWeeks(trackDurationWeeks) ?? 1
 
+    if (!selectedTrackCategoryId) {
+      throw new Error('Selecione a área da trilha.')
+    }
+
     const payload: CreateTrackPayload = {
       title: trackTitle.trim() || DEFAULT_TRACK_TITLE,
       description: trackDescription.trim() || DEFAULT_TRACK_DESCRIPTION,
+      category_id: selectedTrackCategoryId,
       level: trackLevel,
       duration_weeks: durationWeeks,
       skill_ids: selectedSkills.map((skill) => skill.id),
@@ -786,6 +779,7 @@ export default function CreateTrackPage() {
 
   async function handleSaveTrack() {
     const validationErrors = validateTrackForPublication({
+      categoryId: selectedTrackCategoryId,
       description: trackDescription,
       durationWeeks: trackDurationWeeks,
       modules,
@@ -1215,17 +1209,16 @@ export default function CreateTrackPage() {
             <div className="create-track-tags" aria-label="Tecnologias da trilha">
               <span className="create-track-tags__label">Tecnologias *</span>
               {selectedSkills.map((skill) => {
-                const iconName = getSkillIconName(skill)
+                const { accentColor, category, iconName } =
+                  getTechnologyMeta(skill)
 
                 return (
                   <span className="create-track-tech-tag" key={skill.id}>
                     <TechTag
-                      accentColor={
-                        iconName ? techIconColors[iconName] : undefined
-                      }
-                      category={getSkillCategory(skill)}
+                      accentColor={accentColor}
+                      category={category}
                       icon={iconName ? <TechIcon name={iconName} /> : undefined}
-                      variant="tinted"
+                      variant="solid"
                     >
                       {skill.name}
                     </TechTag>
@@ -1340,6 +1333,25 @@ export default function CreateTrackPage() {
 
             <div className="create-track-settings__column">
               <div className="create-track-meta-grid">
+                <label className="create-track-field">
+                  <span>Área da trilha *</span>
+                  <select
+                    aria-invalid={hasPublicationError('track-category')}
+                    data-validation-field="track-category"
+                    value={selectedTrackCategoryId}
+                    onChange={(event) =>
+                      setSelectedTrackCategoryId(event.target.value)
+                    }
+                  >
+                    <option value="">Selecione uma área</option>
+                    {trackCategories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
                 <div className="create-track-field">
                   <span>Nível</span>
                   <div
@@ -1813,7 +1825,7 @@ export default function CreateTrackPage() {
 
                   <div className="content-editor-grid content-editor-grid--two">
                     <label className="content-editor-field">
-                      <span>Tecnologia do desafio</span>
+                      <span>Stack avaliada pela IA *</span>
                       <select
                         aria-invalid={hasPublicationError(
                           'content-language',
@@ -1841,6 +1853,10 @@ export default function CreateTrackPage() {
                           </option>
                         ))}
                       </select>
+                      <small>
+                        Define o analisador usado pela IA e deve corresponder à
+                        tecnologia principal do repositório enviado pelo aluno.
+                      </small>
                     </label>
 
                     <label className="content-editor-field">

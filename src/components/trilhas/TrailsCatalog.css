@@ -147,6 +147,27 @@
   z-index: 2;
 }
 
+.trail-banner__labels {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  max-inline-size: calc(100% - 92px);
+  position: relative;
+  z-index: 2;
+}
+
+.trail-banner .trail-banner__level.atlas-text-tag {
+  --text-tag-bg: color-mix(in srgb, var(--text) 82%, transparent);
+  --text-tag-border: transparent;
+  --text-tag-color: var(--trail-theme);
+
+  font-size: 11px;
+  font-weight: 800;
+  min-block-size: 30px;
+  padding-inline: 12px;
+}
+
 .trail-banner .trail-banner__badge.atlas-status-badge {
   background: var(--text);
   border: 0;

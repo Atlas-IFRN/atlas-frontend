@@ -2,7 +2,13 @@ import { forwardRef } from 'react'
 import type { CSSProperties, HTMLAttributes, ReactNode } from 'react'
 import './TechTag.css'
 
-export type TechTagCategory = 'language' | 'framework' | 'tool' | 'infra'
+export type TechTagCategory =
+  | 'language'
+  | 'framework'
+  | 'database'
+  | 'data-ai'
+  | 'infra'
+  | 'tool'
 export type TechTagVariant = 'outline' | 'tinted' | 'solid'
 
 export interface TechTagProps extends HTMLAttributes<HTMLSpanElement> {
