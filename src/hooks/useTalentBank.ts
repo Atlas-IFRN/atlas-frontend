@@ -4,10 +4,20 @@ import {
   createTalentRegistration,
   deactivateTalentRegistration,
   getMyTalentRegistration,
+  getTalentBankDirectory,
 } from '../services/talentBank'
 
 export const talentBankQueryKeys = {
+  directory: ['talent-bank', 'directory'] as const,
   registration: ['talent-bank', 'registration'] as const,
+}
+
+export function useTalentBankDirectory() {
+  return useQuery({
+    queryKey: talentBankQueryKeys.directory,
+    queryFn: getTalentBankDirectory,
+    staleTime: 5 * 60 * 1000,
+  })
 }
 
 export function useTalentRegistration() {
