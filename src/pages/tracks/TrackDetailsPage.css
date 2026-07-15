@@ -500,6 +500,121 @@
   padding: 10px 12px;
 }
 
+.trail-detail-page .trail-detail-sidebar__drop {
+  color: color-mix(in srgb, var(--danger) 72%, var(--text));
+  inline-size: 100%;
+  margin-block: -2px 14px;
+}
+
+.trail-detail-page .trail-detail-sidebar__drop:hover {
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  color: var(--danger);
+}
+
+.trail-drop-modal {
+  align-items: center;
+  background: color-mix(in srgb, #020817 72%, transparent);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 1000;
+}
+
+.trail-drop-modal__dialog {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-panel);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 38%);
+  inline-size: min(100%, 480px);
+  overflow: hidden;
+}
+
+.trail-drop-modal__header {
+  align-items: center;
+  border-block-end: 1px solid var(--border);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: auto 1fr auto;
+  padding: 20px 22px;
+}
+
+.trail-drop-modal__header p {
+  color: var(--danger);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  margin: 0 0 3px;
+  text-transform: uppercase;
+}
+
+.trail-drop-modal__header h2 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.trail-drop-modal__icon {
+  align-items: center;
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--danger) 28%, transparent);
+  border-radius: 12px;
+  color: var(--danger);
+  display: inline-flex;
+  block-size: 44px;
+  inline-size: 44px;
+  justify-content: center;
+}
+
+.trail-drop-modal__description {
+  color: var(--text-soft);
+  line-height: 1.65;
+  margin: 0;
+  padding: 22px;
+}
+
+.trail-drop-modal__description strong {
+  color: var(--text);
+}
+
+.trail-drop-modal__error {
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+  border-radius: 10px;
+  color: color-mix(in srgb, var(--danger) 72%, var(--text));
+  font-size: 13px;
+  margin: 0 22px 18px;
+  padding: 11px 12px;
+}
+
+.trail-drop-modal__actions {
+  background: color-mix(in srgb, var(--surface) 62%, transparent);
+  border-block-start: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 16px 22px;
+}
+
+@media (max-width: 560px) {
+  .trail-drop-modal {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .trail-drop-modal__dialog {
+    border-radius: var(--r-panel) var(--r-panel) 0 0;
+  }
+
+  .trail-drop-modal__actions {
+    flex-direction: column-reverse;
+  }
+
+  .trail-drop-modal__actions .atlas-button {
+    inline-size: 100%;
+  }
+}
+
 .trail-detail-page .trail-detail-sidebar__stats {
   display: grid;
   gap: 16px;
