@@ -12,7 +12,9 @@ import type { ActiveScholarship, ScholarshipPhase } from '../../../types/feed'
 
 interface ActiveScholarshipsProps {
   scholarships: ActiveScholarship[]
+  isLoading?: boolean
   seeAllHref?: string
+  emptyMessage?: string
 }
 
 /** Cor do ícone por fase da bolsa (verde / âmbar / azul). */
@@ -32,36 +34,42 @@ const phaseIcon: Record<ScholarshipPhase, LucideIcon> = {
 /** Bloco "Bolsas Ativas" com prazos próximos, exibido na coluna esquerda. */
 export function ActiveScholarships({
   scholarships,
+  isLoading = false,
   seeAllHref = '/bolsas',
+  emptyMessage = 'Não há bolsas ativas no momento.',
 }: ActiveScholarshipsProps) {
   return (
     <section className="rail-block">
       <h2 className="rail-block__label">Bolsas Ativas</h2>
 
-      <ul className="scholarship-list">
-        {scholarships.map((scholarship) => (
-          <li key={scholarship.id}>
-            <Link className="scholarship-item" to={scholarship.href}>
-              <IconTile
-                aria-hidden="true"
-                className="scholarship-item__tile"
-                icon={phaseIcon[scholarship.phase]}
-                size="md"
-                variant={phaseVariant[scholarship.phase]}
-              />
+      {isLoading ? null : scholarships.length === 0 ? (
+        <p className="rail-block__empty">{emptyMessage}</p>
+      ) : (
+        <ul className="scholarship-list">
+          {scholarships.map((scholarship) => (
+            <li key={scholarship.id}>
+              <Link className="scholarship-item" to={scholarship.href}>
+                <IconTile
+                  aria-hidden="true"
+                  className="scholarship-item__tile"
+                  icon={phaseIcon[scholarship.phase]}
+                  size="md"
+                  variant={phaseVariant[scholarship.phase]}
+                />
 
-              <div className="scholarship-item__body">
-                <span className="scholarship-item__title">
-                  {scholarship.title}
-                </span>
-                <span className="scholarship-item__meta">
-                  {scholarship.status}
-                </span>
-              </div>
-            </Link>
-          </li>
-        ))}
-      </ul>
+                <div className="scholarship-item__body">
+                  <span className="scholarship-item__title">
+                    {scholarship.title}
+                  </span>
+                  <span className="scholarship-item__meta">
+                    {scholarship.status}
+                  </span>
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
 
       <ButtonLink
         className="rail-block__cta"

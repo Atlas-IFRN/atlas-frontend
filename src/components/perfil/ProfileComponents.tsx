@@ -20,7 +20,7 @@ import { ButtonLink } from '../atoms/ButtonLink'
 import { RailTrackList } from '../feed/rails/RailTrackList'
 import { InfoCard } from '../molecules/InfoCard'
 import { ProfileAchievementsCard } from './ProfileAchievementsCard'
-import { PROFILE_TRACKS } from './profileData'
+import { useTopTracks } from '../../hooks/useWidgets'
 
 function roleLabel(role: string) {
   const normalizedRole = role.trim().toLowerCase()
@@ -216,14 +216,23 @@ interface ProfileSidebarProps {
 }
 
 export function ProfileSidebar({ user }: ProfileSidebarProps) {
+  const { user: currentUser } = useAuth()
   const isTeacher = isTeacherRole(user.role)
+  const isOwnProfile = currentUser?.id === user.id
+  // Trilhas deste perfil, ordenadas por progresso (professor não se matricula,
+  // então nem busca).
+  const { data: tracks = [], isLoading: tracksLoading } = useTopTracks(user.id, !isTeacher)
 
   return (
     <aside className="profile-detail-side">
       <ProfileLinksCard user={user} />
       {!isTeacher ? (
         <>
-          <RailTrackList tracks={PROFILE_TRACKS} />
+          <RailTrackList
+            tracks={tracks}
+            isLoading={tracksLoading}
+            title={isOwnProfile ? 'Minhas trilhas' : 'Trilhas em andamento'}
+          />
           <ProfileAchievementsCard userId={user.id} />
         </>
       ) : null}
