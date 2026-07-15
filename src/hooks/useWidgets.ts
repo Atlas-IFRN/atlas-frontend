@@ -1,5 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
-import { getActiveScholarships, getTopTracks } from '../services/widgets'
+import {
+  getActiveScholarships,
+  getFeedHeroStats,
+  getTopTracks,
+} from '../services/widgets'
 
 /**
  * Trilhas do usuário ordenadas por progresso (widget "Minhas trilhas").
@@ -19,6 +23,15 @@ export function useActiveScholarships(enabled = true) {
   return useQuery({
     queryKey: ['widgets', 'active-scholarships'],
     queryFn: () => getActiveScholarships(3),
+    enabled,
+  })
+}
+
+/** Contagens reais exibidas no slide principal do feed do aluno. */
+export function useFeedHeroStats(enabled = true) {
+  return useQuery({
+    queryKey: ['widgets', 'feed-hero-stats'],
+    queryFn: getFeedHeroStats,
     enabled,
   })
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import {
   AboutCard,
@@ -8,12 +8,14 @@ import {
 } from '../../components/perfil/ProfileComponents'
 import { ProfileEditModal } from '../../components/perfil/ProfileEditModal'
 import { ProfilePostsSection } from '../../components/perfil/ProfilePostsSection'
+import { StudentNotesModal } from '../../components/perfil/StudentNotesModal'
 import '../../components/perfil/Profile.css'
 import '../../components/feed/Feed.css'
 import { ErrorState } from '../../components/states/ErrorState'
 import { LoadingState } from '../../components/states/LoadingState'
 import { useAuth } from '../../contexts/AuthContext'
-import { useMyNotes } from '../../hooks/useNotes'
+import { useMyNotes, useNoteAuthors } from '../../hooks/useNotes'
+import { toStudentNotesModalNotes } from '../../lib/note-presenter'
 
 function ProfileLoading() {
   return (
@@ -52,6 +54,7 @@ export default function ProfilePage() {
   const [loadError, setLoadError] = useState(false)
   const [retryKey, setRetryKey] = useState(0)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isNotesModalOpen, setIsNotesModalOpen] = useState(false)
 
   useEffect(() => {
     let isActive = true
@@ -129,6 +132,21 @@ export default function ProfilePage() {
     user?.role.toLowerCase() ?? '',
   )
   const notesQuery = useMyNotes(Boolean(user && !isTeacher))
+  const authorsQuery = useNoteAuthors(notesQuery.data)
+  const modalNotes = useMemo(
+    () => toStudentNotesModalNotes(notesQuery.data ?? [], authorsQuery.data),
+    [authorsQuery.data, notesQuery.data],
+  )
+  const isNotesLoading =
+    notesQuery.isLoading ||
+    (Boolean(notesQuery.data?.length) && authorsQuery.isLoading) ||
+    (notesQuery.isError && notesQuery.isFetching) ||
+    (authorsQuery.isError && authorsQuery.isFetching)
+  const isNotesError = notesQuery.isError || authorsQuery.isError
+
+  function retryNotes() {
+    void Promise.all([notesQuery.refetch(), authorsQuery.refetch()])
+  }
 
   return (
     <div className="profile-page">
@@ -152,10 +170,11 @@ export default function ProfilePage() {
               <AboutCard bio={user.aboutMe} />
               {!isTeacher ? (
                 <StudentNotesSummaryCard
-                  isError={notesQuery.isError}
-                  isLoading={notesQuery.isLoading}
+                  isError={isNotesError}
+                  isLoading={isNotesLoading}
                   notesCount={notesQuery.data?.length ?? 0}
-                  to="/notas"
+                  onOpen={() => setIsNotesModalOpen(true)}
+                  onRetry={retryNotes}
                 />
               ) : null}
               <ProfilePostsSection isOwnProfile matricula={user.matricula} />
@@ -167,6 +186,14 @@ export default function ProfilePage() {
               onClose={() => setIsEditModalOpen(false)}
               onSave={saveProfile}
               user={user}
+            />
+          ) : null}
+          {!isTeacher && isNotesModalOpen ? (
+            <StudentNotesModal
+              canCreateNote={false}
+              notes={modalNotes}
+              onClose={() => setIsNotesModalOpen(false)}
+              student={user}
             />
           ) : null}
         </>

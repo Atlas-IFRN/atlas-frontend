@@ -36,6 +36,10 @@ export interface CreateStudentNoteInput {
   tags: NoteSkillTag[]
 }
 
+export interface GetStudentNotesParams {
+  studentId?: string
+}
+
 function toStudentNote(note: StudentNoteApi): StudentNote {
   return {
     id: note.id,
@@ -63,8 +67,11 @@ export async function createStudentNote(
   return toStudentNote(data)
 }
 
-export async function getStudentNotes(): Promise<StudentNote[]> {
+export async function getStudentNotes(
+  params: GetStudentNotesParams = {},
+): Promise<StudentNote[]> {
   const notes: StudentNote[] = []
+  const studentId = params.studentId?.trim()
   let page = 1
   let hasNextPage = true
 
@@ -76,6 +83,7 @@ export async function getStudentNotes(): Promise<StudentNote[]> {
           ordering: '-created_at',
           page,
           page_size: 50,
+          ...(studentId ? { student_id: studentId } : {}),
         },
       },
     )
@@ -85,7 +93,9 @@ export async function getStudentNotes(): Promise<StudentNote[]> {
     page += 1
   }
 
-  return notes
+  return studentId
+    ? notes.filter((note) => note.studentId === studentId)
+    : notes
 }
 
 export function getNoteErrorMessage(error: unknown) {
