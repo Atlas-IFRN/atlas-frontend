@@ -17,11 +17,10 @@ import {
 import { Avatar } from '../atoms/Avatar'
 import { Button } from '../atoms/Button'
 import { ButtonLink } from '../atoms/ButtonLink'
-import { ActiveScholarships } from '../feed/rails/ActiveScholarships'
 import { RailTrackList } from '../feed/rails/RailTrackList'
 import { InfoCard } from '../molecules/InfoCard'
 import { ProfileAchievementsCard } from './ProfileAchievementsCard'
-import { useActiveScholarships, useTopTracks } from '../../hooks/useWidgets'
+import { useTopTracks } from '../../hooks/useWidgets'
 
 function roleLabel(role: string) {
   const normalizedRole = role.trim().toLowerCase()
@@ -221,12 +220,10 @@ export function ProfileSidebar({ user }: ProfileSidebarProps) {
   // Trilhas deste perfil, ordenadas por progresso (professor não se matricula,
   // então nem busca). Bolsas ativas são globais (iguais em qualquer perfil).
   const { data: tracks = [], isLoading: tracksLoading } = useTopTracks(user.id, !isTeacher)
-  const { data: scholarships = [], isLoading: scholarshipsLoading } = useActiveScholarships()
 
   return (
     <aside className="profile-detail-side">
       <ProfileLinksCard user={user} />
-      <ActiveScholarships scholarships={scholarships} isLoading={scholarshipsLoading} />
       {!isTeacher ? (
         <>
           <RailTrackList tracks={tracks} isLoading={tracksLoading} />
