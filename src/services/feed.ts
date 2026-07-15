@@ -321,6 +321,23 @@ export async function getFeedPage(
   }
 }
 
+/** Publicações de um usuário, identificadas pela matrícula do perfil. */
+export async function getUserFeedPage(
+  matricula: string,
+  page = 1,
+): Promise<FeedPage> {
+  const { data } = await feedApi.get<ApiPaginated<ApiPost>>(
+    `feed/posts/by-user/${encodeURIComponent(matricula)}/`,
+    { params: { page, page_size: 4 } },
+  )
+
+  return {
+    posts: data.results.map(mapPost),
+    nextPage: data.next ? page + 1 : null,
+    count: data.count,
+  }
+}
+
 export async function getPost(postId: string): Promise<FeedPost> {
   const { data } = await feedApi.get<ApiPost>(`feed/posts/${postId}/`)
   return mapPost(data)

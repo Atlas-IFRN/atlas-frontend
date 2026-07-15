@@ -11,6 +11,7 @@ import {
   getFeedPage,
   getPost,
   getPostComments,
+  getUserFeedPage,
   setPostFixed,
   updatePost,
   type CreatePostInput,
@@ -20,6 +21,7 @@ import {
 export const feedKeys = {
   all: ['feed'] as const,
   list: (filter: FeedFilterValue) => ['feed', 'list', filter] as const,
+  byUser: (matricula: string) => ['feed', 'by-user', matricula] as const,
   detail: (postId: string) => ['feed', 'post', postId] as const,
   comments: (postId: string) => ['feed', 'post', postId, 'comments'] as const,
 }
@@ -31,6 +33,17 @@ export function useFeedPosts(filter: FeedFilterValue) {
     queryFn: ({ pageParam }) => getFeedPage(filter, pageParam),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.nextPage,
+  })
+}
+
+/** Publicações exibidas no perfil de um usuário. */
+export function useUserFeedPosts(matricula?: string) {
+  return useInfiniteQuery({
+    queryKey: feedKeys.byUser(matricula ?? ''),
+    queryFn: ({ pageParam }) => getUserFeedPage(matricula as string, pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    enabled: Boolean(matricula),
   })
 }
 
@@ -100,7 +113,8 @@ export function useAddComment(postId: string) {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: feedKeys.comments(postId) })
       void queryClient.invalidateQueries({ queryKey: feedKeys.detail(postId) })
-      void queryClient.invalidateQueries({ queryKey: ['feed', 'list'] })
+      // Atualiza tanto o feed principal quanto as listas exibidas em perfis.
+      void queryClient.invalidateQueries({ queryKey: feedKeys.all })
     },
   })
 }

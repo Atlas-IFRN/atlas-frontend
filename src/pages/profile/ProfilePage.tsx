@@ -7,6 +7,7 @@ import {
   StudentNotesSummaryCard,
 } from '../../components/perfil/ProfileComponents'
 import { ProfileEditModal } from '../../components/perfil/ProfileEditModal'
+import { ProfilePostsSection } from '../../components/perfil/ProfilePostsSection'
 import '../../components/perfil/Profile.css'
 import '../../components/feed/Feed.css'
 import { ErrorState } from '../../components/states/ErrorState'
@@ -157,6 +158,7 @@ export default function ProfilePage() {
                   to="/notas"
                 />
               ) : null}
+              <ProfilePostsSection isOwnProfile matricula={user.matricula} />
             </div>
             <ProfileSidebar user={user} />
           </div>

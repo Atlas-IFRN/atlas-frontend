@@ -138,6 +138,85 @@
   min-width: 0;
 }
 
+/* ---------- Publicações do perfil ---------- */
+
+.profile-posts {
+  display: grid;
+  gap: var(--s-4);
+  min-width: 0;
+}
+
+.profile-posts__header {
+  align-items: center;
+  display: flex;
+  gap: var(--s-3);
+  padding-inline: var(--s-1);
+}
+
+.profile-posts__icon {
+  align-items: center;
+  background: var(--primary-soft);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--r-md);
+  color: var(--primary);
+  display: inline-flex;
+  flex: 0 0 42px;
+  height: 42px;
+  justify-content: center;
+}
+
+.profile-posts__heading {
+  min-width: 0;
+}
+
+.profile-posts__heading h2 {
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.profile-posts__heading p {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 3px 0 0;
+}
+
+.profile-posts__count {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  color: var(--text-soft);
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: auto;
+  padding: 6px 10px;
+}
+
+.profile-posts__list {
+  display: grid;
+  gap: var(--s-4);
+  min-width: 0;
+}
+
+.profile-posts__list > .post {
+  box-shadow: var(--shadow);
+}
+
+.profile-posts__state {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  min-height: 190px;
+}
+
+.profile-posts__load-more {
+  display: flex;
+  justify-content: center;
+}
+
 .profile-about .atlas-info-card__body p {
   color: var(--text-soft);
   line-height: var(--line-height-lg);
@@ -722,6 +801,10 @@
 
 @media (max-width: 600px) {
   .profile-page { gap: var(--s-4); padding: var(--page-gutter-inline); }
+  .profile-posts__header { align-items: flex-start; flex-wrap: wrap; }
+  .profile-posts__heading { flex: 1 1 calc(100% - 58px); }
+  .profile-posts__count { margin-left: 54px; }
+  .profile-posts__state { min-height: 170px; }
   .profile-header__cover { height: 88px; min-height: 88px; }
   .profile-identity { align-items: flex-start; flex-direction: column; gap: var(--s-3); }
   .profile-identity__avatar { font-size: 38px; height: 88px; margin-top: -64px; width: 88px; }

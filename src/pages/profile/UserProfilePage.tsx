@@ -9,6 +9,7 @@ import {
   StudentNotesSummaryCard,
 } from '../../components/perfil/ProfileComponents'
 import { StudentNotesModal } from '../../components/perfil/StudentNotesModal'
+import { ProfilePostsSection } from '../../components/perfil/ProfilePostsSection'
 import '../../components/perfil/Profile.css'
 import '../../components/feed/Feed.css'
 import { ErrorState } from '../../components/states/ErrorState'
@@ -143,6 +144,7 @@ export default function UserProfilePage() {
                   onOpen={() => setIsNotesModalOpen(true)}
                 />
               ) : null}
+              <ProfilePostsSection matricula={lookup} />
             </div>
             <ProfileSidebar user={profile} />
           </div>
