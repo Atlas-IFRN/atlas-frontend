@@ -6,7 +6,9 @@ import { SegmentedProgress } from './SegmentedProgress'
 
 interface RailTrackListProps {
   tracks: FeedTrackProgress[]
+  isLoading?: boolean
   exploreHref?: string
+  emptyMessage?: string
 }
 
 function overallPercent(track: FeedTrackProgress) {
@@ -24,30 +26,36 @@ function overallPercent(track: FeedTrackProgress) {
 /** Bloco "Minhas trilhas": cada trilha é um link com progresso fragmentado. */
 export function RailTrackList({
   tracks,
+  isLoading = false,
   exploreHref = '/trilhas',
+  emptyMessage = 'Não há trilhas em andamento.',
 }: RailTrackListProps) {
   return (
     <section className="rail-block">
       <h2 className="rail-block__label">Minhas trilhas</h2>
 
-      <div className="rail-track-list">
-        {tracks.map((track) => (
-          <Link className="rail-track" key={track.id} to={track.href}>
-            <span className="rail-track__name">{track.label}</span>
+      {isLoading ? null : tracks.length === 0 ? (
+        <p className="rail-block__empty">{emptyMessage}</p>
+      ) : (
+        <div className="rail-track-list">
+          {tracks.map((track) => (
+            <Link className="rail-track" key={track.id} to={track.href}>
+              <span className="rail-track__name">{track.label}</span>
 
-            <SegmentedProgress
-              completedModules={track.completedModules}
-              currentModuleProgress={track.currentModuleProgress}
-              modules={track.modules}
-            />
+              <SegmentedProgress
+                completedModules={track.completedModules}
+                currentModuleProgress={track.currentModuleProgress}
+                modules={track.modules}
+              />
 
-            <span className="rail-track__meta">
-              {track.completedModules} de {track.modules} módulos ·{' '}
-              {overallPercent(track)}%
-            </span>
-          </Link>
-        ))}
-      </div>
+              <span className="rail-track__meta">
+                {track.completedModules} de {track.modules} módulos ·{' '}
+                {overallPercent(track)}%
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
 
       <ButtonLink
         className="rail-block__cta"

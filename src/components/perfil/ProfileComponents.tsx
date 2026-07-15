@@ -220,18 +220,16 @@ export function ProfileSidebar({ user }: ProfileSidebarProps) {
   const isTeacher = isTeacherRole(user.role)
   // Trilhas deste perfil, ordenadas por progresso (professor não se matricula,
   // então nem busca). Bolsas ativas são globais (iguais em qualquer perfil).
-  const { data: tracks = [] } = useTopTracks(user.id, !isTeacher)
-  const { data: scholarships = [] } = useActiveScholarships()
+  const { data: tracks = [], isLoading: tracksLoading } = useTopTracks(user.id, !isTeacher)
+  const { data: scholarships = [], isLoading: scholarshipsLoading } = useActiveScholarships()
 
   return (
     <aside className="profile-detail-side">
       <ProfileLinksCard user={user} />
-      {scholarships.length > 0 ? (
-        <ActiveScholarships scholarships={scholarships} />
-      ) : null}
+      <ActiveScholarships scholarships={scholarships} isLoading={scholarshipsLoading} />
       {!isTeacher ? (
         <>
-          {tracks.length > 0 ? <RailTrackList tracks={tracks} /> : null}
+          <RailTrackList tracks={tracks} isLoading={tracksLoading} />
           <ProfileAchievementsCard userId={user.id} />
         </>
       ) : null}

@@ -55,8 +55,8 @@ export default function FeedPage() {
 
   const { data: banners = [] } = useBanners()
   // Widgets das laterais: bolsas ativas (global) e minhas trilhas (usuário logado).
-  const { data: activeScholarships = [] } = useActiveScholarships()
-  const { data: myTracks = [] } = useTopTracks()
+  const { data: activeScholarships = [], isLoading: scholarshipsLoading } = useActiveScholarships()
+  const { data: myTracks = [], isLoading: tracksLoading } = useTopTracks()
   const heroSlides = useMemo(
     () => [...HERO_SLIDES, ...banners.map(bannerToSlide)],
     [banners],
@@ -105,7 +105,7 @@ export default function FeedPage() {
       ) : null}
 
       <div className="feed-layout">
-        <FeedLeftRail scholarships={activeScholarships} />
+        <FeedLeftRail scholarships={activeScholarships} isLoading={scholarshipsLoading} />
 
         <div className="feed-main">
           <FeedComposer
@@ -154,7 +154,7 @@ export default function FeedPage() {
           )}
         </div>
 
-        <FeedRightRail tracks={myTracks} />
+        <FeedRightRail tracks={myTracks} isLoading={tracksLoading} />
       </div>
     </main>
   )
