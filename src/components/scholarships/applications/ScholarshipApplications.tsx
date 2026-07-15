@@ -135,6 +135,7 @@ const dateTimeFormatter = new Intl.DateTimeFormat('pt-BR', {
 })
 
 const emptyApplications: ScholarshipApplication[] = []
+const applicationsPageSize = 50
 
 function normalizeText(value: string) {
   return value
@@ -362,15 +363,27 @@ async function attachStudents(
 }
 
 async function listApplicationsByScholarship(scholarshipId: string) {
-  const result = await listScholarshipApplications({
+  const firstPage = await listScholarshipApplications({
     ordering: '-applied_at',
-    pageSize: 200,
+    pageSize: applicationsPageSize,
     scholarship: scholarshipId,
   })
-
-  const applications = result.items.filter(
-    (application) => application.scholarship === scholarshipId,
+  const remainingPages = await Promise.all(
+    Array.from(
+      { length: Math.max(0, firstPage.totalPages - 1) },
+      (_, index) =>
+        listScholarshipApplications({
+          ordering: '-applied_at',
+          page: index + 2,
+          pageSize: applicationsPageSize,
+          scholarship: scholarshipId,
+        }),
+    ),
   )
+
+  const applications = [firstPage, ...remainingPages]
+    .flatMap((page) => page.items)
+    .filter((application) => application.scholarship === scholarshipId)
 
   return attachStudents(applications)
 }
@@ -753,7 +766,7 @@ export function ScholarshipApplications() {
                     <dt>
                       Inscreveu-se em
                     </dt>
-                    <dd>{formatDateTime(application.updatedAt)}</dd>
+                    <dd>{formatDateTime(application.appliedAt)}</dd>
                   </div>
                 </dl>
 

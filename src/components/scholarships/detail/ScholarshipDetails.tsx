@@ -32,6 +32,7 @@ import {
   cancelScholarshipApplication,
   getScholarship,
 } from '../../../services/scholarships'
+import { getUserProfileById } from '../../../services/auth'
 import type {
   Scholarship,
   ScholarshipPhase,
@@ -61,6 +62,13 @@ export function ScholarshipDetails() {
       return getScholarship(scholarshipId)
     },
     enabled: Boolean(scholarshipId),
+  })
+  const publisherId = scholarshipQuery.data?.publishedBy
+  const publisherQuery = useQuery({
+    queryKey: ['user-profile', publisherId],
+    queryFn: () => getUserProfileById(publisherId ?? ''),
+    enabled: Boolean(publisherId),
+    staleTime: 5 * 60 * 1000,
   })
 
   const applyMutation = useMutation({
@@ -203,7 +211,10 @@ export function ScholarshipDetails() {
   )
   const editionLabel = getEditionLabel(scholarship)
   const initials = getScholarshipInitials(scholarship.title)
-  const publishedBy = getPublisherLabel(scholarship, user?.id)
+  const publisherFirstName =
+    publisherQuery.data?.firstName ||
+    (scholarship.publishedBy === user?.id ? user.firstName : '')
+  const publishedBy = getPublisherLabel(scholarship, publisherFirstName)
   const publishedAt = formatFullDate(scholarship.createdAt)
   const updatedAt = formatFullDate(scholarship.updatedAt)
   const aboutText = scholarship.description.trim()
@@ -1098,10 +1109,12 @@ function getEditionLabel(scholarship: Scholarship) {
 
 function getPublisherLabel(
   scholarship: Scholarship,
-  currentUserId: string | undefined,
+  publisherFirstName: string | undefined,
 ) {
-  if (currentUserId && scholarship.publishedBy === currentUserId) {
-    return 'Publicado por você'
+  const normalizedFirstName = publisherFirstName?.trim()
+
+  if (normalizedFirstName) {
+    return `Publicado por ${normalizedFirstName}`
   }
 
   return `Publicado por ${scholarship.publishedBy.slice(0, 8)}`
