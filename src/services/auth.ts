@@ -9,7 +9,7 @@ interface SuapLoginResponse {
   login_url: string
 }
 
-interface SuapUserResponse {
+export interface SuapUserResponse {
   id?: string | number
   registration_number?: string | null
   matricula?: string | null
@@ -60,7 +60,7 @@ function toNullableNumber(value: unknown): number | null {
   return Number.isFinite(numberValue) ? numberValue : null
 }
 
-function toAuthUser(user: SuapUserResponse): AuthUser {
+export function toAuthUser(user: SuapUserResponse): AuthUser {
   const firstName = toStringValue(user.first_name ?? user.firstName)
   const fullName = toStringValue(user.full_name ?? user.fullName) || firstName
   const isNewUser = user.is_new_user ?? user.isNewUser

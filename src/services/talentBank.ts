@@ -1,7 +1,7 @@
 import axios from 'axios'
 import api from './api'
 import type { AuthUser } from '../contexts/AuthContext'
-import { getUserProfileById } from './auth'
+import { toAuthUser, type SuapUserResponse } from './auth'
 import { getCompletedTracks, type CompletedTrack } from './tracks'
 
 export type TalentRegistrationStatus = 'Active' | 'Inactive'
@@ -13,6 +13,8 @@ interface TalentRegistrationApi {
   status_changed_by?: string | null
   status_changed_at?: string | null
   joined_at: string
+  /** Perfil do aluno embutido pelo backend (resolvido em lote no auth). */
+  student?: SuapUserResponse | null
 }
 
 interface PaginatedTalentRegistrationsApi {
@@ -28,6 +30,8 @@ export interface TalentRegistration {
   status: TalentRegistrationStatus
   statusChangedAt: string | null
   joinedAt: string
+  /** Perfil do aluno já resolvido (embutido pelo backend); null se o auth falhou. */
+  student: AuthUser | null
 }
 
 export interface TalentBankStudent {
@@ -77,6 +81,7 @@ function toTalentRegistration(
     status: registration.status,
     statusChangedAt: registration.status_changed_at ?? null,
     joinedAt: registration.joined_at,
+    student: registration.student ? toAuthUser(registration.student) : null,
   }
 }
 
@@ -121,19 +126,28 @@ export async function getActiveTalentRegistrations(): Promise<
 }
 
 export async function getActiveTalentStudents(): Promise<AuthUser[]> {
-  const registrations = await getActiveTalentRegistrations()
-  const uniqueStudentIds = [
-    ...new Set(registrations.map((registration) => registration.studentId)),
-  ]
-  const profileResults = await Promise.allSettled(
-    uniqueStudentIds.map(getUserProfileById),
-  )
-  const students = profileResults.flatMap((result) =>
-    result.status === 'fulfilled' ? [result.value] : [],
-  )
+  // O perfil de cada aluno já vem embutido (`student`) na resposta do
+  // talent-bank — o backend resolve todos em lote no auth. Sem N+1 no front.
+  const students: AuthUser[] = []
+  const seen = new Set<string>()
+  let page = 1
+  let hasNextPage = true
 
-  if (uniqueStudentIds.length > 0 && students.length === 0) {
-    throw new Error('Não foi possível carregar os perfis dos alunos.')
+  while (hasNextPage) {
+    const { data } = await api.get<PaginatedTalentRegistrationsApi>(
+      TALENT_BANK_PATH,
+      { params: { page, page_size: 50, status: 'Active' } },
+    )
+
+    for (const registration of data.results) {
+      if (registration.student && !seen.has(registration.student_id)) {
+        seen.add(registration.student_id)
+        students.push(toAuthUser(registration.student))
+      }
+    }
+
+    hasNextPage = Boolean(data.next)
+    page += 1
   }
 
   return students.filter((student) =>
@@ -147,38 +161,31 @@ export async function getTalentBankDirectory(): Promise<TalentBankDirectory> {
     registrations,
     DIRECTORY_REQUEST_CONCURRENCY,
     async (registration) => {
-      const [profileResult, completedTracksResult] = await Promise.allSettled([
-        getUserProfileById(registration.studentId),
-        getCompletedTracks(registration.studentId),
-      ])
-
-      if (profileResult.status !== 'fulfilled') {
+      // Perfil já vem embutido (resolvido em lote no auth) — sem chamada por
+      // aluno ao auth. Só as trilhas concluídas continuam vindo do track-service.
+      const student = registration.student
+      if (!student) {
         return null
       }
 
-      const student = profileResult.value
       const role = student.role.trim().toLowerCase()
       if (!['student', 'aluno'].includes(role)) {
         return null
       }
 
-      return {
-        completedTracks:
-          completedTracksResult.status === 'fulfilled'
-            ? completedTracksResult.value
-            : null,
-        registration,
-        student,
+      let completedTracks: CompletedTrack[] | null = null
+      try {
+        completedTracks = await getCompletedTracks(registration.studentId)
+      } catch {
+        completedTracks = null
       }
+
+      return { completedTracks, registration, student }
     },
   )
   const students = studentResults.flatMap((student) =>
     student ? [student] : [],
   )
-
-  if (registrations.length > 0 && students.length === 0) {
-    throw new Error('Não foi possível carregar os perfis dos alunos.')
-  }
 
   return { registrations, students }
 }
