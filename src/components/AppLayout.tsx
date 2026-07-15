@@ -8,6 +8,7 @@ import {
 import {
   BookOpen,
   Briefcase,
+  FileClock,
   Home,
   LogOut,
   NotebookPen,
@@ -95,7 +96,10 @@ export function AppLayout() {
         activePrefix: '/banco-talentos',
       },
       ...(isTeacher
-        ? [{ to: '/professor/notas', label: 'Notas', Icon: NotebookPen }]
+        ? [
+            { to: '/professor/notas', label: 'Notas', Icon: NotebookPen },
+            { to: '/auditoria', label: 'Auditoria', Icon: FileClock },
+          ]
         : []),
       { to: profilePath, label: 'Meu Perfil', Icon: User },
     ],
