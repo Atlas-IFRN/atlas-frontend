@@ -323,6 +323,7 @@
 }
 
 .scholarship-create-tech-picker {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -335,41 +336,101 @@
   margin: 0;
 }
 
-.scholarship-create-tech-picker button {
+.scholarship-create-tech-tag {
+  align-items: center;
+  display: inline-flex;
+  position: relative;
+}
+
+.scholarship-create-tech-tag > .atlas-tech-tag {
+  padding-inline-end: 31px;
+}
+
+.scholarship-create-tech-tag button {
+  align-items: center;
   appearance: none;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-3) 64%, transparent);
+  border: 0;
+  border-radius: var(--r-pill);
+  color: var(--text-muted);
   cursor: pointer;
-  padding: 2px;
+  display: inline-flex;
+  inset-block-start: 50%;
+  inset-inline-end: 4px;
+  justify-content: center;
+  min-block-size: 21px;
+  min-inline-size: 21px;
+  padding: 0;
+  position: absolute;
+  transform: translateY(-50%);
   transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    opacity 160ms ease,
-    transform 160ms ease;
+    background var(--t-fast),
+    color var(--t-fast);
 }
 
-.scholarship-create-tech-picker button:not([aria-pressed='true']) {
-  opacity: 0.58;
+.scholarship-create-tech-tag button:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
-.scholarship-create-tech-picker button:hover {
-  opacity: 1;
-  transform: translateY(-1px);
+.scholarship-create-tech-tag button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
-.scholarship-create-tech-picker button[aria-pressed='true'] {
-  border-color: transparent;
-  opacity: 1;
+.scholarship-create-add-tech {
+  align-items: center;
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-pill);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  gap: 6px;
+  min-block-size: 30px;
+  padding: 0 12px;
+  transition:
+    background var(--t-fast),
+    border-color var(--t-fast),
+    color var(--t-fast);
 }
 
-.scholarship-create-tech-picker .atlas-tech-tag--solid {
+.scholarship-create-add-tech:hover,
+.scholarship-create-add-tech:focus-within {
+  background: var(--primary-soft);
+  border-color: color-mix(in srgb, var(--primary) 46%, transparent);
+  color: var(--text);
+}
+
+.scholarship-create-field .scholarship-create-add-tech select {
+  appearance: auto;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--text);
+  cursor: pointer;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  inline-size: 118px;
+  line-height: normal;
+  min-block-size: 28px;
+  outline: 0;
+  padding: 0;
+}
+
+.scholarship-create-field .scholarship-create-add-tech select:focus {
+  background: transparent;
+  border: 0;
   box-shadow: none;
 }
 
-.scholarship-create-tech-picker button:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
+.scholarship-create-add-tech select option {
+  background: var(--card-bg);
+  color: var(--text);
 }
 
 .scholarship-create-requirements,
