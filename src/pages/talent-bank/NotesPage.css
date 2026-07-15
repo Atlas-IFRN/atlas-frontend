@@ -354,6 +354,10 @@
   width: 100%;
 }
 
+.create-note-modal__dialog:focus {
+  outline: none;
+}
+
 .create-note-modal__header {
   align-items: center;
   display: flex;
