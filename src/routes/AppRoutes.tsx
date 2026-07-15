@@ -68,6 +68,7 @@ const EditContentPage = lazy(
 )
 
 const SearchResultsPage = lazy(() => import('../pages/search/SearchResultsPage'))
+const AuditLogPage = lazy(() => import('../pages/audit/AuditLogPage'))
 
 const TalentBankPage = lazy(
   () => import('../pages/talent-bank/TalentBankPage'),
@@ -159,6 +160,7 @@ export function AppRoutes() {
             </Route>
 
             <Route element={<RoleRoute allowedRoles={TEACHER_ROLES} />}>
+              <Route path="/auditoria" element={<AuditLogPage />} />
               <Route
                 path="/professor"
                 element={<TeacherPanelPage />}

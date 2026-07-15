@@ -11,6 +11,7 @@ import {
   ChevronDown,
   Plus,
   Trash2,
+  X,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../../atoms/Button'
@@ -728,6 +729,7 @@ export function ScholarshipFormPage({
   const [activeSection, setActiveSection] =
     useState<FormSection>('identification')
   const [form, setForm] = useState<ScholarshipFormState>(initialState)
+  const [technologyToAddId, setTechnologyToAddId] = useState('')
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
     {},
   )
@@ -973,12 +975,32 @@ export function ScholarshipFormPage({
     }))
   }
 
-  function toggleTechnology(technologyId: string) {
+  function handleTechnologySelect(event: ChangeEvent<HTMLSelectElement>) {
+    const technologyId = event.target.value
+
+    setTechnologyToAddId(technologyId)
+
+    if (!technologyId) {
+      return
+    }
+
     setForm((current) => ({
       ...current,
-      selectedTechnologyIds: current.selectedTechnologyIds.includes(technologyId)
-        ? current.selectedTechnologyIds.filter((id) => id !== technologyId)
+      selectedTechnologyIds: current.selectedTechnologyIds.includes(
+        technologyId,
+      )
+        ? current.selectedTechnologyIds
         : [...current.selectedTechnologyIds, technologyId],
+    }))
+    setTechnologyToAddId('')
+  }
+
+  function removeTechnology(technologyId: string) {
+    setForm((current) => ({
+      ...current,
+      selectedTechnologyIds: current.selectedTechnologyIds.filter(
+        (id) => id !== technologyId,
+      ),
     }))
   }
 
@@ -1142,33 +1164,72 @@ export function ScholarshipFormPage({
                     ) : availableTechnologies.length === 0 ? (
                       <p>Nenhuma tecnologia cadastrada no serviço de bolsas.</p>
                     ) : (
-                      availableTechnologies.map((technology) => {
-                        const meta = getTechnologyMeta(technology.name)
+                      <>
+                        {availableTechnologies
+                          .filter((technology) =>
+                            form.selectedTechnologyIds.includes(technology.id),
+                          )
+                          .map((technology) => {
+                            const meta = getTechnologyMeta(technology.name)
 
-                        return (
-                          <button
-                            aria-pressed={form.selectedTechnologyIds.includes(
-                              technology.id,
-                            )}
-                            key={technology.id}
-                            onClick={() => toggleTechnology(technology.id)}
-                            type="button"
+                            return (
+                              <span
+                                className="scholarship-create-tech-tag"
+                                key={technology.id}
+                              >
+                                <TechTag
+                                  accentColor={
+                                    meta ? techIconColors[meta.icon] : undefined
+                                  }
+                                  category={meta?.category ?? 'tool'}
+                                  icon={
+                                    meta ? (
+                                      <TechIcon name={meta.icon} />
+                                    ) : undefined
+                                  }
+                                  variant="tinted"
+                                >
+                                  {technology.name}
+                                </TechTag>
+                                <button
+                                  aria-label={`Remover ${technology.name}`}
+                                  onClick={() =>
+                                    removeTechnology(technology.id)
+                                  }
+                                  type="button"
+                                >
+                                  <X aria-hidden="true" size={13} />
+                                </button>
+                              </span>
+                            )
+                          })}
+
+                        <label className="scholarship-create-add-tech">
+                          <Plus aria-hidden="true" size={13} />
+                          <select
+                            aria-label="Adicionar tecnologia da bolsa"
+                            onChange={handleTechnologySelect}
+                            value={technologyToAddId}
                           >
-                            <TechTag
-                              accentColor={
-                                meta ? techIconColors[meta.icon] : undefined
-                              }
-                              category={meta?.category ?? 'tool'}
-                              icon={
-                                meta ? <TechIcon name={meta.icon} /> : undefined
-                              }
-                              variant="solid"
-                            >
-                              {technology.name}
-                            </TechTag>
-                          </button>
-                        )
-                      })
+                            <option value="">Tecnologia</option>
+                            {availableTechnologies
+                              .filter(
+                                (technology) =>
+                                  !form.selectedTechnologyIds.includes(
+                                    technology.id,
+                                  ),
+                              )
+                              .map((technology) => (
+                                <option
+                                  key={technology.id}
+                                  value={technology.id}
+                                >
+                                  {technology.name}
+                                </option>
+                              ))}
+                          </select>
+                        </label>
+                      </>
                     )}
                   </div>
                   <FieldErrors errors={validationErrors} field="technologies" />
@@ -1615,7 +1676,7 @@ export function ScholarshipFormPage({
                 Continuar editando
               </Button>
               <Button
-                onClick={handleConfirmCancel} 
+                onClick={handleConfirmCancel}
                 variant="danger">
                 {copy.cancelAction}
               </Button>

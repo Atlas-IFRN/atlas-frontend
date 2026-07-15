@@ -1,107 +1,69 @@
-# Atlas Frontend ⚡
+# Atlas · Frontend 💻
 
-Interface de usuário do ecossistema **Atlas** — SPA para alunos e professores interagirem com trilhas de conhecimento, bolsas de estudo e perfil acadêmico.
+> Parte do **Projeto Atlas** — plataforma acadêmica desenvolvida para o **IFRN Campus Pau dos Ferros** como Projeto Integrador de Sistemas Distribuídos. O Atlas conecta alunos a trilhas de conhecimento e bolsas, com avaliação automática de código por IA.
+
+**SPA (Single Page Application)** em React + TypeScript que é a interface única do Atlas para as duas personas: **aluno** (consome trilhas e se candidata a bolsas) e **professor** (gerencia trilhas, vagas e avalia talentos).
+
+## O que esta aplicação faz
+
+- **Autenticação:** fluxo de login via **SUAP (OAuth2)** com callback, guardando o JWT emitido pelo auth-service.
+- **Trilhas:** navegação por trilhas, módulos e conteúdos, com acompanhamento de progresso e submissão de desafios.
+- **Bolsas:** catálogo de bolsas, candidaturas e banco de talentos.
+- **Feed:** mural institucional com posts, comentários, curtidas e banners.
+- **Painel do professor:** gestão de trilhas/bolsas e avaliação de talentos.
+- **Busca global, perfil e notificações** integrados aos respectivos serviços.
 
 ## Stack
 
-| Tecnologia | Papel |
-|------------|-------|
-| React 19 | Interface reativa e componentizada |
-| Vite | Build tool com Hot Reload |
-| TypeScript | Tipagem estática |
-| Atomic Design | Organização de componentes em camadas reutilizáveis |
+- **React 18 + TypeScript** · **Vite**
+- **Material UI (MUI)** + Emotion · lucide-react / simple-icons
+- **TanStack Query** (data fetching/cache) · **Axios**
+- react-router-dom · react-markdown + remark-gfm · react-youtube · sonner (toasts)
+- ESLint + Prettier · Docker (Nginx servindo o build)
 
-## Arquitetura de pastas
+## Como se encaixa no Atlas
+
+| Repositório | Responsabilidade |
+|---|---|
+| atlas-auth-service | Identidade: SUAP OAuth2, JWT, perfis de usuário |
+| atlas-track-service | Trilhas, módulos, conteúdos, progresso e submissão de desafios |
+| atlas-scholarship-service | Bolsas, candidaturas, banco de talentos e notas |
+| atlas-feed-service | Feed institucional: posts, comentários, curtidas e banners |
+| atlas-notification-service | Notificações (consumidor central via RabbitMQ) |
+| atlas-ai-service | Avaliação de repositórios GitHub por LLM local (Ollama) |
+| **atlas-frontend** | **SPA React + TypeScript (aluno e professor)** |
+| atlas-infra | Docker Compose, Nginx (gateway), Postgres/Redis/RabbitMQ, deploy e backup |
+| atlas-observability | Prometheus + Grafana (métricas dos serviços) |
+
+**Comunicação:** todas as chamadas passam pelo **Nginx** (gateway), que valida o JWT e roteia para o serviço certo por namespace (`/api/auth/`, `/api/track/`, `/api/scholarship/`, `/api/feed/`, `/api/notifications/`). O cliente HTTP usa `VITE_API_URL` como base, com *overrides* opcionais por serviço.
+
+## Estrutura
 
 ```
-src/
-├── components/     # Atomic Design: atoms / molecules / organisms / templates
-├── pages/          # Telas de rota
-├── hooks/          # Hooks customizados (estado, efeitos, integração)
-├── services/       # Camada de acesso à API
-└── assets/         # Imagens, ícones, recursos estáticos
+src/pages/        auth, tracks, scholarships, talent-bank, feed, teacher-panel, profile, search
+src/services/     clientes HTTP (Axios) por serviço
+src/components/   componentes reutilizáveis
+src/contexts/ · src/providers/ · src/hooks/    estado e lógica compartilhada
+src/routes/ · src/layouts/    roteamento e layout
+src/theme/ · src/types/ · src/utils/
 ```
-
-### Atomic Design
-
-| Camada | Responsabilidade | Exemplos |
-|--------|-----------------|----------|
-| `atoms` | Blocos mínimos de UI | botões, inputs, labels |
-| `molecules` | Composições coesas de átomos | campos com label + erro, cards |
-| `organisms` | Seções completas | headers, formulários, listas filtradas |
-| `templates` | Estruturas de página sem dados de negócio | layouts, shells visuais |
-
-> Quando criar um componente: classifique na camada correta antes de commitar. Componentes de baixo nível devem ser desacoplados de regras de negócio.
 
 ## Executando localmente
 
-### Com Docker (recomendado)
-
-Este serviço é orquestrado junto com todos os outros pelo repositório central de infraestrutura:
-
-> **[Atlas-IFRN/atlas-infra](https://github.com/Atlas-IFRN/atlas-infra)** — Docker Compose canônico, Nginx, scripts de deploy e backup.
-
-Para rodar o frontend em modo dev isolado (com Hot Reload):
-
 ```bash
-# Pré-requisito: infra compartilhada rodando
-git clone https://github.com/Atlas-IFRN/atlas-infra
-cd atlas-infra && docker compose -f docker-compose.dev.yml up -d
-
-# Neste repositório
-cp .env.development.example .env.development
-docker build -f Dockerfile.dev -t atlas-frontend-dev .
-docker run --rm -p 5173:5173 -v $(pwd):/app -v /app/node_modules --env-file .env.development atlas-frontend-dev
-```
-
-Acesse: `http://localhost:5173`
-
-### Sem Docker (Node nativo)
-
-```bash
+cp .env.example .env      # configure VITE_API_URL (ex.: http://localhost/api)
 npm install
-npm run dev
+npm run dev               # Vite em modo desenvolvimento
 ```
 
-> **Windows:** use WSL 2 como backend do Docker Desktop para evitar problemas de volume e performance.
+Outros scripts: `npm run build` (typecheck + build de produção), `npm run preview`, `npm run lint`.
+
+> Em produção, o app é servido por **Nginx** dentro de um container, orquestrado pelo **[Atlas-IFRN/atlas-infra](https://github.com/Atlas-IFRN/atlas-infra)**.
 
 ## Variáveis de ambiente
 
-| Arquivo | Uso |
-|---------|-----|
-| `.env.development` | Dev local (lido pelo Vite e pelo container) |
-| `.env.example` | Template versionado — sem secrets |
+Baseie seu `.env` no `.env.example`. Principal: `VITE_API_URL` (base do gateway). Opcionais por serviço: `VITE_TRACKS_API_URL`, `VITE_FEED_API_URL`, `VITE_NOTIFICATIONS_API_URL`.
 
-Apenas variáveis com prefixo `VITE_` são expostas ao bundle do browser:
+## CI/CD
 
-```env
-VITE_API_URL=http://localhost:8000/api
-VITE_ENV_NAME=development
-```
-
-Acesso no código:
-```ts
-const apiUrl = import.meta.env.VITE_API_URL
-```
-
-## Comandos úteis
-
-| Comando | Finalidade |
-|---------|------------|
-| `npm run dev` | Dev sem container |
-| `npm run build` | Build de produção |
-| `npm run lint` | ESLint |
-
-## Padrões de código
-
-- **ESLint** obrigatório antes de qualquer merge
-- **Clean Code** — nomes claros, funções com responsabilidade única
-- **Atomic Design** obrigatório para novos componentes de UI
-- **TypeScript** — tipos explícitos quando agregam legibilidade
-
-> Extraia regras de negócio e integração com API para `services/` e `hooks/`. Evite acoplar páginas a detalhes de implementação.
-
-## Hot Reload com Docker
-
-O `Dockerfile.dev` monta o código como volume, então mudanças em `src/` são refletidas imediatamente sem rebuild. O volume separado de `node_modules` preserva o ambiente do container.
-
+Workflows de GitHub Actions em `.github/workflows/`.
