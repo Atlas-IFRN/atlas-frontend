@@ -113,7 +113,6 @@ export function AppRoutes() {
             <Route path="/inicio" element={<FeedPage />} />
 
             <Route path="/busca" element={<SearchResultsPage />} />
-            <Route path="/auditoria" element={<AuditLogPage />} />
             <Route path="/inicio/novo" element={<CreatePostPage />} />
             <Route path="/inicio/post/:postId" element={<PostPermalinkPage />} />
             <Route path="/inicio/:postId/editar" element={<EditPostPage />} />
@@ -161,6 +160,7 @@ export function AppRoutes() {
             </Route>
 
             <Route element={<RoleRoute allowedRoles={TEACHER_ROLES} />}>
+              <Route path="/auditoria" element={<AuditLogPage />} />
               <Route
                 path="/professor"
                 element={<TeacherPanelPage />}
