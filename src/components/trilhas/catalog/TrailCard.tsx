@@ -17,6 +17,7 @@ export function TrailCard({ trail }: TrailCardProps) {
   const { user } = useAuth()
   const enrollment = useEnrollInTrack()
   const normalizedRole = user?.role.trim().toLowerCase()
+  const canEdit = normalizedRole === 'teacher' || normalizedRole === 'professor'
   const canEnroll = normalizedRole !== 'teacher' && normalizedRole !== 'professor'
 
   function handleEnroll() {
@@ -54,6 +55,7 @@ export function TrailCard({ trail }: TrailCardProps) {
       </Link>
 
       <TrailFooterMeta
+        canEdit={canEdit}
         canEnroll={canEnroll}
         isEnrolling={enrollment.isPending}
         onEnroll={handleEnroll}

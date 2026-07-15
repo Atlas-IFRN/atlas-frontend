@@ -5,6 +5,7 @@ import { ButtonLink } from '../../atoms/ButtonLink'
 import type { Trail } from '../../../types/tracks'
 
 interface TrailFooterMetaProps {
+  canEdit: boolean
   canEnroll: boolean
   isEnrolling?: boolean
   onEnroll: () => void
@@ -12,6 +13,7 @@ interface TrailFooterMetaProps {
 }
 
 export function TrailFooterMeta({
+  canEdit,
   canEnroll,
   isEnrolling = false,
   onEnroll,
@@ -42,16 +44,18 @@ export function TrailFooterMeta({
       </Link>
 
       <div className="trail-footer-meta__actions">
-        <ButtonLink
-          aria-label={`Editar trilha ${trail.title}`}
-          className="trail-footer-meta__cta trail-footer-meta__edit"
-          size="md"
-          title="Editar trilha"
-          to={`/trilhas/${trail.id}/editar`}
-          variant="outline"
-        >
-          <Pencil aria-hidden="true" className="atlas-button__icon" size={15} />
-        </ButtonLink>
+        {canEdit ? (
+          <ButtonLink
+            aria-label={`Editar trilha ${trail.title}`}
+            className="trail-footer-meta__cta trail-footer-meta__edit"
+            size="md"
+            title="Editar trilha"
+            to={`/trilhas/${trail.id}/editar`}
+            variant="outline"
+          >
+            <Pencil aria-hidden="true" className="atlas-button__icon" size={15} />
+          </ButtonLink>
+        ) : null}
 
         {trail.enrolled || !canEnroll ? (
           <ButtonLink
